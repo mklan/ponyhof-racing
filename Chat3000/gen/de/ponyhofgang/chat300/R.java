@@ -21,7 +21,7 @@ public final class R {
         public static final int ic_menu_send_holo_light=0x7f020002;
     }
     public static final class id {
-        public static final int editText1=0x7f080002;
+        public static final int chatText=0x7f080002;
         public static final int imageButton1=0x7f080003;
         public static final int imageView1=0x7f080001;
         public static final int listView1=0x7f080000;
