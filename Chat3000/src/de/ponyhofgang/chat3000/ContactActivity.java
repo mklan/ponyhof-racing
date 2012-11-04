@@ -1,7 +1,12 @@
 package de.ponyhofgang.chat3000;
 
+import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
+import android.app.ActionBar;
 import android.app.ListActivity;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
@@ -19,7 +24,9 @@ public class ContactActivity extends ListActivity{
     public void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contacts);
+        setContactTitle();
         
+        if(Build.VERSION.SDK_INT >= 11) hideActionBarIcon();
         
         
             String[] values = new String[] {"Matze", "Jonas", "Aaron", "Gordon", "Schantal", "Zettrik"};
@@ -43,6 +50,7 @@ public class ContactActivity extends ListActivity{
 
 		
         });
+        
     }
 
 
@@ -52,7 +60,19 @@ public class ContactActivity extends ListActivity{
         return true;
     }
     
+    public void setContactTitle() {
+    	Intent intent = getIntent();
+		this.setTitle(intent.getStringExtra("loginName") + getString(R.string.contact_title));
+	}
     
+
+	@TargetApi(11)
+	public void hideActionBarIcon(){
+    	
+        ActionBar actionBar = getActionBar();
+        actionBar.setDisplayShowHomeEnabled(false);
+    	
+    }
     
 	
 }

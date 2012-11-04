@@ -35,10 +35,12 @@ public class LoginActivity extends Activity implements OnClickListener {
 		if (v.getId() == R.id.loginButton) {
 			if (!isEmpty(loginText) && !consistsOfWhitespace(loginText)) {
 				safeLoginName();
-				startActivity(new Intent(this, ContactActivity.class));
+				Intent intent = new Intent(this, ContactActivity.class);
+				intent.putExtra("loginName", loginText.getText().toString());
+				startActivity(intent);
 
 			}else{
-				Toast.makeText(this, "Login fehlgeschlagen", Toast.LENGTH_SHORT).show();
+				Toast.makeText(this, R.string.login_fail, Toast.LENGTH_SHORT).show();
 				
 			}
 

@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
 
     <string name="app_name">Chat300</string>
     <string name="hello_world">Hello world!</string>
@@ -6,5 +6,9 @@
     <string name="title_activity_login">LoginActivity</string>
     <string name="login_nicknameText">Nickname:</string>
     <string name="login_buttonText">Login</string>
+    <string android:layout_width="wrap_content" android:id="@+id/string1" android:layout_height="wrap_content" name="chat_title">Chat mit </string>
+    <string name="contact_title">\'s Kontakte</string>
+    <string name="login_fail">Login fehlgeschlagen</string>
+    <string name="hint_chat_message">Nachricht schreiben...</string>
 
 </resources>
