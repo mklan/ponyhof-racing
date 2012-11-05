@@ -30,7 +30,7 @@
         <activity android:name="ChatActivity"
             
         android:theme="@android:style/Theme.Holo.Light"
-        android:configChanges="orientation|keyboardHidden"    >
+        android:configChanges="keyboardHidden|orientation|screenSize"    >
         
         </activity>
     </application>

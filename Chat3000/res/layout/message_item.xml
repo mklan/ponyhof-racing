@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+    
+     <TextView
+         android:id="@+id/messageTextLeft"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:layout_alignParentLeft="true"
+         android:background="#D2D2D2"
+         android:textSize="20dp" />
+     
+    <TextView
+        android:id="@+id/messageTextRight"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/messageTextLeft"
+        android:gravity="right"
+        android:padding="5dip"
+        android:textSize="20dp" />
+
+</RelativeLayout>
