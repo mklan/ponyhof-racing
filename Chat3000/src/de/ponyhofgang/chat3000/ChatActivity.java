@@ -3,7 +3,6 @@ package de.ponyhofgang.chat3000;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 
 import android.annotation.SuppressLint;
@@ -23,10 +22,10 @@ public class ChatActivity extends Activity implements OnClickListener {
 
 	private EditText chatText;
 	private ListView listView;
-	private ArrayList<HashMap<String, String>> chatStrings;
+	private ArrayList<HashMap<String, String>> chatStrings = new ArrayList<HashMap<String, String>>();;
 	private HashMap<String, String> map;
 	private SimpleAdapter simpleAdapter;
-	private SimpleDateFormat sdf;
+	private SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
 	final Calendar cal = Calendar.getInstance();
 
 	@Override
@@ -37,24 +36,19 @@ public class ChatActivity extends Activity implements OnClickListener {
 		if (Build.VERSION.SDK_INT >= 11)
 			hideActionBarIcon();
 
-		Intent intent = getIntent();
+		this.setTitle("Chat mit " + getIntent().getStringExtra("chatBuddy"));
 
 		chatText = (EditText) findViewById(R.id.chatText);
-
-		findViewById(R.id.sendButton).setOnClickListener(this);
 		listView = (ListView) findViewById(R.id.messageList);
 
-		this.setTitle("Chat mit " + intent.getStringExtra("chatBuddy"));
+		findViewById(R.id.sendButton).setOnClickListener(this);
 
-		chatStrings = new ArrayList<HashMap<String, String>>();
-		sdf = new SimpleDateFormat("HH:mm:ss");
-
-		simpleAdapter = new SimpleAdapter(this, chatStrings, R.layout.message_item,
-				new String[] { "to", "from", "toHeader", "fromHeader" }, new int[] {
-						R.id.messageTextRight, R.id.messageTextLeft, R.id.messageTextHeaderRight
-						,R.id.messageTextHeaderLeft});
+		simpleAdapter = new SimpleAdapter(this, chatStrings,
+				R.layout.message_item, new String[] { "to", "from", "toHeader",
+						"fromHeader" }, new int[] { R.id.messageTextRight,
+						R.id.messageTextLeft, R.id.messageTextHeaderRight,
+						R.id.messageTextHeaderLeft });
 		listView.setAdapter(simpleAdapter);
-		
 
 	}
 
@@ -73,14 +67,14 @@ public class ChatActivity extends Activity implements OnClickListener {
 
 		map = new HashMap<String, String>();
 		map.put("toHeader", "Du" + getTime());
-		map.put("to", chatText.getText().toString() );
-		map.put("from","");
-		map.put("fromHeader","");
+		map.put("to", chatText.getText().toString());
+		map.put("from", "");
+		map.put("fromHeader", "");
 		chatStrings.add(map);
 		simpleAdapter.notifyDataSetChanged();
 		receiveMessage();
 		chatText.setText("");
-		
+
 		listView.smoothScrollToPosition(listView.getBottom());
 
 	}
@@ -90,18 +84,18 @@ public class ChatActivity extends Activity implements OnClickListener {
 		map = new HashMap<String, String>();
 		Intent intent = getIntent();
 		map.put("fromHeader", intent.getStringExtra("chatBuddy") + getTime());
-		map.put("from", chatText.getText().toString() );
-		map.put("to","");
+		map.put("from", chatText.getText().toString());
+		map.put("to", "");
 		map.put("toHeader", "");
 		chatStrings.add(map);
 		simpleAdapter.notifyDataSetChanged();
 
+		// TODO listView.smoothScrollToPosition(listView.getBottom());
 	}
 
 	@SuppressLint("SimpleDateFormat")
 	public String getTime() {
 
-		
 		return "(" + sdf.format(System.currentTimeMillis()) + "):";
 
 	}
