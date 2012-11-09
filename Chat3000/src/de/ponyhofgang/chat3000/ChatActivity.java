@@ -12,6 +12,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.EditText;
@@ -57,6 +58,11 @@ public class ChatActivity extends Activity implements OnClickListener {
 			if (!isEmpty(chatText)) {
 
 				sendMessage();
+				simpleAdapter.notifyDataSetChanged();
+				Log.d("test",""+listView.getCount());
+				listView.smoothScrollToPosition(listView.getCount());
+				
+				
 
 			}
 
@@ -71,11 +77,15 @@ public class ChatActivity extends Activity implements OnClickListener {
 		map.put("from", "");
 		map.put("fromHeader", "");
 		chatStrings.add(map);
-		simpleAdapter.notifyDataSetChanged();
 		receiveMessage();
 		chatText.setText("");
+		
+		
+		
 
-		listView.smoothScrollToPosition(listView.getBottom());
+        
+
+		
 
 	}
 
@@ -88,9 +98,11 @@ public class ChatActivity extends Activity implements OnClickListener {
 		map.put("to", "");
 		map.put("toHeader", "");
 		chatStrings.add(map);
-		simpleAdapter.notifyDataSetChanged();
+		
 
-		// TODO listView.smoothScrollToPosition(listView.getBottom());
+		// TODO listView.invalidateViews();
+		
+		// TODO listView.smoothScrollToPosition(listView.getCount());
 	}
 
 	@SuppressLint("SimpleDateFormat")
