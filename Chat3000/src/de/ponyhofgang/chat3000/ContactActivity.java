@@ -1,11 +1,18 @@
 package de.ponyhofgang.chat3000;
 
+import java.util.Vector;
+
+import com.google.android.gcm.GCMRegistrar;
+
 import android.annotation.TargetApi;
 import android.app.ActionBar;
 import android.app.ListActivity;
+import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.AdapterView;
@@ -14,6 +21,11 @@ import android.widget.ArrayAdapter;
 
 public class ContactActivity extends ListActivity{
 
+	private  Vector<String[]> contacts;
+	private String nickname;
+	private String regId;
+	private static String SENDER_ID = "76131326678";
+	private Context context;
 	
 	
     @Override
@@ -21,14 +33,15 @@ public class ContactActivity extends ListActivity{
     	super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contacts);
         setContactTitle();
+        ServerUtilities.setUsername(nickname);
         
         if(Build.VERSION.SDK_INT >= 11) hideActionBarIcon();
         
-            //TODO getUserList();
-            String[] values = new String[] {"Matze", "Jonas", "Aaron", "Gordon", "Schantal", "Zettrik"};
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_list_item_1, values);
-            setListAdapter(adapter);
+        context = this;
+        
+        registerAtServer();
+        
+            
           
         
         
@@ -38,7 +51,9 @@ public class ContactActivity extends ListActivity{
         {
         Intent intent = new Intent();
         intent.setClassName(getPackageName(), getPackageName()+".ChatActivity");
-        intent.putExtra("chatBuddy", getListView().getAdapter().getItem(position).toString());
+        intent.putExtra("fromId", (contacts.get(position))[0]);
+        intent.putExtra("reg_id", regId);
+        intent.putExtra("fromName", getListView().getAdapter().getItem(position).toString());
         startActivity(intent);
         
         	
@@ -58,6 +73,7 @@ public class ContactActivity extends ListActivity{
     
     public void setContactTitle() {
     	Intent intent = getIntent();
+    	nickname = intent.getStringExtra("loginName");
 		this.setTitle(intent.getStringExtra("loginName") + getString(R.string.contact_title));
 	}
     
@@ -69,6 +85,60 @@ public class ContactActivity extends ListActivity{
         actionBar.setDisplayShowHomeEnabled(false);
     	
     }
+	
+	public void getContacts(){
+		String[] liste = new String[contacts.size()];
+		for(int i = 0; i<contacts.size(); i++){
+			liste[i] = (contacts.get(i))[1];
+		}
+		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_list_item_1, liste);
+            setListAdapter(adapter);
+	}
+	
+public void registerAtServer(){
+		
+		GCMRegistrar.checkDevice(this);
+		GCMRegistrar.checkManifest(this);
+		regId = GCMRegistrar.getRegistrationId(this);
+		if (regId.equals("")) {
+		  GCMRegistrar.register(this, SENDER_ID);
+			
+		  regId = GCMRegistrar.getRegistrationId(this);
+	      Log.v("test", "Succesfull registered id:" + regId);
+        } else {
+        	  Log.v("test", "Already registered");
+        }
+		
+		
+		if (GCMRegistrar.isRegisteredOnServer(this)) {  
+		new GetThread().execute();
+		}
+	}
+	
+	public class GetThread extends AsyncTask<String, Void, Vector <String[]>>{
+		
+		
+		
+public Vector<String[]> doInBackground(String... strings){
+	
+	
+	ServerUtilities.register(context, regId);
+	
+	return ServerUtilities.getContacts();
+			
+}
+
+		
+		protected void onPostExecute(Vector<String[]> Result){
+			contacts = Result;
+			getContacts();
+			
+		}
+	}
+	
+	
+
     
 	
 }

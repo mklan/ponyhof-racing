@@ -13,6 +13,11 @@ import android.widget.Toast;
 public class LoginActivity extends Activity implements OnClickListener {
 
 	private EditText loginText;
+    
+	
+	
+	
+	
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -34,7 +39,7 @@ public class LoginActivity extends Activity implements OnClickListener {
 		if (v.getId() == R.id.loginButton) {
 			if (!isEmpty(loginText) && !consistsOfWhitespace(loginText)) {
 				safeLoginName();
-				//TODO registerAtServer()
+								
 				Intent intent = new Intent(this, ContactActivity.class);
 				intent.putExtra("loginName", loginText.getText().toString());
 				startActivity(intent);
@@ -49,13 +54,9 @@ public class LoginActivity extends Activity implements OnClickListener {
 
 	public boolean isEmpty(EditText loginText) {
 
-		if (!loginText.getText().toString().equals("")) {
+		return (loginText.getText().toString().equals("")) ;
 
-			return false;
-		}
 		
-
-		return true;
 	}
 
 	public boolean consistsOfWhitespace(EditText loginText) {
@@ -85,5 +86,15 @@ public class LoginActivity extends Activity implements OnClickListener {
 		SharedPreferences settings = getPreferences(0);
 		loginText.setText(settings.getString("nickname", ""));
 	}
+	
+	
+		
+		
+		
+		
+		
+	}
+	
+	
 
-}
+
