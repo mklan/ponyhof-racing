@@ -29,11 +29,7 @@ public class LoginActivity extends Activity implements OnClickListener {
 
 	}
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.activity_login, menu);
-		return true;
-	}
+
 
 	public void onClick(View v) {
 		if (v.getId() == R.id.loginButton) {

@@ -13,7 +13,7 @@ import com.google.android.gcm.GCMBaseIntentService;
 public class GCMIntentService extends GCMBaseIntentService{
 	
 	public static final String BROADCAST_ACTION = "de.ponyhofgang.chat3000.broadcastkey";
-	private static String buddyCurrent = null;
+	private static String buddyCurrent = "achduscheiﬂewasdalos";
 
 	@Override
 	protected void onError(Context arg0, String arg1) {
@@ -76,7 +76,7 @@ public class GCMIntentService extends GCMBaseIntentService{
         notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP |
                 Intent.FLAG_ACTIVITY_SINGLE_TOP);
         PendingIntent intent =
-                PendingIntent.getActivity(context, 0, notificationIntent,  PendingIntent.FLAG_UPDATE_CURRENT);
+                PendingIntent.getActivity(context, 0, notificationIntent,  PendingIntent.FLAG_CANCEL_CURRENT);
         
         
         

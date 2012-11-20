@@ -16,10 +16,15 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.location.Location;
+import android.location.LocationManager;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.EditText;
@@ -36,11 +41,17 @@ public class ChatActivity extends Activity implements OnClickListener {
 	private SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
 	final Calendar cal = Calendar.getInstance();
 	
+	private LocationListener gpsListener;
+	private LocationListener networkListener;
+	private LocationManager locationManager;
+	
 	private String chatBuddyId;
 	private String msg;
 	private String regId;
 	private String chatBuddyName;
 	
+	private String gpsCoords;
+	private String networkCoords;
 
 	private boolean active = false;
 	
@@ -74,8 +85,6 @@ public class ChatActivity extends Activity implements OnClickListener {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_chat);
 		
-		
-
 		if (Build.VERSION.SDK_INT >= 11)
 			hideActionBarIcon();
 
@@ -87,7 +96,13 @@ public class ChatActivity extends Activity implements OnClickListener {
 		SharedPreferences settings = getSharedPreferences("prefs", MODE_PRIVATE);
 		regId = settings.getString("regId", "");
 		
-
+		locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+		 gpsListener = new LocationListener(
+	        		);
+	        networkListener = new LocationListener(
+	        		);
+		
+		
 		chatText = (EditText) findViewById(R.id.chatText);
 		listView = (ListView) findViewById(R.id.messageList);
 
@@ -109,6 +124,30 @@ public class ChatActivity extends Activity implements OnClickListener {
         	recieveMessage(msg);
         }
 		
+		
+		
+	}
+	
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+	    // Handle item selection
+	    switch (item.getItemId()) {
+	        case R.id.menu_chat_location:
+	            sendLocation();
+	            return true;
+	        
+	    }
+	return false;
+	}
+	
+
+
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+	    getMenuInflater().inflate(R.menu.activity_chat, menu);
+	    return true;
 	}
 	
 	@Override
@@ -127,14 +166,22 @@ public class ChatActivity extends Activity implements OnClickListener {
     
     
     public void onPause(){
+    	locationManager.removeUpdates(gpsListener);
+		locationManager.removeUpdates(networkListener);
+		GCMIntentService.setCurrentBuddy("");
     	super.onPause();
-    	GCMIntentService.setCurrentBuddy("");
+    	
     	
     }
     
     public void onResume(){
-    	super.onPause();
+    	super.onResume();
     	GCMIntentService.setCurrentBuddy(chatBuddyName);
+    	locationManager.requestLocationUpdates(
+				LocationManager.GPS_PROVIDER, 5000, 10, gpsListener);
+		locationManager.requestLocationUpdates(
+				LocationManager.NETWORK_PROVIDER, 5000, 10, networkListener);
+    	
     	
     }
 
@@ -142,23 +189,24 @@ public class ChatActivity extends Activity implements OnClickListener {
 		if (v.getId() == R.id.sendButton) {
 			if (!isEmpty(chatText)) {
 
-				sendMessage();
+				sendMessage("txt:" + chatText.getText().toString());
 
 			}
 
 		}
 	}
 
-	public void sendMessage() {
+	public void sendMessage(String message) {
 
+		
 		map = new HashMap<String, String>();
 		map.put("toHeader", "Du" + getTime());
-		map.put("to", chatText.getText().toString());
+		map.put("to", message.substring(4));
 		map.put("from", "");
 		map.put("fromHeader", "");
 		chatStrings.add(map);
 		
-		msg = chatText.getText().toString();
+		msg = message;
 		
 		new SendThread().execute();
 		
@@ -168,19 +216,28 @@ public class ChatActivity extends Activity implements OnClickListener {
 		listView.smoothScrollToPosition(listView.getCount());
 
 	}
+	
+	private void sendLocation() {
+		
+		if(!gpsListener.getLocationString().equals("")){
+			sendMessage("geo:"+ gpsListener.getLocationString());	
+		}else{
+			sendMessage("geo:"+ networkListener.getLocationString());	
+		}
+		
+		
+	}
+	
+	
+	private void sendWake() {
+		sendMessage("vib:");
+	}
 
 	public void recieveMessage(String inMsg) {
+		
+		checkIncomingMessage(inMsg.substring(0, 4), inMsg.substring(4));
 
-		map = new HashMap<String, String>();
-		Intent intent = getIntent();
-		map.put("fromHeader", chatBuddyName + getTime());
-		map.put("from", inMsg);
-		map.put("to", "");
-		map.put("toHeader", "");
-		chatStrings.add(map);
-
-	    simpleAdapter.notifyDataSetChanged();
-		listView.smoothScrollToPosition(listView.getCount());
+		
 	}
 
 	@SuppressLint("SimpleDateFormat")
@@ -202,6 +259,32 @@ public class ChatActivity extends Activity implements OnClickListener {
 		ActionBar actionBar = getActionBar();
 		actionBar.setDisplayShowHomeEnabled(false);
 
+	}
+	
+	public void checkIncomingMessage(String messageHeader, String message){
+		
+		if(messageHeader.equals("txt:")){
+			map = new HashMap<String, String>();
+			map.put("fromHeader", chatBuddyName + getTime());
+			map.put("from", message);
+			map.put("to", "");
+			map.put("toHeader", "");
+			chatStrings.add(map);
+
+		    simpleAdapter.notifyDataSetChanged();
+			listView.smoothScrollToPosition(listView.getCount());
+			
+		}
+        if(messageHeader.equals("geo:")){
+        	Intent intent = new Intent(android.content.Intent.ACTION_VIEW, 
+        	Uri.parse("geo:0,0?q="+message+ "(" + chatBuddyName + ")"));
+        	startActivity(intent);
+		}
+        if(messageHeader.equals("vib:")){
+			
+		}
+		
+		
 	}
 
 	public void onConfigurationChanged(Configuration newConfig) {
@@ -231,6 +314,30 @@ public class ChatActivity extends Activity implements OnClickListener {
 		protected void onPostExecute(Vector<String> Result){
 			
 		}
+	}
+	
+	
+private class LocationListener extends SimpleLocationListener {
+		
+		private String locationString = "";
+					
+		public LocationListener() {
+			super();
+			
+			
+		}
+
+		@Override
+		public void onLocationChanged(Location location) {
+			
+			locationString = location.getLatitude() + "," + location.getLongitude() ;
+		}
+
+		public String getLocationString() {
+			return locationString;
+		}
+
+		
 	}
 	
 	

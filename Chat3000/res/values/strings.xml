@@ -10,5 +10,6 @@
     <string name="contact_title">\'s Kontakte</string>
     <string name="login_fail">Login fehlgeschlagen</string>
     <string name="hint_chat_message">Nachricht schreiben...</string>
+    <string name="menu_chat_location">Share Location</string>
 
 </resources>

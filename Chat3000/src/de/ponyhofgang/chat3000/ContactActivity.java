@@ -65,11 +65,7 @@ public class ContactActivity extends ListActivity{
     }
 
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.activity_login, menu);
-        return true;
-    }
+ 
     
     public void setContactTitle() {
     	Intent intent = getIntent();
