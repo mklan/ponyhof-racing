@@ -4,6 +4,7 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 import android.app.Activity;
 import android.content.Context;
+import android.content.pm.ActivityInfo;
 import android.opengl.GLSurfaceView;
 import android.opengl.GLSurfaceView.Renderer;
 import android.os.Bundle;
@@ -39,8 +40,11 @@ public abstract class GLGame extends Activity implements Game, Renderer {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
-		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-				WindowManager.LayoutParams.FLAG_FULLSCREEN);
+		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN
+				);
+		
+		
+		
 		glView = new GLSurfaceView(this);
 		glView.setRenderer(this);
 		setContentView(glView);
@@ -129,6 +133,7 @@ public abstract class GLGame extends Activity implements Game, Renderer {
 	}
 
 	public FileIO getFileIO() {
+		
 		return fileIO;
 	}
 
@@ -153,4 +158,14 @@ public abstract class GLGame extends Activity implements Game, Renderer {
 	public Screen getCurrentScreen() {
 		return screen;
 	}
+	
+	public int getHeight(){
+		return this.getWindow().getDecorView().getHeight();
+	}
+	
+	public int getWidth(){
+		return this.getWindow().getDecorView().getWidth();
+	}
+	
+	
 }
