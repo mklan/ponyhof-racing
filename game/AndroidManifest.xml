@@ -4,12 +4,13 @@
     android:versionName="1.0" >
 
     <uses-sdk
-        android:minSdkVersion="8"
+        android:minSdkVersion="11"
         android:targetSdkVersion="15" />
     
      <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
      <uses-permission android:name="android.permission.WAKE_LOCK"/>
      <uses-permission android:name="android.permission.INTERNET"/>
+     <uses-permission android:name="android.permission.VIBRATE"/>
        
    
 
@@ -22,8 +23,8 @@
         >
         
         <activity
-            android:name=".framework.test.TestGame"
-            android:label="test"
+            android:name="de.ponyhofgang.ponyhofgame.game.GameActivity"
+            android:label="PonyRacing"
             android:screenOrientation="landscape"
            
              >
@@ -33,7 +34,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".game.multiplayer.SearchServices"></activity>
+         <activity android:name="de.thm.mps.ConnectionMessenger.ChooseDevice"></activity>
         
+        
+    
         
        
     </application>
