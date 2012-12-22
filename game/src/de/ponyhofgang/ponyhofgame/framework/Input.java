@@ -4,6 +4,13 @@ import java.util.List;
 
 public interface Input {
 	
+	public static final int ARROW_LEFT = 97;
+	public static final int ARROW_UP = 119;
+	public static final int ARROW_RIGHT = 100;
+	public static final int ARROW_DOWN = 115;
+	
+	
+	
 	public static class KeyEvent {
 		public static final int KEY_DOWN = 0;
 		public static final int KEY_UP = 1;
@@ -38,4 +45,7 @@ public interface Input {
 	public List<KeyEvent> getKeyEvents();
 
 	public List<TouchEvent> getTouchEvents();
+
+
+	
 }

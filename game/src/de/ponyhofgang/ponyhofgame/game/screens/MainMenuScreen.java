@@ -1,23 +1,21 @@
-package de.ponyhofgang.ponyhofgame.framework.test;
+package de.ponyhofgang.ponyhofgame.game.screens;
 
 import java.util.List;
 
 import javax.microedition.khronos.opengles.GL10;
 
-import android.util.Log;
-import android.widget.Toast;
-
 import de.ponyhofgang.ponyhofgame.framework.Game;
 import de.ponyhofgang.ponyhofgame.framework.Input.TouchEvent;
-import de.ponyhofgang.ponyhofgame.framework.Screen;
 import de.ponyhofgang.ponyhofgame.framework.gl.Camera2D;
 import de.ponyhofgang.ponyhofgame.framework.gl.SpriteBatcher;
-import de.ponyhofgang.ponyhofgame.framework.gl.TextureRegion;
 import de.ponyhofgang.ponyhofgame.framework.impl.GLScreen;
 import de.ponyhofgang.ponyhofgame.framework.math.OverlapTester;
 import de.ponyhofgang.ponyhofgame.framework.math.PonyMath;
 import de.ponyhofgang.ponyhofgame.framework.math.Rectangle;
 import de.ponyhofgang.ponyhofgame.framework.math.Vector2;
+import de.ponyhofgang.ponyhofgame.game.Assets;
+import de.ponyhofgang.ponyhofgame.game.GameActivity;
+
 
 
 public class MainMenuScreen extends GLScreen {
@@ -34,24 +32,42 @@ public class MainMenuScreen extends GLScreen {
 
 	
 	
-	int height;
-	int width;
+	public int height;
+	public int width;
+	       
 
-	public MainMenuScreen(Game game, int height, int width) {
+	
+	
+
+	public boolean loading = false;
+	public boolean loaded = false;
+	
+	
+	private GameActivity game;
+	public boolean quitFromGame = false;
+
+
+	
+	private static MainMenuScreen instance = null;
+	
+	
+	
+
+	private MainMenuScreen(Game game, int height, int width) {
 		super(game);
+		
 		
 		this.height = height;
 		this.width = width;
+		this.game = (GameActivity) game;
+		
+		
 
 		guiCam = new Camera2D(glGraphics, width, height);
 		batcher = new SpriteBatcher(glGraphics, 10);
 
-		 touchPoint = new Vector2();
-		 
+		touchPoint = new Vector2();
 		
-
-		
-
 		timeTrialBounds = new Rectangle((width/2)-(width/2.5f/2), height/2-height/8+width/2.5f/4, width/2.5f, width/2.5f/4);
 		multiplayerBounds = new Rectangle((width/2)-(width/2.5f/2), height/2-height/8, width/2.5f, width/2.5f/4);
 		settingsBounds = new Rectangle((width/2)-(width/2.5f/2), height/2-height/8-width/2.5f/4, width/2.5f, width/2.5f/4);
@@ -72,32 +88,54 @@ public class MainMenuScreen extends GLScreen {
 			guiCam.touchToWorld(touchPoint.set(event.x, event.y));
 		
 			if (OverlapTester.pointInRectangle(timeTrialBounds, touchPoint)) {
+				
+				
 				Assets.playSound(Assets.clickSound);
-				game.setScreen(new GameScreen(game, height, width));
-			
+				loading = true;
 			}
+			
 			if (OverlapTester.pointInRectangle(multiplayerBounds, touchPoint)) {
 				Assets.playSound(Assets.clickSound);
-				game.setScreen(new GameScreen1(game));
+				game.startSearchService();
+				
 			}
 			
 			if (OverlapTester.pointInRectangle(settingsBounds, touchPoint)) {
 				Assets.playSound(Assets.clickSound);
-				game.setScreen(new SettingsScreen(game, height, width));
+				game.setScreen(SettingsScreen.getInstance(game));
 			
 			}
 			
 			if (OverlapTester.pointInRectangle(quitBounds, touchPoint)) {
+				
 				Assets.playSound(Assets.clickSound);
 				System.exit(1);
 			
 			}
 			
 			if (OverlapTester.pointInRectangle(aboutBounds, touchPoint)) {
+				
+				//Assets.pitchSound(Assets.clickSound);
+				
 				Assets.playSound(Assets.clickSound);
-				System.exit(1);
+		
+				game.setScreen(AboutScreen.getInstance(game));
 			
 			}
+		}
+		
+		if (loaded){
+			
+			game.setScreen(LoadingScreen.getInstance(game));
+			
+		}
+		
+		if (quitFromGame){ 
+			
+		GameScreen.getInstance().clear();
+		LoadingScreen.getInstance().clear();
+		quitFromGame = false;
+		
 		}
 	}
 
@@ -118,34 +156,58 @@ public class MainMenuScreen extends GLScreen {
 
 		batcher.beginBatch(Assets.items);
 
-		// TODO koordinaten berichtigen, bzw. übehraupt verstehen
-
 		batcher.drawSprite(width/2, height/2-height/8, width/2.5f, width/2.5f, Assets.menuRegion);
 		batcher.drawSprite(width-PonyMath.getRatio(width, 100), PonyMath.getRatio(width, 80), width/9.5f, width/9.5f, Assets.aboutRegion);
 
 		batcher.endBatch();
+		
+		if (loading){
+			
+			batcher.beginBatch(Assets.loading);
+			batcher.drawSprite(width / 2, height / 2, width, height,
+					Assets.loadingBackgroundRegion);
+			
+			batcher.drawSprite(width / 2, height / 2, PonyMath.getRatio(width, 512), PonyMath.getRatio(width, 271), Assets.iconAndLoadingRegion);
+			
+			batcher.endBatch();
+			loaded = true;
+		}
 
 		gl.glDisable(GL10.GL_BLEND);
 		gl.glDisable(GL10.GL_TEXTURE_2D);
+		
+		
 
 	}
 
 	@Override
 	public void pause() {
-		// TODO Auto-generated method stub
-
+		
 	}
 
 	@Override
 	public void resume() {
-		// TODO Auto-generated method stub
-
+		
 	}
 
 	@Override
 	public void dispose() {
-		// TODO Auto-generated method stub
+		
 
 	}
+	
+	 public static MainMenuScreen getInstance(Game game, int height, int width) {
+	        if (instance == null) {
+	            instance = new MainMenuScreen(game, height, width);
+	        }
+	        return instance;
+	    }
+	 
+	 public static MainMenuScreen getInstance() {
+	        if (instance == null) {
+	            instance = new MainMenuScreen(null, -1, -1);
+	        }
+	        return instance;
+	    }
 
 }

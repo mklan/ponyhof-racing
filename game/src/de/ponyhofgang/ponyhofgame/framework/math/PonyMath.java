@@ -1,5 +1,7 @@
 package de.ponyhofgang.ponyhofgame.framework.math;
 
+
+
 public class PonyMath {
 
 	
@@ -20,14 +22,10 @@ public class PonyMath {
 public static float getRatio(int width, int value){
 		
 		return (width/2.5f)/(512/value);
-		
-		
-		
-		
-		
-		
 	}
 	
 	
+
+
 }
 

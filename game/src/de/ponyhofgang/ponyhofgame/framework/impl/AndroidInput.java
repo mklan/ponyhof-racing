@@ -3,6 +3,7 @@ package de.ponyhofgang.ponyhofgame.framework.impl;
 import java.util.List;
 import android.content.Context;
 import android.os.Build.VERSION;
+import android.os.Vibrator;
 import android.view.View;
 import de.ponyhofgang.ponyhofgame.framework.Input;
 
@@ -10,10 +11,14 @@ public class AndroidInput implements Input {
 	AccelerometerHandler accelHandler;
 	KeyboardHandler keyHandler;
 	TouchHandler touchHandler;
-
+	Vibrator vibrator;
+	
 	public AndroidInput(Context context, View view, float scaleX, float scaleY) {
 		accelHandler = new AccelerometerHandler(context);
 		keyHandler = new KeyboardHandler(view);
+		
+
+		
 		if (Integer.parseInt(VERSION.SDK) < 5)
 			touchHandler = new SingleTouchHandler(view, scaleX, scaleY);
 		else
@@ -56,4 +61,9 @@ public class AndroidInput implements Input {
 	public List<KeyEvent> getKeyEvents() {
 		return keyHandler.getKeyEvents();
 	}
+	
+
+
+
+		
 }

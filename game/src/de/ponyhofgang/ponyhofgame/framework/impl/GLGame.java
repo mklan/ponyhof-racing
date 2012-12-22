@@ -4,11 +4,11 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 import android.app.Activity;
 import android.content.Context;
-import android.content.pm.ActivityInfo;
 import android.opengl.GLSurfaceView;
 import android.opengl.GLSurfaceView.Renderer;
 import android.os.Bundle;
 import android.os.PowerManager;
+import android.os.Vibrator;
 import android.os.PowerManager.WakeLock;
 import android.view.Window;
 import android.view.WindowManager;
@@ -29,6 +29,7 @@ public abstract class GLGame extends Activity implements Game, Renderer {
 	GLGraphics glGraphics;
 	Audio audio;
 	Input input;
+	Vibrator vibrator;
 	FileIO fileIO;
 	Screen screen;
 	GLGameState state = GLGameState.Initialized;
@@ -52,9 +53,12 @@ public abstract class GLGame extends Activity implements Game, Renderer {
 		fileIO = new AndroidFileIO(getAssets());
 		audio = new AndroidAudio(this);
 		input = new AndroidInput(this, glView, 1, 1);
+	    vibrator  = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 		PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
 		wakeLock = powerManager.newWakeLock(PowerManager.FULL_WAKE_LOCK,
 				"GLGame");
+		
+		
 	}
 
 	public void onResume() {
@@ -68,6 +72,7 @@ public abstract class GLGame extends Activity implements Game, Renderer {
 		synchronized (stateChanged) {
 			if (state == GLGameState.Initialized)
 				screen = getStartScreen();
+			
 			state = GLGameState.Running;
 			screen.resume();
 			startTime = System.nanoTime();
@@ -143,6 +148,10 @@ public abstract class GLGame extends Activity implements Game, Renderer {
 
 	public Audio getAudio() {
 		return audio;
+	}
+	
+	public Vibrator getVibrator() {
+		return vibrator;
 	}
 
 	public void setScreen(Screen screen) {

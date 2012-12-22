@@ -1,4 +1,4 @@
-package de.ponyhofgang.ponyhofgame.framework.test;
+package de.ponyhofgang.ponyhofgame.game.screens;
 
 import java.util.List;
 import javax.microedition.khronos.opengles.GL10;
@@ -11,6 +11,8 @@ import de.ponyhofgang.ponyhofgame.framework.math.OverlapTester;
 import de.ponyhofgang.ponyhofgame.framework.math.PonyMath;
 import de.ponyhofgang.ponyhofgame.framework.math.Rectangle;
 import de.ponyhofgang.ponyhofgame.framework.math.Vector2;
+import de.ponyhofgang.ponyhofgame.game.Assets;
+import de.ponyhofgang.ponyhofgame.game.Settings;
 
 public class SettingsScreen extends GLScreen {
 	Camera2D guiCam;
@@ -24,12 +26,20 @@ public class SettingsScreen extends GLScreen {
 
 	int height;
 	int width;
+	
+	private static SettingsScreen instance = null;
+	
+	public boolean pressedBackKey = false;
 
-	public SettingsScreen(Game game, int height, int width) {
+	private SettingsScreen(Game game) {
 		super(game);
 
-		this.height = height;
-		this.width = width;
+	MainMenuScreen mainMenuScreen = MainMenuScreen.getInstance();
+		
+		height = mainMenuScreen.height;
+		width = mainMenuScreen.width;
+		
+		
 
 		guiCam = new Camera2D(glGraphics, width, height);
 		batcher = new SpriteBatcher(glGraphics, 10);
@@ -80,10 +90,22 @@ public class SettingsScreen extends GLScreen {
 
 			}
 			if (OverlapTester.pointInRectangle(backButtonBounds, touchPoint)) {
+				pressedBackKey = false;
 				Assets.playSound(Assets.clickSound);
-				game.setScreen(new MainMenuScreen(game, height, width));
+				game.setScreen(MainMenuScreen.getInstance());
+				
 			}
 		}
+		
+		
+		if (pressedBackKey){
+			
+			pressedBackKey = false;
+			Assets.playSound(Assets.clickSound);
+			game.setScreen(MainMenuScreen.getInstance());
+			
+		}
+			
 	}
 
 	@Override
@@ -135,4 +157,18 @@ public class SettingsScreen extends GLScreen {
 	@Override
 	public void dispose() {
 	}
+	
+	public static SettingsScreen getInstance(Game game) {
+        if (instance == null) {
+            instance = new SettingsScreen(game);
+        }
+        return instance;
+    }
+	
+	public static SettingsScreen getInstance() {
+        if (instance == null) {
+            instance = new SettingsScreen(null);
+        }
+        return instance;
+    }
 }

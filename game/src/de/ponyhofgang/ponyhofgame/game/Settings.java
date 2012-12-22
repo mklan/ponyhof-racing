@@ -1,4 +1,4 @@
-package de.ponyhofgang.ponyhofgame.framework.test;
+package de.ponyhofgang.ponyhofgame.game;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
