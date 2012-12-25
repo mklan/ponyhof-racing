@@ -62,7 +62,7 @@ public class LoadingScreen extends GLScreen {
 		} 
         
 		
-		game.setScreen(GameScreen.getInstance(game));
+		game.setScreen(GameScreen.getInstance(game, SelectACarScreen.selectedCar));
 		
 		
 	

@@ -39,12 +39,9 @@ public class MainMenuScreen extends GLScreen {
 	
 	
 
-	public boolean loading = false;
-	public boolean loaded = false;
-	
-	
+
 	private GameActivity game;
-	public boolean quitFromGame = false;
+	
 
 
 	
@@ -91,7 +88,11 @@ public class MainMenuScreen extends GLScreen {
 				
 				
 				Assets.playSound(Assets.clickSound);
-				loading = true;
+				game.setScreen(SelectACarScreen.getInstance(game));
+				
+				
+				
+				
 			}
 			
 			if (OverlapTester.pointInRectangle(multiplayerBounds, touchPoint)) {
@@ -124,19 +125,9 @@ public class MainMenuScreen extends GLScreen {
 			}
 		}
 		
-		if (loaded){
-			
-			game.setScreen(LoadingScreen.getInstance(game));
-			
-		}
+	
 		
-		if (quitFromGame){ 
-			
-		GameScreen.getInstance().clear();
-		LoadingScreen.getInstance().clear();
-		quitFromGame = false;
 		
-		}
 	}
 
 	@Override
@@ -161,18 +152,6 @@ public class MainMenuScreen extends GLScreen {
 
 		batcher.endBatch();
 		
-		if (loading){
-			
-			batcher.beginBatch(Assets.loading);
-			batcher.drawSprite(width / 2, height / 2, width, height,
-					Assets.loadingBackgroundRegion);
-			
-			batcher.drawSprite(width / 2, height / 2, PonyMath.getRatio(width, 512), PonyMath.getRatio(width, 271), Assets.iconAndLoadingRegion);
-			
-			batcher.endBatch();
-			loaded = true;
-		}
-
 		gl.glDisable(GL10.GL_BLEND);
 		gl.glDisable(GL10.GL_TEXTURE_2D);
 		

@@ -30,11 +30,10 @@ public class Assets {
 	public static TextureRegion iconAndLoadingRegion;
 	public static TextureRegion loadingBackgroundRegion;
 	
-	
-	public static Vertices3 carModel;
+
 	public static Vertices3 levelDocksModel;
 	public static Vertices3 boundsBallModel;
-	public static Texture carTexture;
+	
 	public static Texture levelDocksTexture;
 
 	public static Sound clickSound;
@@ -45,7 +44,18 @@ public class Assets {
 	public static Vertices3 craneModel;
 	public static Texture craneTexture;
 	public static Texture shadowsLevelDocksTexture;
-
+	
+	
+	//cars
+	public static Texture ectoMobileTexture;
+	public static Vertices3 ectoMobileModel;
+	public static Texture batMobileTexture;
+	public static Vertices3 batMobileModel;
+	public static Texture mysteryMachineTexture;
+	public static Vertices3 mysteryMachineModel;
+	public static Texture podRacerTexture;
+	public static Vertices3 podRacerModel;
+    //
 	
 	public static void loadLoadingScreen(GLGame game) {
 		loading = new Texture(game, "loading.jpg", true);
@@ -70,6 +80,19 @@ public class Assets {
      	pauseButtonRegion = new TextureRegion(items, 0, 644, 132, 132);
      	accelRegion = new TextureRegion(items, 132, 770, 260, 126);
      	steeringRegion = new TextureRegion(items, 132, 644, 260, 126);
+     	
+     	ectoMobileTexture = new Texture(game, "ghostbusters.png", true);
+     	ectoMobileModel = ObjLoader.load(game, "ghostbusters.obj");
+     	
+     	batMobileTexture = new Texture(game, "gengar.png", true);
+     	batMobileModel = ObjLoader.load(game, "batmobile.obj");
+     	
+     	mysteryMachineTexture = new Texture(game, "ghostbusters.png", true);
+     	mysteryMachineModel = ObjLoader.load(game, "ghostbusters.obj");
+     	
+     	podRacerTexture = new Texture(game, "ghostbusters.png", true);
+     	podRacerModel = ObjLoader.load(game, "ghostbusters.obj");
+     	
      	clickSound = game.getAudio().newSound("click.wav");
 
 	}
@@ -80,8 +103,7 @@ public class Assets {
 	items2 = new Texture(game, "items2.png", true);
  	pauseMenuRegion = new TextureRegion(items2, 0, 0, 512, 419);
  	pauseBackgroundRegion = new TextureRegion(items2, 0, 443, 2, 2);
- 	carTexture = new Texture(game, "ghostbusters.png", true);
- 	carModel = ObjLoader.load(game, "ghostbusters.obj");
+ 	
  	levelDocksTexture = new Texture(game, "container.png", true);
  	craneTexture = new Texture(game, "crane.png", true);
  	groundLevelDocksTexture = new Texture(game, "ground_level_docks.png", true);
@@ -107,7 +129,7 @@ public class Assets {
 	public static void gameScreenReload() {
 	
 		items2.reload();
-		carTexture.reload();
+		//carTexture.reload();
 		levelDocksTexture.reload();
 		groundLevelDocksTexture.reload();
 		craneTexture.reload();

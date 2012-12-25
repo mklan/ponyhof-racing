@@ -6,8 +6,9 @@ import android.opengl.GLU;
 import de.ponyhofgang.ponyhofgame.framework.gl.AmbientLight;
 import de.ponyhofgang.ponyhofgame.framework.gl.DirectionalLight;
 import de.ponyhofgang.ponyhofgame.framework.gl.LookAtCamera;
+import de.ponyhofgang.ponyhofgame.framework.gl.Texture;
+import de.ponyhofgang.ponyhofgame.framework.gl.Vertices3;
 import de.ponyhofgang.ponyhofgame.framework.impl.GLGraphics;
-import de.ponyhofgang.ponyhofgame.framework.math.LineRectangle;
 import de.ponyhofgang.ponyhofgame.game.gameObjects.Car;
 
 public class WorldRenderer {
@@ -18,6 +19,8 @@ public class WorldRenderer {
 	
 	AmbientLight ambientLight;
 	DirectionalLight directionalLight;
+	private Texture texture;
+	private Vertices3 model;
 	
 	
 	
@@ -88,10 +91,10 @@ public class WorldRenderer {
 		//renderCarBounds(gl, world.myCar);
 	
 
-		if (world.car0 != null)renderCar(gl, world.car0);
-		if (world.car1 != null)renderCar(gl, world.car1);
-		if (world.car2 != null)renderCar(gl, world.car2);
-		if (world.car3 != null)renderCar(gl, world.car3);
+		if (world.car0 != null)renderCar(gl, world.car0, world.car0.carType);
+		if (world.car1 != null)renderCar(gl, world.car1, world.car1.carType);
+		if (world.car2 != null)renderCar(gl, world.car2, world.car2.carType);
+		if (world.car3 != null)renderCar(gl, world.car3, world.car3.carType);
 		
 		        
 		
@@ -108,13 +111,13 @@ public class WorldRenderer {
 		}
 	
 	
-	private void renderCarBounds(GL10 gl, Car gengar) {
+	private void renderCarBounds(GL10 gl, Car car) {
 		
 		gl.glColor4f(1, 0, 0, 1f);
 		Assets.boundsBallModel.bind();
 		
 		gl.glPushMatrix();
-		gl.glTranslatef(gengar.bounds.p1.x, 0, gengar.bounds.p1.y);
+		gl.glTranslatef(car.bounds.p1.x, 0, car.bounds.p1.y);
 		Assets.boundsBallModel.draw(GL10.GL_TRIANGLES, 0,
 				Assets.boundsBallModel.getNumVertices());
 		
@@ -122,7 +125,7 @@ public class WorldRenderer {
 		
 		
 		gl.glPushMatrix();
-		gl.glTranslatef(gengar.bounds.p2.x, 0, gengar.bounds.p2.y);
+		gl.glTranslatef(car.bounds.p2.x, 0, car.bounds.p2.y);
 		Assets.boundsBallModel.draw(GL10.GL_TRIANGLES, 0,
 				Assets.boundsBallModel.getNumVertices());
 		
@@ -132,7 +135,7 @@ public class WorldRenderer {
 		gl.glPushMatrix();
 		
 		
-		gl.glTranslatef(gengar.bounds.p3.x, 0, gengar.bounds.p3.y);
+		gl.glTranslatef(car.bounds.p3.x, 0, car.bounds.p3.y);
 		Assets.boundsBallModel.draw(GL10.GL_TRIANGLES, 0,
 				Assets.boundsBallModel.getNumVertices());
 		
@@ -141,7 +144,7 @@ public class WorldRenderer {
 		
 		gl.glPushMatrix();
 		
-		gl.glTranslatef(gengar.bounds.p4.x, 0, gengar.bounds.p4.y);
+		gl.glTranslatef(car.bounds.p4.x, 0, car.bounds.p4.y);
 		Assets.boundsBallModel.draw(GL10.GL_TRIANGLES, 0,
 				Assets.boundsBallModel.getNumVertices());
 		
@@ -154,12 +157,47 @@ public class WorldRenderer {
 	
 	
 	
-private void renderCar(GL10 gl, Car car) {
+private void renderCar(GL10 gl, Car car, int carType) {
 	
-		
-		Assets.carTexture.bind();
-		
-		Assets.carModel.bind();
+	
+	  switch(carType){
+	  
+	  case CarSpecs.ECTOMOBILE:
+		  
+			
+	    	texture = Assets.ectoMobileTexture;
+	    	model = Assets.ectoMobileModel;
+	    	break;
+	    	
+	  case CarSpecs.BATMOBILE:
+		  
+			
+	    	texture = Assets.batMobileTexture;
+	    	model = Assets.batMobileModel;
+	    	break;
+	    	
+	  case CarSpecs.MYSTERYMACHINE:
+		  
+			
+	    	texture = Assets.mysteryMachineTexture;
+	    	model = Assets.mysteryMachineModel;
+	    	break;
+	    	
+	  case CarSpecs.PODRACER:
+		  
+			
+	    	texture = Assets.podRacerTexture;
+	    	model = Assets.podRacerModel;
+	    	break;
+	  
+	  
+	  }
+	    
+
+	  
+	
+		texture.bind();
+		model.bind();
 		
 		gl.glPushMatrix();
 		
@@ -172,13 +210,13 @@ private void renderCar(GL10 gl, Car car) {
 		//gl.glTranslatef(0, 0, car.bounds.height/3.0f);   //pivot nach vorne Schieben
 		
 		
-		Assets.carModel.draw(GL10.GL_TRIANGLES, 0,
-				Assets.carModel.getNumVertices());
+		model.draw(GL10.GL_TRIANGLES, 0,
+				model.getNumVertices());
 		gl.glPopMatrix();
 		
 		
 		
-		Assets.carModel.unbind();
+		model.unbind();
 		
 		
 	}

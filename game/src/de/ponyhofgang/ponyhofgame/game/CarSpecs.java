@@ -15,16 +15,20 @@ public interface CarSpecs {
 	public static final float ECTOMOBILE_LENGTH = 0.73f;
 	
 	
+    //Mysterymachine
+	public static final int MYSTERYMACHINE = 90;
+	public static final float MYSTERYMACHINE_WIDTH =  0.241f;
+	public static final float MYSTERYMACHINE_LENGTH = 0.73f;
+	
+	//Podracer
+    public static final int PODRACER = 180;
+    public static final float PODRACER_WIDTH =  0.241f;
+	public static final float PODRACER_LENGTH = 0.73f;
+	
 	//Batmobile
-	public static final int BATMOBILE = 1;
-	public static final float BATMOBILE_WIDTH = 1.5f;
-	public static final float BATMOBILE_LENGTH = 1.5f;
-	
-	
-	//Mysterymachine
-	public static final int MYSTERYMACHINE = 2;
-	public static final float MYSTERYMACHINE_WIDTH = 1.5f;
-	public static final float MYSTERYMACHINE_LENGTH = 1.5f;
+	public static final int BATMOBILE = 270;
+	public static final float BATMOBILE_WIDTH =  0.241f;
+	public static final float BATMOBILE_LENGTH = 0.73f;
 	
 	
 	

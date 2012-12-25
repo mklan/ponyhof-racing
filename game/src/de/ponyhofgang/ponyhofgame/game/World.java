@@ -63,6 +63,13 @@ public class World implements CarSpecs {
 				carLength = MYSTERYMACHINE_LENGTH;
 
 				break;
+				
+			case PODRACER:
+
+				carWidth = PODRACER_WIDTH;
+				carLength = PODRACER_LENGTH;
+
+				break;
 			}
 
 			cars.add(new Car(0 + (i + 1), -6, 0, carWidth, carLength, chosenCars.get(i)));
@@ -70,9 +77,17 @@ public class World implements CarSpecs {
 
 		myCar = cars.get(myId);
 
-		switch (playerCount) {
+        switch (playerCount) {
+        
+        case 1:
 
-		case 2:
+			car0 = myCar;
+			
+
+			break;
+
+
+	    case 2:
 
 			car0 = cars.get(0);
 			car1 = cars.get(1);

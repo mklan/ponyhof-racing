@@ -77,18 +77,19 @@ public class GameScreen extends GLScreen {
 	private int width;
 	float accelY;
 	
-	private  ArrayList<Integer> chosenCars;
+	
 	static GLGame game;
 	
 	MainMenuScreen mainMenuScreen;
+	private ArrayList<Integer> selectedCars;
 	
 
 	
 
-	private GameScreen(Game game) {
+	private GameScreen(Game game, int ... selectedCars) {
 		super(game);
 		
-		this.game = (GLGame) game;
+		GameScreen.game = (GLGame) game;
        
 		
 	    mainMenuScreen = MainMenuScreen.getInstance();
@@ -102,11 +103,12 @@ public class GameScreen extends GLScreen {
 		batcher = new SpriteBatcher(glGraphics, 10);
 		touchPoint = new Vector2();
 
-		chosenCars = new ArrayList<Integer>();
-		chosenCars.add(0);
-		chosenCars.add(0);
+		this.selectedCars = new ArrayList<Integer>();
+		for (int i = 0; i < selectedCars.length; i++)
+		this.selectedCars.add(selectedCars[i]);
 		
-		world = new World(2, 0, 0, chosenCars);
+		
+		world = new World(this.selectedCars.size(), 0, 0, this.selectedCars);
 		
 	
 		
@@ -183,8 +185,8 @@ public class GameScreen extends GLScreen {
 			TouchEvent event = events.get(i);
 			if (event.type == TouchEvent.TOUCH_UP) {
 				Assets.playSound(Assets.clickSound);
-				mainMenuScreen.loaded = false;
-				mainMenuScreen.loading = false;
+				SelectAMapScreen.getInstance().loaded = false;
+				SelectAMapScreen.getInstance().loading = false;
 			    game.setScreen(mainMenuScreen);
 			    world = null;
 			}
@@ -240,11 +242,12 @@ public class GameScreen extends GLScreen {
 			}
 			if (OverlapTester.pointInRectangle(quitBounds, touchPoint)) {
 				Assets.playSound(Assets.clickSound);
-				mainMenuScreen.loaded = false;
-				mainMenuScreen.loading = false;
-				mainMenuScreen.quitFromGame = true;
+				SelectAMapScreen.getInstance().loaded = false;
+				SelectAMapScreen.getInstance().loading = false;
 				game.setScreen(mainMenuScreen);
 				world = null;
+				LoadingScreen.getInstance().clear();
+				clear();
 				
 				
 			}
@@ -437,9 +440,9 @@ public class GameScreen extends GLScreen {
 	}
 	
 	
-	 public static GameScreen getInstance(Game game) {
+	 public static GameScreen getInstance(Game game, int ... selectedCars) {
 	        if (instance == null) {
-	            instance = new GameScreen(game);
+	            instance = new GameScreen(game, selectedCars);
 	        }
 	        return instance;
 	    }

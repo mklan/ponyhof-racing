@@ -9,6 +9,8 @@ import de.ponyhofgang.ponyhofgame.framework.Screen;
 import de.ponyhofgang.ponyhofgame.framework.impl.GLGame;
 import de.ponyhofgang.ponyhofgame.game.multiplayer.SearchServices;
 import de.ponyhofgang.ponyhofgame.game.screens.AboutScreen;
+import de.ponyhofgang.ponyhofgame.game.screens.SelectACarScreen;
+import de.ponyhofgang.ponyhofgame.game.screens.SelectAMapScreen;
 import de.ponyhofgang.ponyhofgame.game.screens.GameScreen;
 import de.ponyhofgang.ponyhofgame.game.screens.LoadingScreen;
 import de.ponyhofgang.ponyhofgame.game.screens.MainMenuScreen;
@@ -60,7 +62,11 @@ public class GameActivity extends GLGame {
 	    	 if (this.getCurrentScreen().getClass().getSimpleName().equals("MainMenuScreen")) System.exit(1); 
 	    	 if (this.getCurrentScreen().getClass().getSimpleName().equals("SettingsScreen")) SettingsScreen.getInstance().pressedBackKey = true;
 	    	 if (this.getCurrentScreen().getClass().getSimpleName().equals("AboutScreen")) AboutScreen.getInstance().pressedBackKey = true;
-	    	
+	    	 if (this.getCurrentScreen().getClass().getSimpleName().equals("ChooseCarScreen")) SelectACarScreen.getInstance().pressedBackKey = true;
+	    	 if (this.getCurrentScreen().getClass().getSimpleName().equals("ChooseMapScreen")) SelectAMapScreen.getInstance().pressedBackKey = true;
+		    	
+	    	 
+	    	 
 	    	 if (this.getCurrentScreen().getClass().getSimpleName().equals("GameScreen") && GameScreen.getInstance().state ==  GameScreen.GAME_PAUSED) GameScreen.getInstance().state = GameScreen.GAME_RUNNING;
 	    	 else if (this.getCurrentScreen().getClass().getSimpleName().equals("GameScreen")) GameScreen.getInstance().state = GameScreen.GAME_PAUSED;
 	    	 
