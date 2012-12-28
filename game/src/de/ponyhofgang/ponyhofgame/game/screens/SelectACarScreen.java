@@ -59,7 +59,7 @@ public class SelectACarScreen extends GLScreen {
 		batcher = new SpriteBatcher(glGraphics, 10);
 		touchPoint = new Vector2();
 		backButtonBounds = new Rectangle(PonyMath.getRatio(width, 100)-PonyMath.getRatio(width, 132/2), PonyMath.getRatio(width, 100)-PonyMath.getRatio(width, 132/2), PonyMath.getRatio(width, 132), PonyMath.getRatio(width, 132));
-		nextButtonBounds = new Rectangle(width-PonyMath.getRatio(width, 100)-PonyMath.getRatio(width, 132/2), PonyMath.getRatio(width, 100)-PonyMath.getRatio(width, 132/2), PonyMath.getRatio(width, 132), PonyMath.getRatio(width, 132));
+		nextButtonBounds = new Rectangle(width/2-PonyMath.getRatio(width, 254), PonyMath.getRatio(width, 182), PonyMath.getRatio(width, 508), PonyMath.getRatio(width, 166));
 	}
 
 	@Override
@@ -145,7 +145,6 @@ public class SelectACarScreen extends GLScreen {
 		gl.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
 		batcher.beginBatch(Assets.items);
 		batcher.drawSprite(PonyMath.getRatio(width, 100), PonyMath.getRatio(width, 100), PonyMath.getRatio(width, 132), PonyMath.getRatio(width, 132), Assets.backButtonRegion);
-		batcher.drawSprite(width-PonyMath.getRatio(width, 100), PonyMath.getRatio(width, 100), PonyMath.getRatio(width, 132), PonyMath.getRatio(width, 132), Assets.backButtonRegion);
 		batcher.endBatch();
 		gl.glDisable(GL10.GL_BLEND);
 		gl.glDisable(GL10.GL_TEXTURE_2D);

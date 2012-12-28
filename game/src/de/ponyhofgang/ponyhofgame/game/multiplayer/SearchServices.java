@@ -97,7 +97,9 @@ public class SearchServices extends Activity
 	protected void onStop()
 	{
 		super.onStop();
-		doUnbind();
+		//doUnbind();
+		unbindService(serviceConnection);
+		
 	}
 	
 	
@@ -117,8 +119,8 @@ public class SearchServices extends Activity
 		
 		packageName = chosenService.packageName;
 		
-		i.setClassName(chosenService.packageName, chosenService.packageName + ".ConnectionService"); //Jan
-//		i.setClassName(chosenService.packageName, chosenService.packageName + ".services.MessengerService"); //Simon
+		//i.setClassName(chosenService.packageName, chosenService.packageName + ".ConnectionService"); //Jan
+		i.setClassName(chosenService.packageName, chosenService.packageName + ".services.MessengerService"); //Simon
 		
 		
 		
@@ -126,11 +128,13 @@ public class SearchServices extends Activity
 	}
 	// </code>
 	
-	private void doUnbind()
+	private void doUnbind()   //TODO Bug funct nicht!
 	{
+		
+		
 		if(boundToService)
 		{
-			unbindService(serviceConnection);
+			
 			
 			// tell service i am offline
 			
@@ -147,6 +151,7 @@ public class SearchServices extends Activity
 			}
 			boundToService=false;
 			
+			unbindService(serviceConnection);
 		}
 	}
 
@@ -195,14 +200,14 @@ public class SearchServices extends Activity
 					
 					// process incoming messages
 					Log.d("message", ""+2);
-				//	Bundle bundle=(Bundle)msg.getData();
+					//Bundle bundle=msg.getData();
 					Bundle bundle=(Bundle) msg.obj;// TODO Jan
 			
 
 					
-			    bundle.getInt(MultiplayerInterface.CONNECTION_PLAYERCOUNT);
-			    bundle.getString(MultiplayerInterface.CONNECTION_PLAYERNAMES);
-				bundle.getInt(MultiplayerInterface.CONNECTION_OWN_ID);
+			    Log.d ("test", "playerCount "+bundle.getInt(MultiplayerInterface.CONNECTION_PLAYERCOUNT));
+			    Log.d ("test", "playerNames "+bundle.getString(MultiplayerInterface.CONNECTION_PLAYERNAMES));
+			    Log.d ("test", "OwnID "+bundle.getInt(MultiplayerInterface.CONNECTION_OWN_ID));
 			
 				    
 				    //TODO Auslesen
@@ -210,7 +215,11 @@ public class SearchServices extends Activity
 
 					if(firstTime){
 
-						
+					
+					Intent i=new Intent();
+					i.setClassName(packageName, bundle.getString(MultiplayerInterface.CONNECTION_ACTIVITY));
+					startActivity(i);
+					
 					
 					
 					firstTime = false;

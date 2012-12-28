@@ -1,7 +1,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="de.ponyhofgang.ponyhofgame"
     android:versionCode="1"
-    android:versionName="1.0" >
+    android:versionName="1.0"
+   
+     >
 
     <uses-sdk
         android:minSdkVersion="11"
@@ -19,11 +21,13 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme"
         android:screenOrientation="nosensor" 
+        android:hardwareAccelerated="true"
        
         >
         
         <activity
             android:name="de.ponyhofgang.ponyhofgame.game.GameActivity"
+            
             android:label="PonyRacing"
             android:screenOrientation="landscape"
            
@@ -35,7 +39,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".game.multiplayer.SearchServices"></activity>
-         <activity android:name="de.thm.mps.ConnectionMessenger.ChooseDevice"></activity>
+       
+         
         
         
     

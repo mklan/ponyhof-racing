@@ -146,7 +146,7 @@ public class Car extends DynamicGameObject implements CarSpecs{
 					* direction.y * deltaTime);
 
 		} else {
-			velocity.set(velocity.mul(0.3f));
+			velocity.set(velocity.mul(0.3f));  // Abbremsen, wenn gegen Wand fahren um Faktor 0.3
 
 		}
 
@@ -193,6 +193,12 @@ public class Car extends DynamicGameObject implements CarSpecs{
 		
 
 		return pitch ;
+	}
+
+	public void resetVelocity() {
+		
+		velocity.set(0,0);
+		
 	}
 
 }

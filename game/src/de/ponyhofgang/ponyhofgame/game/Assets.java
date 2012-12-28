@@ -56,6 +56,15 @@ public class Assets {
 	public static Texture podRacerTexture;
 	public static Vertices3 podRacerModel;
     //
+	public static Vertices3 gadgetBoxModel;
+	public static Texture gadgetBoxTexture;
+	public static Texture gadgetBoxShadowTexture;
+	public static Vertices3 gadgetBoxShadowModel;
+	public static TextureRegion oilSpillButtonRegion;
+	public static TextureRegion rocketButtonRegion;
+	public static Vertices3 rocketModel;
+	public static Vertices3 oilSpillModel;
+	public static Texture gadgetsTexture;
 	
 	public static void loadLoadingScreen(GLGame game) {
 		loading = new Texture(game, "loading.jpg", true);
@@ -87,14 +96,17 @@ public class Assets {
      	batMobileTexture = new Texture(game, "gengar.png", true);
      	batMobileModel = ObjLoader.load(game, "batmobile.obj");
      	
-     	mysteryMachineTexture = new Texture(game, "ghostbusters.png", true);
-     	mysteryMachineModel = ObjLoader.load(game, "ghostbusters.obj");
+     	mysteryMachineTexture = new Texture(game, "rocket.png", true);
+     	mysteryMachineModel = ObjLoader.load(game, "oilspill.obj");
      	
-     	podRacerTexture = new Texture(game, "ghostbusters.png", true);
-     	podRacerModel = ObjLoader.load(game, "ghostbusters.obj");
+     	podRacerTexture = new Texture(game, "rocket.png", true);
+     	podRacerModel = ObjLoader.load(game, "rocket.obj");
+     	
      	
      	clickSound = game.getAudio().newSound("click.wav");
-
+     	
+     	
+     
 	}
 	
 	
@@ -103,6 +115,9 @@ public class Assets {
 	items2 = new Texture(game, "items2.png", true);
  	pauseMenuRegion = new TextureRegion(items2, 0, 0, 512, 419);
  	pauseBackgroundRegion = new TextureRegion(items2, 0, 443, 2, 2);
+ 
+ 	oilSpillButtonRegion = new TextureRegion(items2, 256, 443, 129, 129);
+ 	rocketButtonRegion = new TextureRegion(items2, 384, 443, 129, 129);
  	
  	levelDocksTexture = new Texture(game, "container.png", true);
  	craneTexture = new Texture(game, "crane.png", true);
@@ -112,7 +127,18 @@ public class Assets {
  	groundLevelDocksModel = ObjLoader.load(game, "ground_level_docks.obj");
  	craneModel = ObjLoader.load(game, "crane.obj");
  	
+ 	gadgetBoxTexture = new Texture(game, "gadgetBox.png", true);
+ 	gadgetBoxModel = ObjLoader.load(game, "gadgetBox.obj");
+ 	gadgetBoxShadowTexture = new Texture(game, "gadgetBoxShadow.png", true);
+ 	gadgetBoxShadowModel = ObjLoader.load(game, "gadgetBoxShadow.obj");
+ 	
  	boundsBallModel = ObjLoader.load(game, "boundsBall.obj");
+ 	
+ 	gadgetsTexture = new Texture(game, "rocket.png", true);
+ 	oilSpillModel = ObjLoader.load(game, "oilspill.obj");
+ 	
+
+ 	rocketModel = ObjLoader.load(game, "rocket.obj");
 	}
 	
 	

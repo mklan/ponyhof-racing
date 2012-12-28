@@ -97,6 +97,9 @@ public class MainMenuScreen extends GLScreen {
 			
 			if (OverlapTester.pointInRectangle(multiplayerBounds, touchPoint)) {
 				Assets.playSound(Assets.clickSound);
+				
+				
+				
 				game.startSearchService();
 				
 			}

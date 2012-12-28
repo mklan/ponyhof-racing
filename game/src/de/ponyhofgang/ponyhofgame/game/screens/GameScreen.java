@@ -29,6 +29,12 @@ public class GameScreen extends GLScreen {
 	public static final int GAME_PAUSED = 1;
 	public static final int GAME_OVER = 2;
 	
+	public static final int GADGET_COLLECTED = 0;
+	public static final int NO_GADGET = 1;
+	
+	public static final int OILSPILL = 0;
+	public static final int ROCKET = 1;
+	
 	public static final int ACCELERATING = 0;
 	public static final int BRAKING = 1;
 	public static final int IDLING = 2;
@@ -44,7 +50,7 @@ public class GameScreen extends GLScreen {
 	static final float ACCEL_STEERING_ANGLE = 3;
 	static final float TOUCH_STEERING_ANGLE = 2;
 	
-	public int state;
+	public int state, gadgetState;
 	
 	
 	private static GameScreen instance = null;
@@ -75,13 +81,17 @@ public class GameScreen extends GLScreen {
 
 	private int height;
 	private int width;
+	private int collectedGadget;
 	float accelY;
+	
+	
 	
 	
 	static GLGame game;
 	
 	MainMenuScreen mainMenuScreen;
 	private ArrayList<Integer> selectedCars;
+	private Rectangle gadgetButtonBounds;
 	
 
 	
@@ -99,6 +109,7 @@ public class GameScreen extends GLScreen {
 		
 
 		state = GAME_RUNNING;
+		gadgetState = NO_GADGET;
 		guiCam = new Camera2D(glGraphics, width, height);
 		batcher = new SpriteBatcher(glGraphics, 10);
 		touchPoint = new Vector2();
@@ -116,9 +127,29 @@ public class GameScreen extends GLScreen {
 		worldListener = new WorldListener() {
 			
 			public void collision() {
-				// Assets.playSound(Assets.shotSound);
+				// Assets.playSound(Assets.crashSound);
 				GameScreen.game.getVibrator().vibrate(20);
 			}
+			
+			public void collectedGadget(int collectedGadgetContent){
+				
+				// Assets.playSound(Assets.collectSound);
+				GameScreen.game.getVibrator().vibrate(20);
+				gadgetState = GADGET_COLLECTED;
+				collectedGadget = collectedGadgetContent;
+				
+			}
+
+			public void droveTroughtOilSpill() {
+				// TODO ausrutsch-Sound ?!?!?
+				
+			}
+
+			public void detonatingRocket() {
+				// TODO explision sound/animation ?!?!?!
+			}
+			
+			
 
 			
 
@@ -137,12 +168,21 @@ public class GameScreen extends GLScreen {
 		resumeBounds = new Rectangle(width/2-PonyMath.getRatio(width, 256), height/2-PonyMath.getRatio(width, 85), PonyMath.getRatio(width, 512), PonyMath.getRatio(width, 126));
 		quitBounds = new Rectangle(width/2-PonyMath.getRatio(width, 256), height/2-PonyMath.getRatio(width, 250), PonyMath.getRatio(width, 512), PonyMath.getRatio(width, 126));
 
+		
+		gadgetButtonBounds = new Rectangle(width - PonyMath.getRatio(width, 70)
+				- PonyMath.getRatio(width, 70) / 2, height
+				- PonyMath.getRatio(width, 220) - PonyMath.getRatio(width, 70)
+				/ 2, width / 9.5f, width / 9.5f);
+		
+		if(Settings.touchEnabled){
 		leftBounds = new Rectangle(PonyMath.getRatio(width, 130+30)-PonyMath.getRatio(width, 130), PonyMath.getRatio(width, 63+20)-PonyMath.getRatio(width, 63), 128, 126); 
 		rightBounds = new Rectangle(PonyMath.getRatio(width, 130+30), PonyMath.getRatio(width, 63+20)-PonyMath.getRatio(width, 63), 130, 126);
 		
 		brakeBounds = new Rectangle(width-PonyMath.getRatio(width, 130+30)-PonyMath.getRatio(width, 130), PonyMath.getRatio(width, 63+20)-PonyMath.getRatio(width, 63), 128, 126); 
 		accelBounds = new Rectangle(width-PonyMath.getRatio(width, 130+30), PonyMath.getRatio(width, 63+20)-PonyMath.getRatio(width, 63), 130, 126);
-
+		}
+		
+		
 		// wenn Touch deaktiviert wurde, gibt man mit der linken Seite Gas und
 		// mit der rechten bremst man
 		leftSideBounds = new Rectangle(0, 0, width / 2, height);
@@ -208,17 +248,22 @@ public class GameScreen extends GLScreen {
 				Assets.playSound(Assets.clickSound);
 				state = GAME_PAUSED;
 			}
+			
+			
+			if (OverlapTester.pointInRectangle(gadgetButtonBounds, touchPoint) && gadgetState == GADGET_COLLECTED) {
+				//Assets.playSound(Assets.clickSound); //TODO abschusssound
+				gadgetState = NO_GADGET;
+				world.useGadget(collectedGadget);
+			}
 
 		}
 		
 	
 
-		if (true) {
-
-			// lastTime = world.time; //TODO time
-
-			timeString = "time:" + lastTime;
-		}
+		timeString = "time:" + world.time;   //TODO time
+		
+		
+		
 		if (world.isGameOver()) {
 			state = GAME_OVER;
 		}
@@ -414,8 +459,18 @@ public class GameScreen extends GLScreen {
 			 batcher.drawSprite(PonyMath.getRatio(width, 130+30), PonyMath.getRatio(width, 63+20), 260, 126, Assets.steeringRegion);
 			 batcher.drawSprite(width-PonyMath.getRatio(width, 130+30), PonyMath.getRatio(width, 63+20), 260, 126, Assets.accelRegion);
 		}
-
+		
+		
 		batcher.endBatch();
+		if (gadgetState == GADGET_COLLECTED) { 
+			 
+			 batcher.beginBatch(Assets.items2);
+			 if (collectedGadget == OILSPILL)batcher.drawSprite(width - PonyMath.getRatio(width, 70), height- PonyMath.getRatio(width, 220), width / 9.5f, width / 9.5f, Assets.oilSpillButtonRegion);
+			 else if (collectedGadget == ROCKET)batcher.drawSprite(width - PonyMath.getRatio(width, 70), height- PonyMath.getRatio(width, 220), width / 9.5f, width / 9.5f, Assets.rocketButtonRegion);
+			 batcher.endBatch();
+		}
+
+		
 		gl.glDisable(GL10.GL_TEXTURE_2D);
 		gl.glDisable(GL10.GL_BLEND);
 

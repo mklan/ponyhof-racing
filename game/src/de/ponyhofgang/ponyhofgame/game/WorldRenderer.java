@@ -10,6 +10,9 @@ import de.ponyhofgang.ponyhofgame.framework.gl.Texture;
 import de.ponyhofgang.ponyhofgame.framework.gl.Vertices3;
 import de.ponyhofgang.ponyhofgame.framework.impl.GLGraphics;
 import de.ponyhofgang.ponyhofgame.game.gameObjects.Car;
+import de.ponyhofgang.ponyhofgame.game.gameObjects.Gadget;
+import de.ponyhofgang.ponyhofgame.game.gameObjects.OilSpill;
+import de.ponyhofgang.ponyhofgame.game.gameObjects.Rocket;
 
 public class WorldRenderer {
 	
@@ -21,6 +24,9 @@ public class WorldRenderer {
 	DirectionalLight directionalLight;
 	private Texture texture;
 	private Vertices3 model;
+	private float boxRotation;
+	private float boxTranslation;
+	private boolean back;
 	
 	
 	
@@ -58,12 +64,14 @@ public class WorldRenderer {
 	public void render(World world, float deltaTime) {
 		GL10 gl = glGraphics.getGL();
 
-		
+		//3rd Person FollowCam
 		//camera.getPosition().set(world.car.position.x, 2, world.car.position.y).sub(world.car.direction.x * 3 , 0, world.car.direction.y * 3 );  //followCam
+		
+		//3rd Person ViewerCam
 		camera.getPosition().set(world.myCar.position.x, 5, world.myCar.position.y-5);   
 		camera.getLookAt().set(world.myCar.position.x, 0, world.myCar.position.y) ;
 		
-		
+		//1st Person
 		//camera.getPosition().set(world.car.position.x, 0.5f, world.car.position.y).add(world.car.direction.x * 0.5f , 0, world.car.direction.y * 0.5f );   //FirstPersonCam
 		//camera.getLookAt().set(world.car.position.x, 0.5f, world.car.position.y).add(world.car.direction.x * 3 , 0, world.car.direction.y * 3 );           //FirstPersonCam
 		
@@ -79,16 +87,18 @@ public class WorldRenderer {
 		directionalLight.enable(gl, GL10.GL_LIGHT0);
 		
 		
-	//um Collider zu visualisieren...
+	    //--->um Collider zu visualisieren...
 		
-//		int len = world.colliders.size();
+//		int len = world.rockets.size();
 //		for (int i = 0; i < len; i++) {
-//			LineRectangle collider = world.colliders.get(i);
-//			renderGengarBounds(gl, collider);
+//			Rocket rocket = world.rockets.get(i);
+//			renderCarBounds(gl, rocket);
 //			}
-
 		
 		//renderCarBounds(gl, world.myCar);
+
+		//<---
+		
 	
 
 		if (world.car0 != null)renderCar(gl, world.car0, world.car0.carType);
@@ -96,9 +106,29 @@ public class WorldRenderer {
 		if (world.car2 != null)renderCar(gl, world.car2, world.car2.carType);
 		if (world.car3 != null)renderCar(gl, world.car3, world.car3.carType);
 		
-		        
+		
+		//--> GadgetBox Anmiation( abschwingen und drehen
+		//Box rotation
+		boxRotation = boxRotation += deltaTime * 50;
+		if (boxRotation > 360) {
+			boxRotation = boxRotation - 360;
+		}
+		//
+		
+		//Box swing
+		if(!back) boxTranslation = boxTranslation += deltaTime * 0.3f;
+		if(back) boxTranslation = boxTranslation -= deltaTime * 0.3f;
+		if (boxTranslation > 0.1f) back = true;
+		if (boxTranslation < -0.1f) back = false;
+		//<---
 		
 		renderLevelDocks(gl);
+		
+		renderGadgetBoxes(gl, deltaTime,  world);  
+		renderOilSpills(gl, world);
+		renderRockets(gl, world);
+		
+		
 	
 		
 		
@@ -111,7 +141,123 @@ public class WorldRenderer {
 		}
 	
 	
-	private void renderCarBounds(GL10 gl, Car car) {
+	private void renderOilSpills(GL10 gl, World world) {
+		
+	 	Assets.gadgetsTexture.bind();
+    	Assets.oilSpillModel.bind();
+		
+		int len = world.oilSpills.size();
+		
+		
+		for (int i = 0; i < len; i++) {
+			OilSpill oilspill = world.oilSpills.get(i);
+			
+			gl.glPushMatrix();
+			gl.glTranslatef(oilspill.position.x, 0, oilspill.position.y );
+			gl.glRotatef(-oilspill.bounds.angle, 0, 1, 0);
+			
+			Assets.oilSpillModel.draw(GL10.GL_TRIANGLES, 0,
+					Assets.oilSpillModel.getNumVertices());
+			
+			
+			gl.glPopMatrix();
+			
+			
+
+			}
+		
+		
+
+	}
+	
+private void renderRockets(GL10 gl, World world) {
+		
+	 	Assets.gadgetsTexture.bind();
+    	Assets.rocketModel.bind();
+		
+		int len = world.rockets.size();
+		
+		
+		for (int i = 0; i < len; i++) {
+			Rocket rocket = world.rockets.get(i);
+			
+			gl.glPushMatrix();
+			gl.glTranslatef(rocket.position.x, 0, rocket.position.y );
+			gl.glRotatef(-rocket.bounds.angle, 0, 1, 0);
+			
+			Assets.rocketModel.draw(GL10.GL_TRIANGLES, 0,
+					Assets.rocketModel.getNumVertices());
+			
+			
+			gl.glPopMatrix();
+			
+			
+
+			}
+		
+		
+
+	}
+	
+	private void renderGadgetBoxes(GL10 gl, float deltaTime, World world) {
+		
+	 	Assets.gadgetBoxTexture.bind();
+    	Assets.gadgetBoxModel.bind();
+		
+		int len = world.gadgets.size();
+		for (int i = 0; i < len; i++) {
+			Gadget gadgetBox = world.gadgets.get(i);
+			
+			if(!gadgetBox.active) continue;
+	   
+			
+	    	gl.glPushMatrix();
+			gl.glTranslatef(gadgetBox.position.x, boxTranslation, gadgetBox.position.y );
+			gl.glRotatef(-boxRotation, 0, 1, 0);
+			
+			Assets.gadgetBoxModel.draw(GL10.GL_TRIANGLES, 0,
+					Assets.gadgetBoxModel.getNumVertices());
+			
+			
+			gl.glPopMatrix();
+			
+			
+
+			}
+		
+		
+		Assets.gadgetBoxModel.unbind();
+		
+		
+		Assets.gadgetBoxShadowTexture.bind();
+    	Assets.gadgetBoxShadowModel.bind();
+		
+		len = world.gadgets.size();
+		for (int i = 0; i < len; i++) {
+			Gadget gadgetBox = world.gadgets.get(i);
+			
+			if(!gadgetBox.active) continue;
+	   
+			
+	    	gl.glPushMatrix();
+			gl.glTranslatef(gadgetBox.position.x, 0.01f, gadgetBox.position.y );
+			gl.glRotatef(-boxRotation, 0, 1, 0);
+			
+			Assets.gadgetBoxShadowModel.draw(GL10.GL_TRIANGLES, 0,
+					Assets.gadgetBoxShadowModel.getNumVertices());
+			
+			
+			gl.glPopMatrix();
+			
+			
+
+			}
+		
+		
+		Assets.gadgetBoxShadowModel.unbind();
+	}
+
+	private void renderCarBounds(GL10 gl, Rocket car) {
 		
 		gl.glColor4f(1, 0, 0, 1f);
 		Assets.boundsBallModel.bind();

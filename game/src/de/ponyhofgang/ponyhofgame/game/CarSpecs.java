@@ -9,16 +9,16 @@ public interface CarSpecs {
 	public static final float CAR_IDLE_DEACCELERATION = 1.5f;
 	
 	
-	//Ectomobile
-	public static final int ECTOMOBILE = 0;
-	public static final float ECTOMOBILE_WIDTH = 0.241f;
-	public static final float ECTOMOBILE_LENGTH = 0.73f;
-	
 	
     //Mysterymachine
-	public static final int MYSTERYMACHINE = 90;
+	public static final int MYSTERYMACHINE = 0;
 	public static final float MYSTERYMACHINE_WIDTH =  0.241f;
 	public static final float MYSTERYMACHINE_LENGTH = 0.73f;
+	
+	//Ectomobile
+    public static final int ECTOMOBILE = 90;
+	public static final float ECTOMOBILE_WIDTH = 0.241f;
+	public static final float ECTOMOBILE_LENGTH = 0.73f;
 	
 	//Podracer
     public static final int PODRACER = 180;
