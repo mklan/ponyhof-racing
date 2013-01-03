@@ -4,6 +4,7 @@ import java.util.List;
 import javax.microedition.khronos.opengles.GL10;
 
 import android.util.Log;
+import android.widget.Toast;
 import de.ponyhofgang.ponyhofgame.framework.Game;
 import de.ponyhofgang.ponyhofgame.framework.Input.TouchEvent;
 import de.ponyhofgang.ponyhofgame.framework.gl.Camera2D;
@@ -14,6 +15,7 @@ import de.ponyhofgang.ponyhofgame.framework.math.PonyMath;
 import de.ponyhofgang.ponyhofgame.framework.math.Rectangle;
 import de.ponyhofgang.ponyhofgame.framework.math.Vector2;
 import de.ponyhofgang.ponyhofgame.game.Assets;
+import de.ponyhofgang.ponyhofgame.game.GameActivity;
 
 public class SelectAMapScreen extends GLScreen {
 
@@ -30,23 +32,26 @@ public class SelectAMapScreen extends GLScreen {
 	int height;
 	int width;
 	
-	float selectedCar;
+	MainMenuScreen mainMenuScreen;
+	
+	
 
 	public boolean pressedBackKey = false;
+	private boolean multiplayer;
 
 	private static SelectAMapScreen instance = null;
 
-	private SelectAMapScreen(Game game) {
+	private SelectAMapScreen(Game game, boolean multiplayer) {
 		super(game);
 
-	    Log.d("angle", ""+SelectACarScreen.selectedCar);
+	    
 		
-		MainMenuScreen mainMenuScreen = MainMenuScreen.getInstance();
+		mainMenuScreen = MainMenuScreen.getInstance();
 
 		height = mainMenuScreen.height;
 		width = mainMenuScreen.width;
 
-		;
+		this.multiplayer = multiplayer;
 
 		guiCam = new Camera2D(glGraphics, width, height);
 		batcher = new SpriteBatcher(glGraphics, 10);
@@ -78,9 +83,19 @@ public class SelectAMapScreen extends GLScreen {
 
 			}
 			if (OverlapTester.pointInRectangle(nextButtonBounds, touchPoint)) {
-
+				
 				Assets.playSound(Assets.clickSound);
-				loading = true;
+				
+				Log.d("test",  "Auswahl der Autos: " + SelectACarScreen.getInstance().cars.size() +" von "+ mainMenuScreen.game.playerCount);
+				
+				if(SelectACarScreen.getInstance().cars.size() != mainMenuScreen.game.playerCount ) SelectACarScreen.getInstance().packageCars();
+			    else{ 
+			    	if(multiplayer) mainMenuScreen.game.sendSelectedMap(selectedMap);
+			    	mainMenuScreen.game.map = selectedMap;
+			    	
+			    	loading = true;
+			    }
+				
 
 			}
 		}
@@ -152,16 +167,16 @@ public class SelectAMapScreen extends GLScreen {
 	public void dispose() {
 	}
 
-	public static SelectAMapScreen getInstance(Game game) {
+	public static SelectAMapScreen getInstance(Game game, boolean multiplayer) {
 		if (instance == null) {
-			instance = new SelectAMapScreen(game);
+			instance = new SelectAMapScreen(game, multiplayer);
 		}
 		return instance;
 	}
 
 	public static SelectAMapScreen getInstance() {
 		if (instance == null) {
-			instance = new SelectAMapScreen(null);
+			return null;
 		}
 		return instance;
 	}

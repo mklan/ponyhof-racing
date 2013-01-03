@@ -1,6 +1,8 @@
 package de.ponyhofgang.ponyhofgame.game.screens;
 
 
+import java.util.ArrayList;
+
 import javax.microedition.khronos.opengles.GL10;
 import de.ponyhofgang.ponyhofgame.framework.Game;
 import de.ponyhofgang.ponyhofgame.framework.gl.Camera2D;
@@ -62,7 +64,16 @@ public class LoadingScreen extends GLScreen {
 		} 
         
 		
-		game.setScreen(GameScreen.getInstance(game, SelectACarScreen.selectedCar));
+		///////TEST////////////
+		
+		ArrayList<Integer> cars = new ArrayList<Integer>();
+		cars.add(90);
+		cars.add(90);
+		
+		game.setScreen(GameScreen.getInstance(game, cars));
+		
+		
+		//game.setScreen(GameScreen.getInstance(game, SelectACarScreen.getInstance().cars));
 		
 		
 	

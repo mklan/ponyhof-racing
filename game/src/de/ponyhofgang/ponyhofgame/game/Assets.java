@@ -1,6 +1,8 @@
 package de.ponyhofgang.ponyhofgame.game;
 
+
 import de.ponyhofgang.ponyhofgame.framework.Sound;
+import de.ponyhofgang.ponyhofgame.framework.gl.Animation;
 import de.ponyhofgang.ponyhofgame.framework.gl.ObjLoader;
 import de.ponyhofgang.ponyhofgame.framework.gl.Texture;
 import de.ponyhofgang.ponyhofgame.framework.gl.TextureRegion;
@@ -65,6 +67,8 @@ public class Assets {
 	public static Vertices3 rocketModel;
 	public static Vertices3 oilSpillModel;
 	public static Texture gadgetsTexture;
+	public static Texture explosionTexture;
+	public static Animation explosionAnim;
 	
 	public static void loadLoadingScreen(GLGame game) {
 		loading = new Texture(game, "loading.jpg", true);
@@ -139,6 +143,18 @@ public class Assets {
  	
 
  	rocketModel = ObjLoader.load(game, "rocket.obj");
+ 	
+ 	explosionTexture = new Texture(game, "explode.png", true);
+ 	TextureRegion[] keyFrames = new TextureRegion[16];
+ 	int frame = 0;
+ 	for (int y = 0; y < 256; y += 64) {
+ 	for (int x = 0; x < 256; x += 64) {
+ 	keyFrames[frame++] = new TextureRegion(explosionTexture, x, y, 64, 64);
+ 	}
+ 	}
+ 	explosionAnim = new Animation(0.1f, keyFrames);
+ 	
+ 	
 	}
 	
 	
@@ -146,6 +162,10 @@ public class Assets {
 	public static void reload() {
 		background.reload();
 		items.reload();
+		ectoMobileTexture.reload();
+		batMobileTexture.reload();
+		mysteryMachineTexture.reload();
+		podRacerTexture.reload();
 
 		
 	}

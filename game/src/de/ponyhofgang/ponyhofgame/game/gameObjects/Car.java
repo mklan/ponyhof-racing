@@ -10,6 +10,11 @@ import de.ponyhofgang.ponyhofgame.game.screens.GameScreen;
 public class Car extends DynamicGameObject implements CarSpecs{
 
 	
+	public static final int DRIVING = 0;
+	public static final int SLIPPING = 1;
+	public static final int CRASHING = 2;
+	public static final int EXPLODING = 3;
+	public static final float SLIPPING_DURATION = 5;
 
 	public boolean finished = false;
 
@@ -19,6 +24,10 @@ public class Car extends DynamicGameObject implements CarSpecs{
 	
 	public int carType;
 
+	public int state;
+	public float colliderDirectionAngle;
+	public float slippingStartTime;
+	
 	public Car(float x, float y, float angle, float width, float length, int chosenCar) {
 	super(x, y, angle, width, length);	
 	
@@ -26,8 +35,8 @@ public class Car extends DynamicGameObject implements CarSpecs{
 
 	}
 
-	public void update(float deltaTime, float angle, boolean inCollision,
-			int accelerationState, float colliderDirectionAngle) {
+	public void update(float deltaTime, float angle,
+			int accelerationState) {
 
 		this.angle = angle;
 		
@@ -46,12 +55,12 @@ public class Car extends DynamicGameObject implements CarSpecs{
 		pitch = rotate(this.angle);
 		
 		
-		if(inCollision && OverlapTester.direction){  // fährt an eine Seite des Richtungsvektiors zu  
+		if(state == CRASHING && OverlapTester.direction){  // fährt an eine Seite des Richtungsvektiors zu  
 			
 			if((colliderDirectionAngle - pitch < 120 && colliderDirectionAngle - pitch > 60) || (colliderDirectionAngle - pitch < -60 && colliderDirectionAngle - pitch > -120)){
 			
-				if (velocity.x > 0)position.sub(0.05f * direction.x  , 0.05f  * direction.y );  
-				else position.add(0.05f * direction.x  , 0.05f  * direction.y ); // Rückwärtsfahreng
+				if (velocity.x > 0)position.sub(0.1f * bounds.direction.x  , 0.1f  * bounds.direction.y );  
+				else position.add(0.1f * bounds.direction.x  , 0.1f  * bounds.direction.y ); // Rückwärtsfahren
 			
 			}else{
 				
@@ -65,14 +74,14 @@ public class Car extends DynamicGameObject implements CarSpecs{
 		}
 		
 		
-        if(inCollision && !OverlapTester.direction){   // fährt auf das Lot der Colliders zu    
+        if(state == CRASHING && !OverlapTester.direction){   // fährt auf das Lot der Colliders zu    
 			
 			
         	if((colliderDirectionAngle+90 - pitch < 120 && colliderDirectionAngle+90 - pitch > 60) || (colliderDirectionAngle+90 - pitch < -60 && colliderDirectionAngle+90 - pitch > -120)){
     			
         	
-        		if (velocity.x > 0)position.sub(0.05f * direction.x  , 0.05f  * direction.y );  
-				else position.add(0.05f * direction.x  , 0.05f  * direction.y ); // Rückwärtsfahreng
+        		if (velocity.x > 0)position.sub(0.1f * bounds.direction.x  , 0.1f  * bounds.direction.y );  
+				else position.add(0.1f * bounds.direction.x  , 0.1f  * bounds.direction.y ); // Rückwärtsfahren
 			
 			}else{
         		
@@ -88,9 +97,9 @@ public class Car extends DynamicGameObject implements CarSpecs{
        // Log.d("angle", ""+pitch);
 		
 		
-		direction.set((float) Math.cos(pitch *  Vector2.TO_RADIANS), (float) Math.sin(pitch * Vector2.TO_RADIANS))
+		bounds.direction.set((float) Math.cos(pitch *  Vector2.TO_RADIANS), (float) Math.sin(pitch * Vector2.TO_RADIANS))
 				.nor();
-		lotDirection.set((float) Math.cos((pitch + 90) * Vector2.TO_RADIANS),
+		bounds.lotDirection.set((float) Math.cos((pitch + 90) * Vector2.TO_RADIANS),
 				(float) Math.sin((pitch + 90) * Vector2.TO_RADIANS)).nor();
 
 		
@@ -98,7 +107,7 @@ public class Car extends DynamicGameObject implements CarSpecs{
 		
 	
 
-		if (!inCollision) {
+		if (state == DRIVING ) {
 
 			if (accelerationState == GameScreen.ACCELERATING) {
 
@@ -142,45 +151,27 @@ public class Car extends DynamicGameObject implements CarSpecs{
 
 			}
 
-			position.add(velocity.x * direction.x * deltaTime, velocity.y
-					* direction.y * deltaTime);
+			position.add(velocity.x * bounds.direction.x * deltaTime, velocity.y
+					* bounds.direction.y * deltaTime);
+			
+			
 
-		} else {
-			velocity.set(velocity.mul(0.3f));  // Abbremsen, wenn gegen Wand fahren um Faktor 0.3
+		} 
+		
+		
+		
+		if(state == CRASHING) velocity.set(velocity.mul(0.3f));  // Abbremsen, wenn gegen die Wand gefahren wird (um Faktor 0.3)
 
-		}
+		
+		
+		 
+		 
+		if(state == SLIPPING)velocity.set(0,0);
+			
+		
 
-		bounds.position.set(this.position);
+		 moveCollider(position);
 
-		bounds.p1
-				.set(bounds.position.x, bounds.position.y)
-				.add(direction.x * bounds.length / 2,
-						direction.y * bounds.length / 2)
-				.sub(lotDirection.x * bounds.width / 2,
-						lotDirection.y * bounds.width / 2);
-
-		bounds.p2
-				.set(bounds.position.x, bounds.position.y)
-				.sub(direction.x * bounds.length / 2,
-						direction.y * bounds.length / 2)
-				.sub(lotDirection.x * bounds.width / 2,
-						lotDirection.y * bounds.width / 2);
-
-		bounds.p3
-				.set(bounds.position.x, bounds.position.y)
-				.sub(direction.x * bounds.length / 2,
-						direction.y * bounds.length / 2)
-				.add(lotDirection.x * bounds.width / 2,
-						lotDirection.y * bounds.width / 2);
-
-		bounds.p4
-				.set(bounds.position.x, bounds.position.y)
-				.add(direction.x * bounds.length / 2,
-						direction.y * bounds.length / 2)
-				.add(lotDirection.x * bounds.width / 2,
-						lotDirection.y * bounds.width / 2);
-
-		// stateTime += deltaTime;
 	}
 
 	public float rotate(float pitchInc) {

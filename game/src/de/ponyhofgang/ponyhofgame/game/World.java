@@ -3,6 +3,8 @@ package de.ponyhofgang.ponyhofgame.game;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.os.SystemClock;
+
 import de.ponyhofgang.ponyhofgame.framework.math.LineRectangle;
 import de.ponyhofgang.ponyhofgame.framework.math.OverlapTester;
 import de.ponyhofgang.ponyhofgame.game.gameObjects.Car;
@@ -10,6 +12,7 @@ import de.ponyhofgang.ponyhofgame.game.gameObjects.Gadget;
 import de.ponyhofgang.ponyhofgame.game.gameObjects.OilSpill;
 import de.ponyhofgang.ponyhofgame.game.gameObjects.Rocket;
 import de.ponyhofgang.ponyhofgame.game.screens.GameScreen;
+import de.ponyhofgang.ponyhofgame.game.screens.MainMenuScreen;
 
 public class World implements CarSpecs {
 	public interface WorldListener {
@@ -27,7 +30,7 @@ public class World implements CarSpecs {
 
 	public final static int LEVEL_DOCKS = 0;
 
-	private static final float BOX_APEARING_INTERVAL = 5;
+	public static final float BOX_APEARING_INTERVAL = 5;
 
 	public final List<LineRectangle> colliders;
 	public final ArrayList<Gadget> gadgets;
@@ -59,6 +62,12 @@ public class World implements CarSpecs {
 
 	public float time = 0;
 
+	public int myId;
+
+	private int playerCount;
+
+	private int ticker = 0;
+
 	
 
 	public World(int playerCount, int myId, int worldId,
@@ -70,7 +79,7 @@ public class World implements CarSpecs {
 		rockets = new ArrayList<Rocket>();
 		oilSpills = new ArrayList<OilSpill>();
 
-		for (int i = 0; i < playerCount; i++) {
+		for (int i = 0; i < chosenCars.size(); i++) {
 
 			switch (chosenCars.get(i)) {
 			case ECTOMOBILE:
@@ -105,6 +114,8 @@ public class World implements CarSpecs {
 		}
 
 		myCar = cars.get(myId);
+		this.myId = myId;
+		this.playerCount = playerCount;
 
 		switch (playerCount) {
 
@@ -165,17 +176,31 @@ public class World implements CarSpecs {
 	}
 
 	public void update(float deltaTime, int accelerationState, float angle) {
+		
+		
+		ticker ++;
+		if((playerCount > 1) && ticker%50 == 0){  //wenn es mehr Spieler gibt, dann sende meine Position an die anderen
+	    ticker = 0;	
+		MainMenuScreen.getInstance().game.sendData(myCar.position.x, myCar.position.y, myCar.pitch);	
+			
+		}
 
 		time = time + deltaTime;
 		
-		myCar.update(deltaTime, angle, inCollision, accelerationState,
-				colliderDirectionAngle);
+		myCar.update(deltaTime, angle, accelerationState);
+		
+		if(myCar.state == Car.SLIPPING){
+		if (time - myCar.slippingStartTime < Car.SLIPPING_DURATION) myCar.state = Car.DRIVING;
+		}
 
-		//---> die Raketen werden in ihrere Update Methode vorangetrieben
+		//---> die Raketen werden in ihrrer Update Methode vorangetrieben
 		int len = rockets.size();
 		for (int i = 0; i < len; i++) {
 			Rocket rocket = rockets.get(i);
 			rocket.update(deltaTime);
+			
+			if(rocket.explotionTimeState > Assets.explosionAnim.frameDuration*15) rockets.remove(i);
+			
 		}
 		//<---
 		
@@ -207,11 +232,13 @@ public class World implements CarSpecs {
 			LineRectangle collider = colliders.get(i);
 			if (OverlapTester
 					.intersectSegmentRectangles(myCar.bounds, collider)) {
-				colliderDirectionAngle = collider.angle;
-				inCollision = true;
+				myCar.colliderDirectionAngle = collider.angle;
+				myCar.state = Car.CRASHING;
 				listener.collision();
+				
 				return;
 			}
+	   myCar.state = Car.DRIVING;
 
 		}
 		inCollision = false;
@@ -235,7 +262,7 @@ public class World implements CarSpecs {
 			
 			if (!gadget.active) {  // ist eine Box schon eingesammeltworden wird, geguckt obs Zeit ist eine neue zu erstellen
 
-				if (time - gadget.lastTimeCollected > BOX_APEARING_INTERVAL) {
+				if (time - gadget.lastTimeCollected > Gadget.BOX_APEARING_INTERVAL) {
 					gadget.generateNewContent();
 					gadget.active = true;
 				}
@@ -269,9 +296,10 @@ public class World implements CarSpecs {
 					oilspill.bounds)) {
 
 				listener.droveTroughtOilSpill();
-				oilspill = null;
+				
 				oilSpills.remove(i);
-				myCar.resetVelocity();
+				myCar.state = Car.SLIPPING;
+				myCar.slippingStartTime = time;
 				// TODO auto ggf um 360° drehen
 				return;
 			}
@@ -290,8 +318,6 @@ public class World implements CarSpecs {
 			// fliegt Rakete gegen eine Wand?
 
 			
-
-			
 			for (int j = 0; j < colliderLen; j++) {
 				LineRectangle collider = colliders.get(j);
 
@@ -299,9 +325,10 @@ public class World implements CarSpecs {
 						collider, rocket.bounds)) {
 
 					listener.detonatingRocket();
-					rocket = null;
-					rockets.remove(i);
-                    return;    //TODO hier muss man sich was einfallen lasse, weil ja mehere Rakete gleichzeitig im umlauf sind... vll nicht so tragisch
+					
+					rocket.state = Rocket.DETONATING;
+					
+					return;    //TODO hier muss man sich was einfallen lasse, weil ja mehere Rakete gleichzeitig im umlauf sind... vll nicht so tragisch
 					
 				}
 
@@ -312,8 +339,9 @@ public class World implements CarSpecs {
 					rocket.bounds)) {
 
 				listener.detonatingRocket();
-				rocket = null;
-				rockets.remove(i);
+				
+				rocket.state = Rocket.DETONATING;
+				
 				myCar.resetVelocity();
 				return;
 			}
@@ -327,9 +355,9 @@ public class World implements CarSpecs {
 		if (gadgetContent == GameScreen.OILSPILL) {
 
 			//Eine Öllache wird hinter dem Auto erzeugt und existiert so lange, bis jemand drüber fährt
-			oilSpills.add(new OilSpill(myCar.position.x - myCar.direction.x
+			oilSpills.add(new OilSpill(myCar.position.x - myCar.bounds.direction.x
 					* (myCar.bounds.length + 0.1f), myCar.position.y
-					- myCar.direction.y * (myCar.bounds.length + 0.1f),
+					- myCar.bounds.direction.y * (myCar.bounds.length + 0.1f),
 					myCar.pitch, 0.8f, 0.8f));
 
 		}
@@ -337,8 +365,8 @@ public class World implements CarSpecs {
 		if (gadgetContent == GameScreen.ROCKET) {
 
 			//eine Rakete wird vor dem Auto erzeugt und fliegt in der momentanen Richtung, bis Sie auf ein Hindernis stößt
-			rockets.add(new Rocket(myCar.position.x + myCar.direction.x   * (myCar.bounds.length + 0.1f),
-					               myCar.position.y + myCar.direction.y * (myCar.bounds.length + 0.1f),
+			rockets.add(new Rocket(myCar.position.x + myCar.bounds.direction.x   * (myCar.bounds.length + 0.1f),
+					               myCar.position.y + myCar.bounds.direction.y * (myCar.bounds.length + 0.1f),
 					               myCar.pitch, 0.034f, 0.465f));
 			
 	

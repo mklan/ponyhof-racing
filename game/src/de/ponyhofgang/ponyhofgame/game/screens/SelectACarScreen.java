@@ -1,6 +1,7 @@
 package de.ponyhofgang.ponyhofgame.game.screens;
 
 
+import java.util.ArrayList;
 import java.util.List;
 import javax.microedition.khronos.opengles.GL10;
 
@@ -15,6 +16,7 @@ import de.ponyhofgang.ponyhofgame.framework.math.Rectangle;
 import de.ponyhofgang.ponyhofgame.framework.math.Vector2;
 import de.ponyhofgang.ponyhofgame.game.Assets;
 import de.ponyhofgang.ponyhofgame.game.ShowCaseRenderer;
+import de.ponyhofgang.ponyhofgame.game.gameObjects.Car;
 
 public class SelectACarScreen extends GLScreen {
 	
@@ -34,24 +36,39 @@ public class SelectACarScreen extends GLScreen {
 	
 	
 	public boolean pressedBackKey = false;
-	public static int selectedCar = 0;
+	
+	
+	
+	public int selectedCar;
+	public int selectedCar0 = -1;
+	public int selectedCar1 = -1;
+	public int selectedCar2 = -1;
+	public int selectedCar3 = -1;
+	
+	public ArrayList<Integer> cars;
 	
 	private int down_x = -1;
 	private int swipe;
 	
 	
 	private static SelectACarScreen instance = null;
+	private MainMenuScreen mainMenuScreen;
+	private boolean multiplayer;
+	
+	
 	
 
-	private SelectACarScreen(Game game)  {
+	private SelectACarScreen(Game game, boolean multiplayer)  {
 		super(game);
 
-	MainMenuScreen mainMenuScreen = MainMenuScreen.getInstance();
+	    mainMenuScreen = MainMenuScreen.getInstance();
 		
 		height = mainMenuScreen.height;
 		width = mainMenuScreen.width;
 		
+		this.multiplayer = multiplayer;
 		
+		cars = new ArrayList<Integer>();
 		
 		renderer = new ShowCaseRenderer(glGraphics);
 
@@ -107,10 +124,15 @@ public class SelectACarScreen extends GLScreen {
 			if (OverlapTester.pointInRectangle(nextButtonBounds, touchPoint)) {
 				
 				selectedCar = Math.round(ShowCaseRenderer.rotation2);
+				if(!multiplayer) cars.add(0, selectedCar);
+				if(multiplayer) mainMenuScreen.game.sendSelectedCar(selectedCar);  // Die auswahl der Autos wird an andere Spieler geschickt
 				Assets.playSound(Assets.clickSound);
-				game.setScreen(SelectAMapScreen.getInstance(game));
 				
+				if(mainMenuScreen.game.ownId == 0){  // Nur der Host darf eine Map auswählen
 				
+				if(multiplayer)game.setScreen(SelectAMapScreen.getInstance(game, true));
+				if(!multiplayer)game.setScreen(SelectAMapScreen.getInstance(game, false));
+				}
 				
 			}
 		}
@@ -151,6 +173,28 @@ public class SelectACarScreen extends GLScreen {
 		
 		renderer.render(swipe, deltaTime);
 	}
+	
+	
+	public boolean packageCars() {
+		
+		cars.clear();   //lösche erstmal wieder das Array
+		
+		
+		if (selectedCar0 == -1){return false;}
+		else{ cars.add(0, selectedCar0);}
+		
+		if (selectedCar1 == -1){return false;}
+		else{ cars.add(1, selectedCar1);}
+		
+		if (selectedCar2 == -1){return false;}
+		else{ cars.add(2, selectedCar2);}
+		
+		if (selectedCar3 == -1){return false;}
+		else{ cars.add(3, selectedCar3);}
+		
+		return true;
+		
+	}  
 
 	@Override
 	public void pause() {
@@ -165,22 +209,24 @@ public class SelectACarScreen extends GLScreen {
 	}
 	
 	
-	 public static SelectACarScreen getInstance(Game game) {
+	 public static SelectACarScreen getInstance(Game game, boolean multiplayer) {
 	        if (instance == null) {
-	            instance = new SelectACarScreen(game);
+	            instance = new SelectACarScreen(game, multiplayer);
 	        }
 	        return instance;
 	    }
 	 
 	 public static SelectACarScreen getInstance() {
 	        if (instance == null) {
-	            instance = new SelectACarScreen(null);
+	            return null;
 	        }
 	        return instance;
 	    }
 	 public void clear()  
 	  {  
 	    instance = null;  
-	  }  
+	  }
+
+	
 
 }

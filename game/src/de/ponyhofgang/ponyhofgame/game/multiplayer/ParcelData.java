@@ -5,13 +5,19 @@ import android.os.Parcelable;
 
 public class ParcelData implements Parcelable {
 
-	public byte mapIsSelected, carIsSelected,  gameIsPaused;
-	public float positionX, positionY, angle;
-	public int whichMap, whichCar;
+	public byte mapIsSelected; 
+	public byte carIsSelected;
+	public byte gameIsPaused;
+	public float positionX ;
+	public float positionY ;
+	public float angle;
+	public int whichMap; 
+	public int whichCar;
 	
 	
 	
 	public ParcelData(byte mapIsSelected, byte carIsSelected, byte gameIsPaused, float positionX, float positionY, float angle, int whichMap, int whichCar){
+		
 
 		this.mapIsSelected = mapIsSelected;
 		this.carIsSelected = carIsSelected;
@@ -25,15 +31,14 @@ public class ParcelData implements Parcelable {
 
 
 	public int describeContents() {
-		// TODO Auto-generated method stub
-		return 3;
+		
+		return 0;
 	}
 
 
 
-	public synchronized void writeToParcel(Parcel dest, int flags) {
-		// TODO Auto-generated method stub
-		
+	public void writeToParcel(Parcel dest, int flags) {
+	
 		dest.writeByte(mapIsSelected);
 		dest.writeByte(carIsSelected);
 		dest.writeByte(gameIsPaused);
@@ -45,8 +50,25 @@ public class ParcelData implements Parcelable {
 		
 	}
 	
+
+    private ParcelData(Parcel in) {
+       
+    	mapIsSelected = in.readByte();
+        carIsSelected = in.readByte();
+        gameIsPaused = in.readByte();
+        positionX = in.readFloat();
+        positionY = in.readFloat();
+        angle = in.readFloat();
+        whichMap = in.readInt();
+        whichCar = in.readInt();
+    }
+	
+    
+
+    
 	 public static final Parcelable.Creator<ParcelData> CREATOR = new Parcelable.Creator<ParcelData>() {
-	        public ParcelData createFromParcel(Parcel in) {
+	       
+		    public ParcelData createFromParcel(Parcel in) {
 	            return new ParcelData(in);
 	        }
 
@@ -55,19 +77,10 @@ public class ParcelData implements Parcelable {
 				return new ParcelData[size];
 			}
 	 	};
-
-        private ParcelData(Parcel in) {
-            mapIsSelected = in.readByte();
-            carIsSelected = in.readByte();
-            gameIsPaused = in.readByte();
-            positionX = in.readFloat();
-            positionY = in.readFloat();
-            angle = in.readFloat();
-            whichMap = in.readInt();
-            whichCar = in.readInt();
-        }
-	
-	
-	
-	
+	 	
 }
+	
+	
+	
+	
+

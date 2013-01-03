@@ -60,7 +60,7 @@ public class GameScreen extends GLScreen {
 
 	SpriteBatcher batcher;
 
-	World world;
+	public World world;
 	WorldListener worldListener;
 	WorldRenderer renderer;
 	Rectangle pauseBounds;
@@ -90,13 +90,16 @@ public class GameScreen extends GLScreen {
 	static GLGame game;
 	
 	MainMenuScreen mainMenuScreen;
-	private ArrayList<Integer> selectedCars;
+	
 	private Rectangle gadgetButtonBounds;
+	private boolean multiplayer;
+	
+	
 	
 
 	
 
-	private GameScreen(Game game, int ... selectedCars) {
+	private GameScreen(Game game, ArrayList<Integer> selectedCars) {
 		super(game);
 		
 		GameScreen.game = (GLGame) game;
@@ -107,6 +110,7 @@ public class GameScreen extends GLScreen {
 		height = mainMenuScreen.height;
 		width = mainMenuScreen.width;
 		
+		this.multiplayer = mainMenuScreen.game.multiplayer;
 
 		state = GAME_RUNNING;
 		gadgetState = NO_GADGET;
@@ -114,14 +118,13 @@ public class GameScreen extends GLScreen {
 		batcher = new SpriteBatcher(glGraphics, 10);
 		touchPoint = new Vector2();
 
-		this.selectedCars = new ArrayList<Integer>();
-		for (int i = 0; i < selectedCars.length; i++)
-		this.selectedCars.add(selectedCars[i]);
+//		this.selectedCars = new ArrayList<Integer>();
+//		for (int i = 0; i < selectedCars.length; i++)
+//		this.selectedCars.add(selectedCars[i]);
 		
 		
-		world = new World(this.selectedCars.size(), 0, 0, this.selectedCars);
+		world = new World(selectedCars.size(), mainMenuScreen.game.ownId, mainMenuScreen.game.map, selectedCars);
 		
-	
 		
 		
 		worldListener = new WorldListener() {
@@ -185,13 +188,11 @@ public class GameScreen extends GLScreen {
 		
 		// wenn Touch deaktiviert wurde, gibt man mit der linken Seite Gas und
 		// mit der rechten bremst man
+		if(!Settings.touchEnabled){
 		leftSideBounds = new Rectangle(0, 0, width / 2, height);
 		rightSideBounds = new Rectangle(width / 2, 0, width / 2, height);
-
-		// lastScore = 0;
-		// scoreString = "lives:" + lastLives + " waves:" + lastWaves +
-		// " score:"
-		// + lastScore;
+		}
+		
 		fpsCounter = new FPSCounter(); // zum Debuggen
 	}
 
@@ -244,14 +245,19 @@ public class GameScreen extends GLScreen {
 			if (event.type != TouchEvent.TOUCH_DOWN)
 				continue;
 			guiCam.touchToWorld(touchPoint.set(event.x, event.y));
+			
+			//wurde Pause gedrückt?
 			if (OverlapTester.pointInRectangle(pauseBounds, touchPoint)) {
 				Assets.playSound(Assets.clickSound);
 				state = GAME_PAUSED;
+				if(multiplayer) mainMenuScreen.game.sendPause(1); //wenn im Multiplayer, dann den andeen bescheid sagen
+			
 			}
 			
-			
+			//hat man ein gadget gesammelt
 			if (OverlapTester.pointInRectangle(gadgetButtonBounds, touchPoint) && gadgetState == GADGET_COLLECTED) {
 				//Assets.playSound(Assets.clickSound); //TODO abschusssound
+				
 				gadgetState = NO_GADGET;
 				world.useGadget(collectedGadget);
 			}
@@ -495,16 +501,16 @@ public class GameScreen extends GLScreen {
 	}
 	
 	
-	 public static GameScreen getInstance(Game game, int ... selectedCars) {
+	 public static GameScreen getInstance(Game game, ArrayList<Integer> cars) {
 	        if (instance == null) {
-	            instance = new GameScreen(game, selectedCars);
+	            instance = new GameScreen(game, cars);
 	        }
 	        return instance;
 	    }
 	 
 	 public static GameScreen getInstance() {
 	        if (instance == null) {
-	            instance = new GameScreen(null);
+	            return null;
 	        }
 	        return instance;
 	    }

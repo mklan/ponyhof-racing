@@ -40,7 +40,7 @@ public class MainMenuScreen extends GLScreen {
 	
 
 
-	private GameActivity game;
+	public GameActivity game;
 	
 
 
@@ -88,7 +88,8 @@ public class MainMenuScreen extends GLScreen {
 				
 				
 				Assets.playSound(Assets.clickSound);
-				game.setScreen(SelectACarScreen.getInstance(game));
+				game.ownId = 0;
+				game.setScreen(SelectACarScreen.getInstance(game, false));
 				
 				
 				

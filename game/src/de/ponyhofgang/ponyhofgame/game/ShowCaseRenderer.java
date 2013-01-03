@@ -111,7 +111,7 @@ public class ShowCaseRenderer {
 
 		gl.glPushMatrix();
 
-		gl.glTranslatef(0, 0, -1.5f);
+		gl.glTranslatef(0, 0.01f, -1.5f);
 
 		gl.glRotatef(-rotation, 0, 1, 0);
 
@@ -126,7 +126,7 @@ public class ShowCaseRenderer {
 
 		gl.glPushMatrix();
 
-		gl.glTranslatef(0, 0, 1.5f);
+		gl.glTranslatef(0, 0.01f, 1.5f);
 
 		gl.glRotatef(-rotation, 0, 1, 0);
 
@@ -141,7 +141,7 @@ public class ShowCaseRenderer {
 
 		gl.glPushMatrix();
 
-		gl.glTranslatef(-1.5f, 0, 0);
+		gl.glTranslatef(-1.5f, 0.01f, 0);
 
 		gl.glRotatef(-rotation, 0, 1, 0);
 
@@ -156,7 +156,7 @@ public class ShowCaseRenderer {
 
 		gl.glPushMatrix();
 
-		gl.glTranslatef(1.5f, 0, 0);
+		gl.glTranslatef(1.5f, 0.01f, 0);
 
 		gl.glRotatef(-rotation, 0, 1, 0);
 

@@ -50,6 +50,10 @@ public class SearchServices extends Activity
 	private World world;
 	public String packageName;
 	
+	private byte[] recievedByteData;
+	
+	
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
@@ -65,6 +69,8 @@ public class SearchServices extends Activity
 		
 		
 		
+	   
+	   
 		
 		// <code>
 		chosenServiceIndex=-1;
@@ -120,7 +126,8 @@ public class SearchServices extends Activity
 		packageName = chosenService.packageName;
 		
 		//i.setClassName(chosenService.packageName, chosenService.packageName + ".ConnectionService"); //Jan
-		i.setClassName(chosenService.packageName, chosenService.packageName + ".services.MessengerService"); //Simon
+	//	i.setClassName(chosenService.packageName, chosenService.packageName + ".services.MessengerService"); //Simon
+		i.setClassName(chosenService.packageName, chosenService.packageName + "." + chosenService.applicationInfo.loadLabel(getPackageManager())); // Hans
 		
 		
 		
@@ -200,8 +207,8 @@ public class SearchServices extends Activity
 					
 					// process incoming messages
 					Log.d("message", ""+2);
-					//Bundle bundle=msg.getData();
-					Bundle bundle=(Bundle) msg.obj;// TODO Jan
+					Bundle bundle=msg.getData();
+					//Bundle bundle=(Bundle) msg.obj;// TODO Jan
 			
 
 					
@@ -210,7 +217,7 @@ public class SearchServices extends Activity
 			    Log.d ("test", "OwnID "+bundle.getInt(MultiplayerInterface.CONNECTION_OWN_ID));
 			
 				    
-				    //TODO Auslesen
+				  
 				    
 
 					if(firstTime){
@@ -239,18 +246,26 @@ public class SearchServices extends Activity
 					Log.d("message", ""+4);
 
 					Bundle dataBundle =msg.getData();
-					dataBundle.setClassLoader(getClassLoader());
+					
 
-					dataBundle.getInt(MultiplayerInterface.GET_ADDRESS);
-					dataBundle.getString(MultiplayerInterface.GET_TYPE);
-					ParcelData sentData = dataBundle.getParcelable(MultiplayerInterface.GET_DATA);
-
-
-//					ParcelData rawData = ParcelData.CREATOR.createFromParcel(parcelSentData);  TODO nötig???
-//					
-//					world.car2.position.x = sentData.positionX;
-//					world.car2.position.y = sentData.positionY;   //TODO hier werden die Daten für die Autos gesetzt
-//					world.car2.pitch = sentData.angle;
+					Log.d ("test", "adress: "+dataBundle.getInt(MultiplayerInterface.GET_ADDRESS));
+					Log.d ("test", "type: "+dataBundle.getString(MultiplayerInterface.GET_TYPE));
+					recievedByteData = dataBundle.getByteArray(MultiplayerInterface.GET_DATA);
+					
+					String str2 = new String(recievedByteData);
+                    
+//					final Parcel parcelData2  = Parcel.obtain();
+//                  parcelData2.setDataPosition(0);
+//					parcelData2.unmarshall(recievedByteData, 0, recievedByteData.length);
+//					StringData recievedData = StringData.CREATOR.createFromParcel(parcelData2); 
+					
+					
+					
+					Log.d ("test", "positionY: "+ str2); 
+					
+					
+					   //TODO hier werden die Daten für die Autos gesetzt
+					
 					
 					
 					
@@ -285,40 +300,40 @@ public class SearchServices extends Activity
 				}
 				
 				
-				
-				try {
-				// create outgoing message
 				Message msg=Message.obtain(null, MultiplayerInterface.MESSAGE_3_SEND);
 				
 				Bundle bundle=new Bundle();
 				
-			
-				ParcelData data = new ParcelData((byte)1, (byte)1, (byte)1, 2.0f, 2.0f, 2.0f, 2, 2);
+				ParcelData data = new ParcelData((byte)1, (byte)1, (byte)1, 4.0f, 4.0f, 4.0f, 2, 2);
+				//StringData stringData = new StringData("es klappt!");
+				String test ="es klappt";
+//				
+//				final Parcel parcelData  = Parcel.obtain();
+//				data.writeToParcel(parcelData, 0);
+//                parcelData.setDataPosition(0);
+//                final byte[] byteData = parcelData.marshall();
 				
 			
-				final Parcel parcelData  = Parcel.obtain();
-
 				
-				data.writeToParcel(parcelData, 0);
-				
-		
-				final byte[] byteData = parcelData.marshall();
-
+                bundle.putByteArray(MultiplayerInterface.SEND_DATA, test.getBytes());
 				bundle.putInt(MultiplayerInterface.SEND_ADDRESS, -1);
 				bundle.putString(MultiplayerInterface.SEND_TYPE, "data");
-				bundle.putByteArray(MultiplayerInterface.SEND_DATA, byteData);
 				
 				
-				messengerService.send(Message.obtain(null, MultiplayerInterface.MESSAGE_3_SEND, 0, 0, bundle));
-				
-			
-				parcelData.recycle();
+				msg.setData(bundle);
 				
 				
-				} catch (RemoteException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+				try
+				{
+					messengerService.send(msg);
 				}
+				catch(RemoteException e)
+				{
+					Log.e(TAG, e.getClass().getName() + ": " + e.getMessage());
+				}
+				
+				
+			//	parcelData.recycle();
 				
 
 
@@ -326,7 +341,7 @@ public class SearchServices extends Activity
 		}
 	}
 	
-	// <code>
+
 	private class ClassChooserDialog extends DialogFragment implements DialogInterface.OnClickListener
 	{
 		@Override
@@ -352,4 +367,3 @@ public class SearchServices extends Activity
 		
 	}
 }
-// </code>
