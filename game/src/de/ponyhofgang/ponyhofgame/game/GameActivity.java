@@ -21,6 +21,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
+import android.os.Parcel;
 import android.os.RemoteException;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -33,7 +34,6 @@ import de.ponyhofgang.ponyhofgame.framework.Screen;
 import de.ponyhofgang.ponyhofgame.framework.impl.GLGame;
 import de.ponyhofgang.ponyhofgame.game.multiplayer.MultiplayerInterface;
 import de.ponyhofgang.ponyhofgame.game.multiplayer.ParcelData;
-import de.ponyhofgang.ponyhofgame.game.multiplayer.SearchServices;
 
 import de.ponyhofgang.ponyhofgame.game.screens.AboutScreen;
 import de.ponyhofgang.ponyhofgame.game.screens.SelectACarScreen;
@@ -45,19 +45,14 @@ import de.ponyhofgang.ponyhofgame.game.screens.SettingsScreen;
 
 
 public class GameActivity extends GLGame {
+	
 	boolean firstTimeCreate = true;
-	LoadingScreen loadingScreen;
-	MainMenuScreen mainMenuScreen;
-	Intent intent;
 	
-	
-	
-	private final String TAG=SearchServices.class.getName();
+	private final String TAG=GameActivity.class.getName();
 	private final Messenger messengerActivity=new Messenger(new ActivityHandler());
 	private Messenger messengerService;
 	private ServiceConnection serviceConnection=new MyServiceConnection();
 	private boolean boundToService=false;
-	
 	private List<PackageInfo> availableServices;
 	private int chosenServiceIndex = -1;
 	
@@ -66,14 +61,12 @@ public class GameActivity extends GLGame {
 	public int playerCount = 1;
 	public int map = 0;
 	public boolean multiplayer = false;
-	// views
-	
-	
-	
 
+	
+	
 	public String packageName;
 	
-	private byte[] recievedByteData;
+	
 	
 	
 
@@ -95,7 +88,7 @@ public class GameActivity extends GLGame {
 			Assets.load(this);
 			firstTimeCreate = false;
 			
-			intent = new Intent(this, SearchServices.class);
+			
 		} else {
 			Assets.reload();
 		}
@@ -112,55 +105,9 @@ public class GameActivity extends GLGame {
 	
 	@Override
 	public boolean onKeyUp(int keyCode, KeyEvent event) {
-	    if (keyCode == KeyEvent.KEYCODE_BACK) {
+	   
 	       
-	    	 if (this.getCurrentScreen().getClass().getSimpleName().equals("MainMenuScreen")) System.exit(1); 
-	    	 if (this.getCurrentScreen().getClass().getSimpleName().equals("SettingsScreen")) SettingsScreen.getInstance().pressedBackKey = true;
-	    	 if (this.getCurrentScreen().getClass().getSimpleName().equals("AboutScreen")) AboutScreen.getInstance().pressedBackKey = true;
-	    	 if (this.getCurrentScreen().getClass().getSimpleName().equals("ChooseCarScreen")) SelectACarScreen.getInstance().pressedBackKey = true;
-	    	 if (this.getCurrentScreen().getClass().getSimpleName().equals("ChooseMapScreen")) SelectAMapScreen.getInstance().pressedBackKey = true;
-		    	
-	    	 
-	    	 
-	    	 if (this.getCurrentScreen().getClass().getSimpleName().equals("GameScreen") && GameScreen.getInstance().state ==  GameScreen.GAME_PAUSED) {
-	    		 GameScreen.getInstance().state = GameScreen.GAME_RUNNING;
-	    		 if(multiplayer) sendPause(0); //wenn im Multiplayer, dann den andeen bescheid sagen
-	    	 }
-	    	 else if (this.getCurrentScreen().getClass().getSimpleName().equals("GameScreen")){
-	    		 GameScreen.getInstance().state = GameScreen.GAME_PAUSED;
-	    		 if(multiplayer) sendPause(1); //wenn im Multiplayer, dann den andeen bescheid sagen
-	    	 }
-	    	 
-	    	
-	    	 
-	    }
-	    
-	    
-	    if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
-		       
-	    	
-	    	 if (this.getCurrentScreen().getClass().getSimpleName().equals("GameScreen") && GameScreen.getInstance().state ==  GameScreen.GAME_RUNNING)GameScreen.getInstance().DPAD_LEFT = false;
-	   }
-	    
-	    if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
-		       
-	    	
-	    	 if (this.getCurrentScreen().getClass().getSimpleName().equals("GameScreen") && GameScreen.getInstance().state ==  GameScreen.GAME_RUNNING) GameScreen.getInstance().DPAD_RIGHT = false;
-	   }
-	    
-	    if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
-		       
-	    	
-	    	 if (this.getCurrentScreen().getClass().getSimpleName().equals("GameScreen") && GameScreen.getInstance().state ==  GameScreen.GAME_RUNNING) GameScreen.getInstance().DPAD_UP = false;
-	   }
-	    
-	    if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
-		       
-	    	
-	    	 if (this.getCurrentScreen().getClass().getSimpleName().equals("GameScreen") && GameScreen.getInstance().state ==  GameScreen.GAME_RUNNING) GameScreen.getInstance().DPAD_DOWN = false;
-	   }
-	    
-	    
+	   KeyMapping.backKeyManager(this.getCurrentScreen(), this, keyCode);
 	    
 	    
 	    return super.onKeyDown(keyCode, event);
@@ -169,59 +116,22 @@ public class GameActivity extends GLGame {
 	
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
-	    if (keyCode == KeyEvent.KEYCODE_BUTTON_START) {
-	       
-	    	if (this.getCurrentScreen().getClass().getSimpleName().equals("GameScreen") && GameScreen.getInstance().state ==  GameScreen.GAME_PAUSED) GameScreen.getInstance().state = GameScreen.GAME_RUNNING;
-	    	 else if (this.getCurrentScreen().getClass().getSimpleName().equals("GameScreen")) GameScreen.getInstance().state = GameScreen.GAME_PAUSED;
-	   }
-	    
-	    if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT) {
-		       
-	    	
-	    	 if (this.getCurrentScreen().getClass().getSimpleName().equals("GameScreen") && GameScreen.getInstance().state ==  GameScreen.GAME_RUNNING) GameScreen.getInstance().DPAD_LEFT = true;
-	   }
-	    
-	    if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT) {
-		       
-	    	
-	    	 if (this.getCurrentScreen().getClass().getSimpleName().equals("GameScreen") && GameScreen.getInstance().state ==  GameScreen.GAME_RUNNING) GameScreen.getInstance().DPAD_RIGHT = true;
-	   }
-	    
-	    if (keyCode == KeyEvent.KEYCODE_DPAD_UP) {
-		       
-	    	
-	    	 if (this.getCurrentScreen().getClass().getSimpleName().equals("GameScreen") && GameScreen.getInstance().state ==  GameScreen.GAME_RUNNING) GameScreen.getInstance().DPAD_UP = true;
-	   }
-	    
-	    if (keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
-		       
-	    	
-	    	 if (this.getCurrentScreen().getClass().getSimpleName().equals("GameScreen") && GameScreen.getInstance().state ==  GameScreen.GAME_RUNNING) GameScreen.getInstance().DPAD_DOWN = true;
-	   }
+	
+		KeyMapping.controlManager(this.getCurrentScreen(), keyCode);
 	
 	    return super.onKeyDown(keyCode, event);
 	}
 	
 	
-	public void startSearchService(){
-		
-		//startActivity(intent);
-		initialize();
-	}
-	
-	
-	
-	
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	
 	
-	public void initialize()
+	public void initializeMultiplayer()
 	{
 		
 		
 		
-		
-		chosenServiceIndex=-1;
 		availableServices=new ArrayList<PackageInfo>();
 		List<PackageInfo> services=getPackageManager().getInstalledPackages(PackageManager.GET_SERVICES);
 		for(PackageInfo pi : services)
@@ -234,38 +144,32 @@ public class GameActivity extends GLGame {
 		}
 		
 		new ClassChooserDialog().show(getFragmentManager(), TAG);
-		// </code>
+		
 	}
 
 	@Override
 	protected void onStart()
 	{
 		super.onStart();
-		if(chosenServiceIndex != -1)
-		{
-			doBind();
-		}
+		if(chosenServiceIndex != -1)  doBind();
+		
 	}
 
 	@Override
 	protected void onStop()
 	{
 		super.onStop();
-		//doUnbind();
-		unbindService(serviceConnection);
+		//doUnbind();  //TODO buggy
+		
+		if(chosenServiceIndex != -1) unbindService(serviceConnection);
+	
 		
 	}
 	
 	
 	
-//	@Override
-//	protected void onResume()
-//	{
-//		super.onResume();
-//		doBind();
-//	}
 	
-	// <code>
+	
 	private void doBind()
 	{
 		Intent i=new Intent();
@@ -274,16 +178,16 @@ public class GameActivity extends GLGame {
 		packageName = chosenService.packageName;
 		
 		//i.setClassName(chosenService.packageName, chosenService.packageName + ".ConnectionService"); //Jan
-		//i.setClassName(chosenService.packageName, chosenService.packageName + ".services.MessengerService"); //Simon
-		i.setClassName(chosenService.packageName, chosenService.packageName + "." + chosenService.applicationInfo.loadLabel(getPackageManager())); // Hans
+
+		i.setClassName(chosenService.packageName, chosenService.packageName + "." + chosenService.applicationInfo.loadLabel(getPackageManager())); // Hans, Tobi
 		
 		
 		
 		bindService(i, serviceConnection, Context.BIND_AUTO_CREATE);
 	}
-	// </code>
 	
-	private void doUnbind()   //TODO Bug funct nicht!
+	
+	public void doUnbind()   //TODO Bug funct nicht!
 	{
 		
 		
@@ -357,14 +261,15 @@ public class GameActivity extends GLGame {
 					// process incoming messages
 					Log.d("message", ""+2);
 					Bundle bundle=msg.getData();
-					//Bundle bundle=(Bundle) msg.obj;// TODO Jan
+					//Bundle bundle=(Bundle) msg.obj;// TODO Jan, Simon(tobi)
 			
 
 					
 			        playerCount = bundle.getInt(MultiplayerInterface.CONNECTION_PLAYERCOUNT);
+			        Log.d("test", "count "+playerCount);
 			        Log.d ("test", "playerNames "+bundle.getString(MultiplayerInterface.CONNECTION_PLAYERNAMES));
 			        ownId = bundle.getInt(MultiplayerInterface.CONNECTION_OWN_ID);
-			
+			        Log.d ("test", "ownId "+ownId);
 				    
 				  
 				    
@@ -381,7 +286,7 @@ public class GameActivity extends GLGame {
 						
 						
 						// Auswahl der Autos, Host wählt Strecke, Welt wird erstellt
-						//setScreen(SelectACarScreen.getInstance(GameActivity.this, true));
+						//setScreen(SelectACarScreen.getInstance(GameActivity.this, true));  /TODO richtig
 						
 					
 						//TODO teeestt
@@ -397,22 +302,17 @@ public class GameActivity extends GLGame {
 					Log.d("message", ""+4);
 
 					Bundle dataBundle =msg.getData();
+					//Bundle dataBundle=(Bundle) msg.obj;// TODO Jan, Simon(tobi)
 					
 
 					Log.d ("test", "adress: "+dataBundle.getInt(MultiplayerInterface.GET_ADDRESS));
 					String messageType = dataBundle.getString(MultiplayerInterface.GET_TYPE);
-					recievedByteData = dataBundle.getByteArray(MultiplayerInterface.GET_DATA);
+					byte[] recievedByteData = dataBundle.getByteArray(MultiplayerInterface.GET_DATA);
 					
-					String dataString = new String(recievedByteData);
-                    
-//					final Parcel parcelData2  = Parcel.obtain();
-//                  parcelData2.setDataPosition(0);
-//					parcelData2.unmarshall(recievedByteData, 0, recievedByteData.length);
-//					StringData recievedData = StringData.CREATOR.createFromParcel(parcelData2); 
-					
-					
+				
 					if(messageType.equals("car")){
 						
+						String dataString = new String(recievedByteData);
 						parseCarString(dataString);
 						
 					}
@@ -420,6 +320,7 @@ public class GameActivity extends GLGame {
 					
 					if(messageType.equals("map")){
 						
+						String dataString = new String(recievedByteData);
 						map = Integer.parseInt(dataString);  //Map wird gesetzt
 						
 						if(ownId != 0){  //Wenn man nicht der Host ist, wird der Ladebildschirm gestartet
@@ -430,16 +331,36 @@ public class GameActivity extends GLGame {
 						
 					}
 					
+					if(messageType.equals("boxCollected")){ 
+						
+						
+					 String dataStrings[] = new String(recievedByteData).split(" ");
+					 GameScreen.getInstance().world.deactivateBox(Integer.parseInt(dataStrings[0]), Integer.parseInt(dataStrings[1]));
+						
+						
+					}
+						
+					
 					
 					if(messageType.equals("data")){
 						
-						parseCoordString(dataString);
+						final Parcel parcelData  = Parcel.obtain();
+	                    parcelData.unmarshall(recievedByteData, 0, recievedByteData.length);
+	                    parcelData.setDataPosition(0);
+						ParcelData recievedData = ParcelData.CREATOR.createFromParcel(parcelData); 
+						
+						Log.d("coords", recievedData.positionX+" "+recievedData.positionY+" "+recievedData.angle);
+						
+						
+						if (recievedData.playerId != ownId) setCoords(recievedData); // nur falls das nicht meine Daten sind
+						parcelData.recycle();
 						
 					}
 					
 					
 					if(messageType.equals("pause")){
 						
+						String dataString = new String(recievedByteData);
 						parsePauseString(dataString);
 						
 					}
@@ -455,7 +376,7 @@ public class GameActivity extends GLGame {
 					Log.d("message", ""+6);
 					
 					Bundle closingBundle =msg.getData();
-					
+					//Bundle closingBundle=(Bundle) msg.obj;// TODO Jan, Simon(tobi)
 					
 					Toast.makeText(GameActivity.this, "Verbindung wurde von PlayId " +closingBundle.getInt(MultiplayerInterface.CLOSED_BY)+" beendet", Toast.LENGTH_SHORT).show();
 					
@@ -514,50 +435,49 @@ private void parsePauseString(String dataString) {
 		}
 		
 		
-private void parseCoordString(String dataString) {
-			
-			String[] temp = dataString.split(" ");
-			
-			int playerId = Integer.parseInt(temp[0]);
-			float x = Float.valueOf(temp[1].trim()).floatValue();
-			float y =  Float.valueOf(temp[2].trim()).floatValue();
-			float angle =  Float.valueOf(temp[3].trim()).floatValue();
-			
-			if (playerId != ownId){
-			switch(playerId){
-			
-			case 0:
-				GameScreen.getInstance().world.car0.position.x = x;
-				GameScreen.getInstance().world.car0.position.y = y;
-				GameScreen.getInstance().world.car0.pitch = angle;
-				
-				break;
-			case 1:
-				GameScreen.getInstance().world.car1.position.x = x;
-				GameScreen.getInstance().world.car1.position.y = y;
-				GameScreen.getInstance().world.car1.pitch = angle;
-				
-				break;
-			case 2:
-				GameScreen.getInstance().world.car2.position.x = x;
-				GameScreen.getInstance().world.car2.position.y = y;
-				GameScreen.getInstance().world.car2.pitch = angle;
-				break;
-			case 3:
-				GameScreen.getInstance().world.car3.position.x = x;
-				GameScreen.getInstance().world.car3.position.y = y;
-				GameScreen.getInstance().world.car3.pitch = angle;
-				break;
-			
-			}
-			}
-			
-		}
-		
-		
+
 		
 		
 	}
+	
+	
+	private void setCoords(ParcelData data) {
+		
+		
+		switch(data.playerId){
+		
+		case 0:
+			GameScreen.getInstance().world.car0.position.x = data.positionX;
+			GameScreen.getInstance().world.car0.position.y = data.positionY;
+			GameScreen.getInstance().world.car0.pitch = data.angle;
+			
+			break;
+		case 1:
+			GameScreen.getInstance().world.car1.position.x = data.positionX;
+			GameScreen.getInstance().world.car1.position.y = data.positionY;
+			GameScreen.getInstance().world.car1.pitch = data.angle;
+			
+			break;
+		case 2:
+			GameScreen.getInstance().world.car2.position.x = data.positionX;
+			GameScreen.getInstance().world.car2.position.y = data.positionY;
+			GameScreen.getInstance().world.car2.pitch = data.angle;
+			break;
+		case 3:
+			GameScreen.getInstance().world.car3.position.x = data.positionX;
+			GameScreen.getInstance().world.car3.position.y = data.positionY;
+			GameScreen.getInstance().world.car3.pitch = data.angle;
+			break;
+		
+		}
+		}
+		
+	
+	
+	
+	
+	
+
 	
 
 		public void sendData(float positionX, float positionY, float angle)
@@ -565,7 +485,7 @@ private void parseCoordString(String dataString) {
 			
 				if(!boundToService)
 				{
-					Toast.makeText(GameActivity.this, "not bound to a service", Toast.LENGTH_SHORT).show();
+					//Toast.makeText(GameActivity.this, "not bound to a service", Toast.LENGTH_SHORT).show();
 					return;
 				}
 				
@@ -574,20 +494,22 @@ private void parseCoordString(String dataString) {
 				
 				Bundle bundle=new Bundle();
 				
-				//ParcelData data = new ParcelData((byte)1, (byte)1, (byte)1, 4.0f, 4.0f, 4.0f, 2, 2);
-				//StringData stringData = new StringData("es klappt!");
+				ParcelData data = new ParcelData(ownId, positionX, positionY, angle);
 				
-				String dataString = ownId+" "+positionX+" "+positionY+" "+angle ;
+				
+				//String dataString = ownId+" "+positionX+" "+positionY+" "+angle ;
 //				
-//				final Parcel parcelData  = Parcel.obtain();
-//				data.writeToParcel(parcelData, 0);
-//                parcelData.setDataPosition(0);
-//                final byte[] byteData = parcelData.marshall();
+				final Parcel parcelData  = Parcel.obtain();
+				data.writeToParcel(parcelData, 0);
+
+                final byte[] byteData = parcelData.marshall();
 				
 			
 				
-                bundle.putByteArray(MultiplayerInterface.SEND_DATA, dataString.getBytes());
-				bundle.putInt(MultiplayerInterface.SEND_ADDRESS, -1);  
+                bundle.putByteArray(MultiplayerInterface.SEND_DATA, byteData);
+				if(ownId == 0)bundle.putInt(MultiplayerInterface.SEND_ADDRESS, 1);  
+				if(ownId == 1)bundle.putInt(MultiplayerInterface.SEND_ADDRESS, 0);
+              //  bundle.putInt(MultiplayerInterface.SEND_ADDRESS, -1);
 				bundle.putString(MultiplayerInterface.SEND_TYPE, "data");
 				
 				
@@ -604,19 +526,19 @@ private void parseCoordString(String dataString) {
 				}
 				
 				
-			//	parcelData.recycle();
+		    	parcelData.recycle();
 				
 
 
 			}
 		
 		
-		public void sendPause(int flag)
+		public void sendStringCommands(String data, String type)
 		{
 			
 				if(!boundToService)
 				{
-					Toast.makeText(GameActivity.this, "not bound to a service", Toast.LENGTH_SHORT).show();
+					//Toast.makeText(GameActivity.this, "not bound to a service", Toast.LENGTH_SHORT).show();
 					return;
 				}
 				
@@ -625,21 +547,16 @@ private void parseCoordString(String dataString) {
 				
 				Bundle bundle=new Bundle();
 				
-				//ParcelData data = new ParcelData((byte)1, (byte)1, (byte)1, 4.0f, 4.0f, 4.0f, 2, 2);
-				//StringData stringData = new StringData("es klappt!");
 				
-				String dataString = ownId+" "+flag ;
-//				
-//				final Parcel parcelData  = Parcel.obtain();
-//				data.writeToParcel(parcelData, 0);
-//                parcelData.setDataPosition(0);
-//                final byte[] byteData = parcelData.marshall();
 				
+				String dataString = ownId+" "+data ;
+
 			
 				
                 bundle.putByteArray(MultiplayerInterface.SEND_DATA, dataString.getBytes());
-				bundle.putInt(MultiplayerInterface.SEND_ADDRESS, -1);  
-				bundle.putString(MultiplayerInterface.SEND_TYPE, "pause");
+
+                bundle.putInt(MultiplayerInterface.SEND_ADDRESS, -1);
+				bundle.putString(MultiplayerInterface.SEND_TYPE, type);
 				
 				
 				msg.setData(bundle);
@@ -655,113 +572,14 @@ private void parseCoordString(String dataString) {
 				}
 				
 				
-			//	parcelData.recycle();
-				
-
-
-			}
-		
-		
-		public void sendSelectedCar(int selectedCar)
-		{
 			
-				if(!boundToService)
-				{
-					Toast.makeText(GameActivity.this, "not bound to a service", Toast.LENGTH_SHORT).show();
-					return;
-				}
-				
-				
-				Message msg=Message.obtain(null, MultiplayerInterface.MESSAGE_3_SEND);
-				
-				Bundle bundle=new Bundle();
-				
-				//ParcelData data = new ParcelData((byte)1, (byte)1, (byte)1, 4.0f, 4.0f, 4.0f, 2, 2);
-				//StringData stringData = new StringData("es klappt!");
-				String dataString = ownId+" "+selectedCar ;
-//				
-//				final Parcel parcelData  = Parcel.obtain();
-//				data.writeToParcel(parcelData, 0);
-//                parcelData.setDataPosition(0);
-//                final byte[] byteData = parcelData.marshall();
-				
-				
-				
-                bundle.putByteArray(MultiplayerInterface.SEND_DATA, dataString.getBytes());
-				bundle.putInt(MultiplayerInterface.SEND_ADDRESS, -1);  
-				bundle.putString(MultiplayerInterface.SEND_TYPE, "car");
-				
-				
-				msg.setData(bundle);
-				
-				
-				try
-				{
-					messengerService.send(msg);
-				}
-				catch(RemoteException e)
-				{
-					Log.e(TAG, e.getClass().getName() + ": " + e.getMessage());
-				}
-				
-				
-			//	parcelData.recycle();
 				
 
 
 			}
 		
 		
-		public void sendSelectedMap(int selectedMap)
-		{
-			
-				if(!boundToService)
-				{
-					Toast.makeText(GameActivity.this, "not bound to a service", Toast.LENGTH_SHORT).show();
-					return;
-				}
-				
-				
-				Message msg=Message.obtain(null, MultiplayerInterface.MESSAGE_3_SEND);
-				
-				Bundle bundle=new Bundle();
-				
-				//ParcelData data = new ParcelData((byte)1, (byte)1, (byte)1, 4.0f, 4.0f, 4.0f, 2, 2);
-				//StringData stringData = new StringData("es klappt!");
-				String dataString = ""+selectedMap ;
-//				
-//				final Parcel parcelData  = Parcel.obtain();
-//				data.writeToParcel(parcelData, 0);
-//                parcelData.setDataPosition(0);
-//                final byte[] byteData = parcelData.marshall();
-				
-				
-				
-                bundle.putByteArray(MultiplayerInterface.SEND_DATA, dataString.getBytes());
-				bundle.putInt(MultiplayerInterface.SEND_ADDRESS, -1);  
-				bundle.putString(MultiplayerInterface.SEND_TYPE, "map");
-				
-				
-				msg.setData(bundle);
-				
-				
-				try
-				{
-					messengerService.send(msg);
-				}
-				catch(RemoteException e)
-				{
-					Log.e(TAG, e.getClass().getName() + ": " + e.getMessage());
-				}
-				
-				
-			//	parcelData.recycle();
-				
-
-
-			}
 		
-	
 	
 
 	private class ClassChooserDialog extends DialogFragment implements DialogInterface.OnClickListener

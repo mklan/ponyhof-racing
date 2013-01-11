@@ -5,8 +5,10 @@ import de.ponyhofgang.ponyhofgame.framework.Sound;
 
 public class AndroidSound implements Sound {
 	int soundId;
+	int streamId;
 	SoundPool soundPool;
 	float currentPitch = 1;
+	boolean isPlaying = false;
 
 	public AndroidSound(SoundPool soundPool, int soundId) {
 		this.soundId = soundId;
@@ -15,13 +17,35 @@ public class AndroidSound implements Sound {
 
 	
 	public void play(float volume) {
-		soundPool.play(soundId, volume, volume, 0, 0, 1);
+		streamId = soundPool.play(soundId, volume, volume, 0, 0, 1);
+		isPlaying = true;
+		
+	}
+	
+	public void stop() {
+		soundPool.stop(streamId);
+		isPlaying = false;
+	}
+	
+	public void play(float volume, int loopFlag, float pitch) {
+		streamId = soundPool.play(soundId, volume, volume, 0, loopFlag, 1);
+		isPlaying = true;
 	}
 	
 	
 	public void pitch(float factor) {
 		currentPitch += factor;
-		soundPool.setRate (soundId, currentPitch);
+		soundPool.setRate ((int) soundId, currentPitch);
+	}
+	
+	public void setPitch(float pitch) {
+		
+		soundPool.setRate (streamId, pitch);
+	}
+	
+	public boolean isPlaying(){
+		
+		return isPlaying;
 	}
 
 	

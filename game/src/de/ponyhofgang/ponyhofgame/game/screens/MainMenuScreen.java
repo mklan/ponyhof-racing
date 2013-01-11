@@ -101,8 +101,7 @@ public class MainMenuScreen extends GLScreen {
 				
 				
 				
-				game.startSearchService();
-				
+				game.initializeMultiplayer();
 			}
 			
 			if (OverlapTester.pointInRectangle(settingsBounds, touchPoint)) {

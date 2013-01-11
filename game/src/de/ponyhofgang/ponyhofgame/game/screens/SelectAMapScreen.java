@@ -90,7 +90,7 @@ public class SelectAMapScreen extends GLScreen {
 				
 				if(SelectACarScreen.getInstance().cars.size() != mainMenuScreen.game.playerCount ) SelectACarScreen.getInstance().packageCars();
 			    else{ 
-			    	if(multiplayer) mainMenuScreen.game.sendSelectedMap(selectedMap);
+			    	if(multiplayer) mainMenuScreen.game.sendStringCommands(selectedMap+"", "map");
 			    	mainMenuScreen.game.map = selectedMap;
 			    	
 			    	loading = true;
@@ -112,6 +112,7 @@ public class SelectAMapScreen extends GLScreen {
 		if (loaded) {
 
 			game.setScreen(LoadingScreen.getInstance(game));
+			loaded = false;
 
 		}
 
@@ -148,6 +149,7 @@ public class SelectAMapScreen extends GLScreen {
 					PonyMath.getRatio(width, 271), Assets.iconAndLoadingRegion);
 
 			batcher.endBatch();
+			loading = false;
 			loaded = true;
 		}
 

@@ -1,6 +1,7 @@
 package de.ponyhofgang.ponyhofgame.game;
 
 
+import de.ponyhofgang.ponyhofgame.framework.Music;
 import de.ponyhofgang.ponyhofgame.framework.Sound;
 import de.ponyhofgang.ponyhofgame.framework.gl.Animation;
 import de.ponyhofgang.ponyhofgame.framework.gl.ObjLoader;
@@ -38,7 +39,18 @@ public class Assets {
 	
 	public static Texture levelDocksTexture;
 
+	
+	//Sounds
 	public static Sound clickSound;
+	public static Sound explosionSound;
+	public static Sound squashSound;
+	public static Sound slippingSound;
+	public static Sound launchingSound;
+	public static Sound collectSound;
+	public static Sound engineSound;
+	public static Sound idleSound;
+	
+	//
 	public static TextureRegion steeringRegion;
 	public static TextureRegion accelRegion;
 	public static Texture groundLevelDocksTexture;
@@ -69,9 +81,12 @@ public class Assets {
 	public static Texture gadgetsTexture;
 	public static Texture explosionTexture;
 	public static Animation explosionAnim;
+
+	
+	
 	
 	public static void loadLoadingScreen(GLGame game) {
-		loading = new Texture(game, "loading.jpg", true);
+		loading = new Texture(game, "gui/loading.jpg", true);
 		loadingBackgroundRegion = new TextureRegion(loading, 0, 493, 2, 2);
 		iconAndLoadingRegion = new TextureRegion(loading, 0, 0, 512, 271);
 		
@@ -79,10 +94,10 @@ public class Assets {
 	
 	
 	public static void load(GLGame game) {
-		background = new Texture(game, "background.jpg", true);
+		background = new Texture(game, "gui/background.jpg", true);
 		backgroundRegion = new TextureRegion(background, 0, 0, 1280, 720);
 		
-		items = new Texture(game, "items.png", true);
+		items = new Texture(game, "gui/items.png", true);
 		menuRegion = new TextureRegion(items, 0, 0, 512, 512);
      	aboutRegion = new TextureRegion(items, 132, 512, 132, 132); 
      	settingsRegion = new TextureRegion(items, 512, 0, 512, 512 );
@@ -94,20 +109,20 @@ public class Assets {
      	accelRegion = new TextureRegion(items, 132, 770, 260, 126);
      	steeringRegion = new TextureRegion(items, 132, 644, 260, 126);
      	
-     	ectoMobileTexture = new Texture(game, "ghostbusters.png", true);
-     	ectoMobileModel = ObjLoader.load(game, "ghostbusters.obj");
+     	ectoMobileTexture = new Texture(game, "texture/ghostbusters.png", true);
+     	ectoMobileModel = ObjLoader.load(game, "mesh/ghostbusters.obj");
      	
-     	batMobileTexture = new Texture(game, "gengar.png", true);
-     	batMobileModel = ObjLoader.load(game, "batmobile.obj");
+     	batMobileTexture = new Texture(game, "texture/gengar.png", true);
+     	batMobileModel = ObjLoader.load(game, "mesh/batmobile.obj");
      	
-     	mysteryMachineTexture = new Texture(game, "rocket.png", true);
-     	mysteryMachineModel = ObjLoader.load(game, "oilspill.obj");
+     	mysteryMachineTexture = new Texture(game, "texture/scooby_bus_textur.png", true);
+     	mysteryMachineModel = ObjLoader.load(game, "mesh/scooby_bus.obj");
      	
-     	podRacerTexture = new Texture(game, "rocket.png", true);
-     	podRacerModel = ObjLoader.load(game, "rocket.obj");
+     	podRacerTexture = new Texture(game, "texture/rocket.png", true);
+     	podRacerModel = ObjLoader.load(game, "mesh/rocket.obj");
      	
      	
-     	clickSound = game.getAudio().newSound("click.wav");
+     	clickSound = game.getAudio().newSound("sound/click.wav");
      	
      	
      
@@ -116,35 +131,35 @@ public class Assets {
 	
 	
 	public static void loadLevel(GLGame game) {
-	items2 = new Texture(game, "items2.png", true);
+	items2 = new Texture(game, "gui/items2.png", true);
  	pauseMenuRegion = new TextureRegion(items2, 0, 0, 512, 419);
  	pauseBackgroundRegion = new TextureRegion(items2, 0, 443, 2, 2);
  
  	oilSpillButtonRegion = new TextureRegion(items2, 256, 443, 129, 129);
  	rocketButtonRegion = new TextureRegion(items2, 384, 443, 129, 129);
  	
- 	levelDocksTexture = new Texture(game, "container.png", true);
- 	craneTexture = new Texture(game, "crane.png", true);
- 	groundLevelDocksTexture = new Texture(game, "ground_level_docks.png", true);
- 	shadowsLevelDocksTexture = new Texture(game, "shadows_level_docks.png", true);
- 	levelDocksModel = ObjLoader.load(game, "level_docks.obj");
- 	groundLevelDocksModel = ObjLoader.load(game, "ground_level_docks.obj");
- 	craneModel = ObjLoader.load(game, "crane.obj");
+ 	levelDocksTexture = new Texture(game, "texture/container.png", true);
+ 	craneTexture = new Texture(game, "texture/crane.png", true);
+ 	groundLevelDocksTexture = new Texture(game, "texture/ground_level_docks.png", true);
+ 	shadowsLevelDocksTexture = new Texture(game, "texture/shadows_level_docks.png", true);
+ 	levelDocksModel = ObjLoader.load(game, "mesh/level_docks.obj");
+ 	groundLevelDocksModel = ObjLoader.load(game, "mesh/ground_level_docks.obj");
+ 	craneModel = ObjLoader.load(game, "mesh/crane.obj");
  	
- 	gadgetBoxTexture = new Texture(game, "gadgetBox.png", true);
- 	gadgetBoxModel = ObjLoader.load(game, "gadgetBox.obj");
- 	gadgetBoxShadowTexture = new Texture(game, "gadgetBoxShadow.png", true);
- 	gadgetBoxShadowModel = ObjLoader.load(game, "gadgetBoxShadow.obj");
+ 	gadgetBoxTexture = new Texture(game, "texture/gadgetBox.png", true);
+ 	gadgetBoxModel = ObjLoader.load(game, "mesh/gadgetBox.obj");
+ 	gadgetBoxShadowTexture = new Texture(game, "texture/gadgetBoxShadow.png", true);
+ 	gadgetBoxShadowModel = ObjLoader.load(game, "mesh/gadgetBoxShadow.obj");
  	
- 	boundsBallModel = ObjLoader.load(game, "boundsBall.obj");
+ 	boundsBallModel = ObjLoader.load(game, "mesh/boundsBall.obj");
  	
- 	gadgetsTexture = new Texture(game, "rocket.png", true);
- 	oilSpillModel = ObjLoader.load(game, "oilspill.obj");
+ 	gadgetsTexture = new Texture(game, "texture/rocket.png", true);
+ 	oilSpillModel = ObjLoader.load(game, "mesh/oilspill.obj");
  	
 
- 	rocketModel = ObjLoader.load(game, "rocket.obj");
+ 	rocketModel = ObjLoader.load(game, "mesh/rocket.obj");
  	
- 	explosionTexture = new Texture(game, "explode.png", true);
+ 	explosionTexture = new Texture(game, "texture/explode.png", true);
  	TextureRegion[] keyFrames = new TextureRegion[16];
  	int frame = 0;
  	for (int y = 0; y < 256; y += 64) {
@@ -153,6 +168,14 @@ public class Assets {
  	}
  	}
  	explosionAnim = new Animation(0.1f, keyFrames);
+ 	
+ 	launchingSound = game.getAudio().newSound("sound/launching.wav");
+ 	explosionSound = game.getAudio().newSound("sound/explosion.wav");
+ 	squashSound = game.getAudio().newSound("sound/squash.wav");
+ 	slippingSound = game.getAudio().newSound("sound/slipping.wav");
+ 	collectSound = game.getAudio().newSound("sound/collect.wav");
+ 	engineSound = game.getAudio().newSound("sound/engine_loop.ogg");
+	idleSound = game.getAudio().newSound("sound/engine_idle.mp3");
  	
  	
 	}
@@ -166,6 +189,12 @@ public class Assets {
 		batMobileTexture.reload();
 		mysteryMachineTexture.reload();
 		podRacerTexture.reload();
+		loading.reload();
+		//gadgetsTexture.reload(); //wenn keine Rakete mehr im Showcase gezeigt wird dann hier einfügen und bei 186 enfernen
+		
+//		if(Settings.soundEnabled)
+//			music.play();
+//			}
 
 		
 	}
@@ -175,12 +204,14 @@ public class Assets {
 	public static void gameScreenReload() {
 	
 		items2.reload();
-		//carTexture.reload();
 		levelDocksTexture.reload();
 		groundLevelDocksTexture.reload();
 		craneTexture.reload();
 		shadowsLevelDocksTexture.reload();
-		
+		gadgetBoxTexture.reload();
+		gadgetBoxShadowTexture.reload();
+		gadgetsTexture.reload(); // wenn keine Rakete mehr im Showcase gezeigt wird dann hier entfernen
+		explosionTexture.reload();
 	}
 	
 	
@@ -190,6 +221,17 @@ public class Assets {
 	public static void playSound(Sound sound) {
 		if (Settings.sfxEnabled)
 		sound.play(1);
+		}
+	
+	public static void playEngineSound(Music music) {
+		if (Settings.sfxEnabled)
+		music.setLooping(true);
+		music.play();
+		}
+	
+	public static void playloopedSound(Sound sound, float pitch) {
+		if (Settings.sfxEnabled)
+		sound.play(1, -1, pitch);
 		}
 	
 

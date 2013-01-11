@@ -17,7 +17,7 @@ public class ShowCaseRenderer {
 	AmbientLight ambientLight;
 	DirectionalLight directionalLight;
 	public float rotation = 0;
-	public static float rotation2 = 0;
+	public static float rotationCamera = 0;
 
 	private Vector2 camDirection;
 
@@ -52,12 +52,12 @@ public class ShowCaseRenderer {
 
 		GL10 gl = glGraphics.getGL();
 
-		camDirection.set((float) Math.cos(rotation2 * Vector2.TO_RADIANS),
-				(float) Math.sin(rotation2 * Vector2.TO_RADIANS)).nor();
+		camDirection.set((float) Math.cos(rotationCamera * Vector2.TO_RADIANS),
+				(float) Math.sin(rotationCamera * Vector2.TO_RADIANS)).nor();
 
 		camera.getPosition().set(0, 0, 0)
-				.sub(camDirection.x * 2.5f, -0.4f, camDirection.y * 2.5f);
-		
+				.sub(camDirection.x * 2.55f, -0.4f, camDirection.y * 2.5f);
+
 		camera.getLookAt().set(0, 0, 0);
 
 		camera.setMatrices(gl);
@@ -71,30 +71,30 @@ public class ShowCaseRenderer {
 		ambientLight.enable(gl);
 		directionalLight.enable(gl, GL10.GL_LIGHT0);
 
-		if (swipe == SWIPE_LEFT && rotation2 % 90 != 0) {
+		if (swipe == SWIPE_LEFT && rotationCamera % 90 != 0) {
 
-			rotation2 = rotation2 -= 1.5f;
-
-		}
-
-		if (swipe == SWIPE_RIGHT && rotation2 % 90 != 0) {
-
-			rotation2 = rotation2 += 1.5f;
+			rotationCamera = rotationCamera -= 1.5f;
 
 		}
 
-		if (rotation2 == 360)
-			rotation2 = 0;
-		if (rotation2 < 0)
-			rotation2 = rotation2 + 360;
+		if (swipe == SWIPE_RIGHT && rotationCamera % 90 != 0) {
 
+			rotationCamera = rotationCamera += 1.5f;
+
+		}
+
+		if (rotationCamera == 360)
+			rotationCamera = 0;
+		if (rotationCamera < 0)
+			rotationCamera = rotationCamera + 360;
+
+		// eigenRotation der Autos
 		rotation = rotation += deltaTime * 25;
 		if (rotation > 360) {
 			rotation = rotation - 360;
 		}
-		renderShowCase(gl);
-		
 
+		renderShowCase(gl);
 
 		gl.glDisable(GL10.GL_TEXTURE_2D);
 

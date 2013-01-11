@@ -3,7 +3,8 @@ package de.ponyhofgang.ponyhofgame.game;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.os.SystemClock;
+import android.util.Log;
+
 
 import de.ponyhofgang.ponyhofgame.framework.math.LineRectangle;
 import de.ponyhofgang.ponyhofgame.framework.math.OverlapTester;
@@ -11,10 +12,10 @@ import de.ponyhofgang.ponyhofgame.game.gameObjects.Car;
 import de.ponyhofgang.ponyhofgame.game.gameObjects.Gadget;
 import de.ponyhofgang.ponyhofgame.game.gameObjects.OilSpill;
 import de.ponyhofgang.ponyhofgame.game.gameObjects.Rocket;
-import de.ponyhofgang.ponyhofgame.game.screens.GameScreen;
 import de.ponyhofgang.ponyhofgame.game.screens.MainMenuScreen;
 
 public class World implements CarSpecs {
+	
 	public interface WorldListener {
 		public void collision();
 
@@ -25,48 +26,37 @@ public class World implements CarSpecs {
 		public void detonatingRocket();
 
 	}
-
-	public static boolean raceStarted = false;
-
-	public final static int LEVEL_DOCKS = 0;
-
-	public static final float BOX_APEARING_INTERVAL = 5;
-
-	public final List<LineRectangle> colliders;
-	public final ArrayList<Gadget> gadgets;
-	public ArrayList<Car> cars;
-
+	
 	WorldListener listener;
 
-	boolean inCollision = false;
+	public static boolean raceStarted = false; //TODO
 
-	public float colliderDirectionAngle;
+	public final static int LEVEL_DOCKS = 0;
+	public final static int LEVEL_2  = 1;
+	public final static int LEVEL_3 = 2;
 
+	
+	
+	public List<LineRectangle> colliders;
+	public ArrayList<Gadget> gadgets;
+	public ArrayList<Car> cars;
+    public ArrayList<Rocket> rockets;
+    public ArrayList<OilSpill> oilSpills;
+
+	
 	public Car myCar;
 	public Car car0;
 	public Car car1;
 	public Car car2;
 	public Car car3;
 
-	private float carLength, carWidth;
-
-	protected int collectedGadgetId;
-
-	private int collectedGadgetContent;
-
-	
-
-	public ArrayList<Rocket> rockets;
-
-	public ArrayList<OilSpill> oilSpills;
-
-	public float time = 0;
 
 	public int myId;
-
 	private int playerCount;
 
 	private int ticker = 0;
+	public float time = 0;
+
 
 	
 
@@ -78,8 +68,15 @@ public class World implements CarSpecs {
 		gadgets = new ArrayList<Gadget>();
 		rockets = new ArrayList<Rocket>();
 		oilSpills = new ArrayList<OilSpill>();
-
+		
+	
+		
+		
+		//erstelle die Auto instanzen
 		for (int i = 0; i < chosenCars.size(); i++) {
+			
+			float carWidth = 0;
+			float carLength = 0;
 
 			switch (chosenCars.get(i)) {
 			case ECTOMOBILE:
@@ -113,11 +110,12 @@ public class World implements CarSpecs {
 					chosenCars.get(i)));
 		}
 
-		myCar = cars.get(myId);
+		myCar = cars.get(myId);  // identifiziere mein Auto
 		this.myId = myId;
 		this.playerCount = playerCount;
 
-		switch (playerCount) {
+		switch (playerCount) {  //jenachdem wieviele leute mitspielen, werden den Autos objekte zugeordnet 
+								//( Ab 2 Spieler hat man selbst 2 Instanzen!!! myCar + carX !!! )
 
 		case 1:
 
@@ -169,51 +167,58 @@ public class World implements CarSpecs {
 			gadgets.add(new Gadget(12.881f, -6.036f, 0, 0.363f, 0.363f));
 			gadgets.add(new Gadget(13.986f, -6.036f, 0, 0.363f, 0.363f));
 		}
+		
+	
+
+		
+		
+		
+	
 	}
 
 	public void setWorldListener(WorldListener worldListener) {
 		this.listener = worldListener;
 	}
 
-	public void update(float deltaTime, int accelerationState, float angle) {
+	public void update(float deltaTime, int accelerationState, float angle) {  //das kommt aus den Controlls raus vom Spieler
 		
+		time = time + deltaTime;
+		
+		myCar.update(deltaTime, angle, accelerationState);
+	
 		
 		ticker ++;
-		if((playerCount > 1) && ticker%50 == 0){  //wenn es mehr Spieler gibt, dann sende meine Position an die anderen
+		if((playerCount > 1) && ticker%20 == 0){  //wenn es mehr Spieler gibt, dann sende meine Position an die anderen
 	    ticker = 0;	
 		MainMenuScreen.getInstance().game.sendData(myCar.position.x, myCar.position.y, myCar.pitch);	
 			
 		}
 
-		time = time + deltaTime;
-		
-		myCar.update(deltaTime, angle, accelerationState);
-		
+	
+		//Falls das Auto ausrutscht
 		if(myCar.state == Car.SLIPPING){
-		if (time - myCar.slippingStartTime < Car.SLIPPING_DURATION) myCar.state = Car.DRIVING;
+		if (time - myCar.slippingStartTime > Car.SLIPPING_DURATION) myCar.state = Car.DRIVING;
 		}
 
-		//---> die Raketen werden in ihrrer Update Methode vorangetrieben
+		//---> die Raketen werden in ihrer Update Methode vorangetrieben
 		int len = rockets.size();
 		for (int i = 0; i < len; i++) {
 			Rocket rocket = rockets.get(i);
 			rocket.update(deltaTime);
 			
-			if(rocket.explotionTimeState > Assets.explosionAnim.frameDuration*15) rockets.remove(i);
+			if(rocket.explotionTimeState > Assets.explosionAnim.frameDuration*12) rockets.remove(i);
 			
 		}
 		//<---
 		
 		checkWorldCollisions();
-		checkGadgetBoxCollisions(); // TODO keine Gadgetboxen im Timetrial..
-									// höchstens ggf. Speedboost
+		checkGadgetBoxCollisions(); // TODO keine Gadgetboxen im Timetrial.. // höchstens ggf. Speedboost
 
-		// Die ganzen If abfragen dienen der Entlastung der Methdenaufrufe
+		// Die folgenden If-Abfragen dienen der Entlastung der Methdenaufrufe
 
 		if (car1 != null)
 			checkOppenentCollisions(); // Falls man mit mindestens einem Gegner
 										// Spielt, soll die Colission gecheckt
-										// werden
 		if (oilSpills.size() > 0)
 			checkOilSpillCollisions(); // ist eine ÖlLache plaziert worden, soll
 										// die Collision gecheckt werden
@@ -238,10 +243,11 @@ public class World implements CarSpecs {
 				
 				return;
 			}
-	   myCar.state = Car.DRIVING;
-
 		}
-		inCollision = false;
+		
+		//Nur falls er nicht im Slippingmode it, soll der DRIVING modus aktiviert werden, da dies oben geklärt wird	
+	    if(myCar.state !=  Car.SLIPPING) myCar.state = Car.DRIVING;
+
 
 	}
 
@@ -260,7 +266,7 @@ public class World implements CarSpecs {
 			Gadget gadget = gadgets.get(i);
 
 			
-			if (!gadget.active) {  // ist eine Box schon eingesammeltworden wird, geguckt obs Zeit ist eine neue zu erstellen
+			if (!gadget.active) {  // ist eine Box schon eingesammelt worden, wird geguckt ob es Zeit ist eine neue zu erstellen
 
 				if (time - gadget.lastTimeCollected > Gadget.BOX_APEARING_INTERVAL) {
 					gadget.generateNewContent();
@@ -272,11 +278,16 @@ public class World implements CarSpecs {
 
 			if (OverlapTester.intersectSegmentRectangles(myCar.bounds,
 					gadget.bounds)) {
-				collectedGadgetId = i;
-				collectedGadgetContent = gadget.content;
+				
+				if(myCar.gadgetState == Car.NO_GADGET) myCar.collectedGadgetId = i; //falls noch kein Gadget eingesammelt wurde
+				
 				gadget.active = false;
 				gadget.lastTimeCollected = time;
-				listener.collectedGadget(collectedGadgetContent);
+				
+				if (playerCount > 1) MainMenuScreen.getInstance().game.sendStringCommands(i+" "+time, "boxCollected");
+				
+				
+				listener.collectedGadget(gadget.content);
 				return;
 			}
 
@@ -298,6 +309,8 @@ public class World implements CarSpecs {
 				listener.droveTroughtOilSpill();
 				
 				oilSpills.remove(i);
+				//send Remove
+				
 				myCar.state = Car.SLIPPING;
 				myCar.slippingStartTime = time;
 				// TODO auto ggf um 360° drehen
@@ -328,7 +341,8 @@ public class World implements CarSpecs {
 					
 					rocket.state = Rocket.DETONATING;
 					
-					return;    //TODO hier muss man sich was einfallen lasse, weil ja mehere Rakete gleichzeitig im umlauf sind... vll nicht so tragisch
+					return;    //TODO hier muss man sich was einfallen lassen, 
+					//weil ja mehere Rakete gleichzeitig im umlauf sind... vll nicht so tragisch, da schnelle wiederholung
 					
 				}
 
@@ -352,7 +366,7 @@ public class World implements CarSpecs {
 
 	public void useGadget(int gadgetContent) {
 
-		if (gadgetContent == GameScreen.OILSPILL) {
+		if (gadgetContent == Gadget.OILSPILL) {
 
 			//Eine Öllache wird hinter dem Auto erzeugt und existiert so lange, bis jemand drüber fährt
 			oilSpills.add(new OilSpill(myCar.position.x - myCar.bounds.direction.x
@@ -362,7 +376,7 @@ public class World implements CarSpecs {
 
 		}
 
-		if (gadgetContent == GameScreen.ROCKET) {
+		if (gadgetContent == Gadget.ROCKET) {
 
 			//eine Rakete wird vor dem Auto erzeugt und fliegt in der momentanen Richtung, bis Sie auf ein Hindernis stößt
 			rockets.add(new Rocket(myCar.position.x + myCar.bounds.direction.x   * (myCar.bounds.length + 0.1f),
@@ -378,5 +392,17 @@ public class World implements CarSpecs {
 	public boolean isGameOver() {
 		return myCar.finished == true; // wenn auto im Ziel angelangt ist
 	}
+	
+	
+	public void deactivateBox(int id, int time){
+		
+		Gadget gadget = gadgets.get(id);
+		gadget.active = false;
+		gadget.lastTimeCollected = time;
+	
+	}
+	
+
+	
 
 }

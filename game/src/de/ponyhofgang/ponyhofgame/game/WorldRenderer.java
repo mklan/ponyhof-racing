@@ -30,11 +30,11 @@ public class WorldRenderer {
 	private Vertices3 model;
 	private float boxRotation;
 	private float boxTranslation;
-	private boolean back;
+	private float slippingRotation;
+	
+	private boolean boxBackSwing;
 	private SpriteBatcher batcher;
-	private boolean firstFrame;
-	private float exploisionStart;
-	private int slippingRotation;
+	
 
 	public WorldRenderer(GLGraphics glGraphics) {
 
@@ -73,14 +73,14 @@ public class WorldRenderer {
 		camera.getLookAt().set(world.myCar.position.x, 0,
 				world.myCar.position.y);
 
-		// 1st Person
+		// -----> 1st Person
 		// camera.getPosition().set(world.car.position.x, 0.5f,
 		// world.car.position.y).add(world.car.direction.x * 0.5f , 0,
 		// world.car.direction.y * 0.5f ); //FirstPersonCam
 		// camera.getLookAt().set(world.car.position.x, 0.5f,
 		// world.car.position.y).add(world.car.direction.x * 3 , 0,
 		// world.car.direction.y * 3 ); //FirstPersonCam
-
+        // <----
 		camera.setMatrices(gl);
 		gl.glEnable(GL10.GL_DEPTH_TEST);
 		gl.glEnable(GL10.GL_TEXTURE_2D);
@@ -105,9 +105,10 @@ public class WorldRenderer {
 
 		// --> Ausrutsch Animation
 		
-		slippingRotation = slippingRotation += deltaTime * 50;
+		
+	   slippingRotation += deltaTime * 500;
 		if (slippingRotation > 360) {
-			slippingRotation = 0;
+			slippingRotation = slippingRotation -360;
 		}
 		// <---
 		
@@ -131,7 +132,7 @@ public class WorldRenderer {
 		
 		// --> GadgetBox Animation( abschwingen und drehen
 		// Box rotation
-		boxRotation = boxRotation += deltaTime * 50;
+		boxRotation += deltaTime * 50;
 		if (boxRotation > 360) {
 			boxRotation = boxRotation - 360;
 		}
@@ -141,14 +142,14 @@ public class WorldRenderer {
 
 
 		// Box swing
-		if (!back)
+		if (!boxBackSwing)
 			boxTranslation = boxTranslation += deltaTime * 0.3f;
-		if (back)
+		if (boxBackSwing)
 			boxTranslation = boxTranslation -= deltaTime * 0.3f;
 		if (boxTranslation > 0.1f)
-			back = true;
+			boxBackSwing = true;
 		if (boxTranslation < -0.1f)
-			back = false;
+			boxBackSwing = false;
 		// <---
 
 		renderLevelDocks(gl);
@@ -160,7 +161,6 @@ public class WorldRenderer {
 		renderRockets(gl, world);
 
 		gl.glDisable(GL10.GL_TEXTURE_2D);
-
 		gl.glDisable(GL10.GL_COLOR_MATERIAL);
 		gl.glDisable(GL10.GL_LIGHTING);
 		gl.glDisable(GL10.GL_DEPTH_TEST);
@@ -254,6 +254,8 @@ public class WorldRenderer {
 
 		}
 
+		
+		//Box schadows
 		Assets.gadgetBoxModel.unbind();
 
 		Assets.gadgetBoxShadowTexture.bind();
@@ -355,11 +357,11 @@ public class WorldRenderer {
 
 		gl.glTranslatef(car.position.x, 0, car.position.y);
 		
+		gl.glRotatef(-car.pitch, 0, 1, 0);
+		
 		if(car.state == Car.SLIPPING) gl.glRotatef(slippingRotation, 0, 1, 0);
 
-		gl.glRotatef(-car.pitch, 0, 1, 0);
-
-		// gl.glTranslatef(0, 0, car.bounds.height/3.0f); //pivot nach vorne
+		//gl.glTranslatef(0, 0, car.bounds.height/3.0f); //pivot nach vorne  zum driften?
 		// Schieben
 
 		model.draw(GL10.GL_TRIANGLES, 0, model.getNumVertices());

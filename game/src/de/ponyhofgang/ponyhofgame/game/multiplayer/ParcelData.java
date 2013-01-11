@@ -5,28 +5,21 @@ import android.os.Parcelable;
 
 public class ParcelData implements Parcelable {
 
-	public byte mapIsSelected; 
-	public byte carIsSelected;
-	public byte gameIsPaused;
+    public int playerId;
 	public float positionX ;
 	public float positionY ;
 	public float angle;
-	public int whichMap; 
-	public int whichCar;
 	
 	
 	
-	public ParcelData(byte mapIsSelected, byte carIsSelected, byte gameIsPaused, float positionX, float positionY, float angle, int whichMap, int whichCar){
+	
+	public ParcelData( int playerId, float positionX, float positionY, float angle){
 		
-
-		this.mapIsSelected = mapIsSelected;
-		this.carIsSelected = carIsSelected;
-		this.gameIsPaused = gameIsPaused;
+		this.playerId = playerId;
 		this.positionX = positionX;
 		this.positionY = positionY;
 		this.angle = angle;
-		this.whichCar = whichCar;
-		this.whichMap = whichMap;
+		;
 	}
 
 
@@ -39,28 +32,23 @@ public class ParcelData implements Parcelable {
 
 	public void writeToParcel(Parcel dest, int flags) {
 	
-		dest.writeByte(mapIsSelected);
-		dest.writeByte(carIsSelected);
-		dest.writeByte(gameIsPaused);
+		dest.writeInt(playerId);
 		dest.writeFloat(positionX);
 		dest.writeFloat(positionY);
 		dest.writeFloat(angle);
-		dest.writeInt(whichCar);
-		dest.writeInt(whichMap);
+		
+		
 		
 	}
 	
 
     private ParcelData(Parcel in) {
        
-    	mapIsSelected = in.readByte();
-        carIsSelected = in.readByte();
-        gameIsPaused = in.readByte();
+    	playerId = in.readInt();
         positionX = in.readFloat();
         positionY = in.readFloat();
         angle = in.readFloat();
-        whichMap = in.readInt();
-        whichCar = in.readInt();
+        
     }
 	
     

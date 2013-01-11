@@ -1,8 +1,8 @@
 package de.ponyhofgang.ponyhofgame.framework;
 
-import de.ponyhofgang.ponyhofgame.framework.math.Cube;
+
 import de.ponyhofgang.ponyhofgame.framework.math.Rectangle;
-import de.ponyhofgang.ponyhofgame.framework.math.Sphere;
+
 import de.ponyhofgang.ponyhofgame.framework.math.Vector3;
 
 public class GameObject3D {

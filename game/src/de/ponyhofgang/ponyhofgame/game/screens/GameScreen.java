@@ -23,25 +23,15 @@ import de.ponyhofgang.ponyhofgame.game.Settings;
 import de.ponyhofgang.ponyhofgame.game.World;
 import de.ponyhofgang.ponyhofgame.game.World.WorldListener;
 import de.ponyhofgang.ponyhofgame.game.WorldRenderer;
+import de.ponyhofgang.ponyhofgame.game.gameObjects.Car;
+import de.ponyhofgang.ponyhofgame.game.gameObjects.Gadget;
 
 public class GameScreen extends GLScreen {
 	public static final int GAME_RUNNING = 0;
 	public static final int GAME_PAUSED = 1;
 	public static final int GAME_OVER = 2;
 	
-	public static final int GADGET_COLLECTED = 0;
-	public static final int NO_GADGET = 1;
-	
-	public static final int OILSPILL = 0;
-	public static final int ROCKET = 1;
-	
-	public static final int ACCELERATING = 0;
-	public static final int BRAKING = 1;
-	public static final int IDLING = 2;
-	
-	
-	
-	
+
 	public boolean DPAD_UP = false;
 	public boolean DPAD_DOWN = false;
 	public boolean DPAD_LEFT = false;
@@ -50,7 +40,7 @@ public class GameScreen extends GLScreen {
 	static final float ACCEL_STEERING_ANGLE = 3;
 	static final float TOUCH_STEERING_ANGLE = 2;
 	
-	public int state, gadgetState;
+	public int state;
 	
 	
 	private static GameScreen instance = null;
@@ -93,6 +83,8 @@ public class GameScreen extends GLScreen {
 	
 	private Rectangle gadgetButtonBounds;
 	private boolean multiplayer;
+	private int counter;
+
 	
 	
 	
@@ -113,43 +105,39 @@ public class GameScreen extends GLScreen {
 		this.multiplayer = mainMenuScreen.game.multiplayer;
 
 		state = GAME_RUNNING;
-		gadgetState = NO_GADGET;
+		//world.myCar.gadgetState = Car.NO_GADGET;
 		guiCam = new Camera2D(glGraphics, width, height);
 		batcher = new SpriteBatcher(glGraphics, 10);
 		touchPoint = new Vector2();
 
-//		this.selectedCars = new ArrayList<Integer>();
-//		for (int i = 0; i < selectedCars.length; i++)
-//		this.selectedCars.add(selectedCars[i]);
 		
-		
+		//hier wird die Welt erstellt !!!!!
 		world = new World(selectedCars.size(), mainMenuScreen.game.ownId, mainMenuScreen.game.map, selectedCars);
-		
+		///
 		
 		
 		worldListener = new WorldListener() {
 			
 			public void collision() {
-				// Assets.playSound(Assets.crashSound);
+				// Assets.playSound(Assets.crashSound); //TODO  vieleicht aber nur, denn vibration reicht vll
 				GameScreen.game.getVibrator().vibrate(20);
 			}
 			
 			public void collectedGadget(int collectedGadgetContent){
 				
-				// Assets.playSound(Assets.collectSound);
-				GameScreen.game.getVibrator().vibrate(20);
-				gadgetState = GADGET_COLLECTED;
+				Assets.playSound(Assets.collectSound); 
+				world.myCar.gadgetState = Car.GADGET_COLLECTED;
 				collectedGadget = collectedGadgetContent;
 				
 			}
 
 			public void droveTroughtOilSpill() {
-				// TODO ausrutsch-Sound ?!?!?
+				Assets.playSound(Assets.slippingSound);
 				
 			}
 
 			public void detonatingRocket() {
-				// TODO explision sound/animation ?!?!?!
+				//Assets.playSound(Assets.explosionSound);
 			}
 			
 			
@@ -250,15 +238,15 @@ public class GameScreen extends GLScreen {
 			if (OverlapTester.pointInRectangle(pauseBounds, touchPoint)) {
 				Assets.playSound(Assets.clickSound);
 				state = GAME_PAUSED;
-				if(multiplayer) mainMenuScreen.game.sendPause(1); //wenn im Multiplayer, dann den andeen bescheid sagen
+				if(multiplayer) mainMenuScreen.game.sendStringCommands(1+"", "pause"); //wenn im Multiplayer, dann den andeen bescheid sagen
 			
 			}
 			
 			//hat man ein gadget gesammelt
-			if (OverlapTester.pointInRectangle(gadgetButtonBounds, touchPoint) && gadgetState == GADGET_COLLECTED) {
-				//Assets.playSound(Assets.clickSound); //TODO abschusssound
-				
-				gadgetState = NO_GADGET;
+			if (OverlapTester.pointInRectangle(gadgetButtonBounds, touchPoint) && world.myCar.gadgetState == Car.GADGET_COLLECTED) {
+				if(collectedGadget == Gadget.OILSPILL)Assets.playSound(Assets.squashSound); 
+				if(collectedGadget == Gadget.ROCKET)Assets.playSound(Assets.launchingSound); 
+				world.myCar.gadgetState = Car.NO_GADGET;
 				world.useGadget(collectedGadget);
 			}
 
@@ -266,20 +254,54 @@ public class GameScreen extends GLScreen {
 		
 	
 
-		timeString = "time:" + world.time;   //TODO time
-		
+		timeString = "time:" + world.time;   //TODO time, aber eher die Time vom Startschuss
 		
 		
 		if (world.isGameOver()) {
 			state = GAME_OVER;
 		}
 
+		//Hier wird der Nutzer-Input an die Welt geleitet!!!!!
 		world.update(deltaTime, InputAcceleration(), calculateInputRotation());
+		computeCarSound();  //TODO
 
 	}
 	
 	
+	private void computeCarSound() {
+		
+		
+		
+		if( !Assets.engineSound.isPlaying() ){
+			Assets.playloopedSound(Assets.engineSound, 1);
+		}
+		
+		if(world.myCar.velocity.len() > 0) {
+			
+			counter++;
+			if ( counter%10 == 0){
+				counter = 0;
+				
+			Assets.engineSound.setPitch( 1+ world.myCar.velocity.len()*0.1f);
+				
+			}
+			
+		}
+			   
+		
+
+			
+			
+		
+		
+	}
+
+
+
+
 	private void updatePaused() {
+		
+		Assets.engineSound.stop();
 		List<TouchEvent> events = game.getInput().getTouchEvents();
 		int len = events.size();
 		for (int i = 0; i < len; i++) {
@@ -290,13 +312,13 @@ public class GameScreen extends GLScreen {
 			if (OverlapTester.pointInRectangle(resumeBounds, touchPoint)) {
 				Assets.playSound(Assets.clickSound);
 				state = GAME_RUNNING;
+				if(multiplayer) mainMenuScreen.game.sendStringCommands(0+"", "pause"); //wenn im Multiplayer, dann den anderen bescheid sagen
 			}
 			if (OverlapTester.pointInRectangle(quitBounds, touchPoint)) {
 				Assets.playSound(Assets.clickSound);
-				SelectAMapScreen.getInstance().loaded = false;
-				SelectAMapScreen.getInstance().loading = false;
+				
 				game.setScreen(mainMenuScreen);
-				world = null;
+				if(multiplayer) mainMenuScreen.game.doUnbind();  //TODO ggf buggy
 				LoadingScreen.getInstance().clear();
 				clear();
 				
@@ -322,9 +344,9 @@ public class GameScreen extends GLScreen {
 				}
 			}
 		} else {   // Ist ACCEL eingestellt
-			accelY = game.getInput().getAccelY()/1.5f;
-			if (accelY > -ACCEL_STEERING_ANGLE && accelY < ACCEL_STEERING_ANGLE) {  //im Rahmen ist es OK
-				angle = accelY;
+			accelY = game.getInput().getAccelY()/1.5f;  // Für Tablets muss X Achse verwendet werden !!!
+			if (accelY > -ACCEL_STEERING_ANGLE && accelY < ACCEL_STEERING_ANGLE) {  //im diesem Rahmen ist alles möglich
+				angle = accelY;                                                     
 			} else if (accelY < -ACCEL_STEERING_ANGLE){  // das ist das Maxiumum
 				angle = -ACCEL_STEERING_ANGLE;
 			} else{
@@ -346,12 +368,12 @@ public class GameScreen extends GLScreen {
 							.getTouchX(i), game.getInput().getTouchY(i)));
 					if (OverlapTester.pointInRectangle(accelBounds, touchPoint) ||  DPAD_UP) {
 						
-						return ACCELERATING;
+						return Car.ACCELERATING;
 					}
 					
 					if (OverlapTester.pointInRectangle(brakeBounds, touchPoint) ||  DPAD_DOWN) {
 						
-						return BRAKING;
+						return Car.BRAKING;
 					}
 				
 				}
@@ -364,13 +386,13 @@ public class GameScreen extends GLScreen {
 					if (OverlapTester.pointInRectangle(rightSideBounds,
 							touchPoint)) {
 						
-						return ACCELERATING;
+						return Car.ACCELERATING;
 						
 					}
 					if (OverlapTester.pointInRectangle(leftSideBounds,
 							touchPoint)) {
 						
-						return BRAKING;
+						return Car.BRAKING;
 					}
 				}
 					
@@ -379,7 +401,7 @@ public class GameScreen extends GLScreen {
 			}
 
 		
-		return IDLING;
+		return Car.IDLING;
 	}
 
 	
@@ -468,11 +490,11 @@ public class GameScreen extends GLScreen {
 		
 		
 		batcher.endBatch();
-		if (gadgetState == GADGET_COLLECTED) { 
+		if (world.myCar.gadgetState == Car.GADGET_COLLECTED) { 
 			 
 			 batcher.beginBatch(Assets.items2);
-			 if (collectedGadget == OILSPILL)batcher.drawSprite(width - PonyMath.getRatio(width, 70), height- PonyMath.getRatio(width, 220), width / 9.5f, width / 9.5f, Assets.oilSpillButtonRegion);
-			 else if (collectedGadget == ROCKET)batcher.drawSprite(width - PonyMath.getRatio(width, 70), height- PonyMath.getRatio(width, 220), width / 9.5f, width / 9.5f, Assets.rocketButtonRegion);
+			 if (collectedGadget == Gadget.OILSPILL)batcher.drawSprite(width - PonyMath.getRatio(width, 70), height- PonyMath.getRatio(width, 220), width / 9.5f, width / 9.5f, Assets.oilSpillButtonRegion);
+			 else if (collectedGadget == Gadget.ROCKET)batcher.drawSprite(width - PonyMath.getRatio(width, 70), height- PonyMath.getRatio(width, 220), width / 9.5f, width / 9.5f, Assets.rocketButtonRegion);
 			 batcher.endBatch();
 		}
 
@@ -485,6 +507,7 @@ public class GameScreen extends GLScreen {
 	@Override
 	public void pause() {
 		state = GAME_PAUSED;
+		if(multiplayer) mainMenuScreen.game.sendStringCommands(1+"", "pause"); //wenn im Multiplayer, dann den anderen bescheid sagen
 
 	}
 

@@ -103,8 +103,8 @@ public class SelectACarScreen extends GLScreen {
 			
 			if(down_x >= 0){
 				
-				if ((down_x - event.x) > 50){ swipe  = ShowCaseRenderer.SWIPE_LEFT; ShowCaseRenderer.rotation2 -= 1.5;}
-				if ((down_x - event.x) < -50){ swipe = ShowCaseRenderer.SWIPE_RIGHT; ShowCaseRenderer.rotation2 += 1.5;}
+				if ((down_x - event.x) > 50){ swipe  = ShowCaseRenderer.SWIPE_LEFT; ShowCaseRenderer.rotationCamera -= 1.5;}
+				if ((down_x - event.x) < -50){ swipe = ShowCaseRenderer.SWIPE_RIGHT; ShowCaseRenderer.rotationCamera += 1.5;}
 				
 				down_x =-1;
 				
@@ -121,11 +121,14 @@ public class SelectACarScreen extends GLScreen {
 				clear();
 				
 			}
+			
+			
+			if(ShowCaseRenderer.rotationCamera%90 == 0){  //Man darf nur weiter klicken, wenn das Auto zuende Rotiert ist
 			if (OverlapTester.pointInRectangle(nextButtonBounds, touchPoint)) {
 				
-				selectedCar = Math.round(ShowCaseRenderer.rotation2);
+				selectedCar = Math.round(ShowCaseRenderer.rotationCamera);  //ermittel anhand der Rotation das Auto
 				if(!multiplayer) cars.add(0, selectedCar);
-				if(multiplayer) mainMenuScreen.game.sendSelectedCar(selectedCar);  // Die auswahl der Autos wird an andere Spieler geschickt
+				if(multiplayer) mainMenuScreen.game.sendStringCommands(selectedCar+"", "car");  // Die auswahl der Autos wird an andere Spieler geschickt
 				Assets.playSound(Assets.clickSound);
 				
 				if(mainMenuScreen.game.ownId == 0){  // Nur der Host darf eine Map auswählen
@@ -134,6 +137,7 @@ public class SelectACarScreen extends GLScreen {
 				if(!multiplayer)game.setScreen(SelectAMapScreen.getInstance(game, false));
 				}
 				
+			}
 			}
 		}
 			
@@ -156,22 +160,33 @@ public class SelectACarScreen extends GLScreen {
 		
 		
 		GL10 gl = glGraphics.getGL();
-		gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
+		gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
 		guiCam.setViewportAndMatrices();
+		gl.glEnable(GL10.GL_BLEND);
 		gl.glEnable(GL10.GL_TEXTURE_2D);
 		batcher.beginBatch(Assets.background);
 		batcher.drawSprite(width / 2, height / 2, width, height,
 				Assets.backgroundRegion);
 		batcher.endBatch();
+		
+		gl.glDisable(GL10.GL_TEXTURE_2D);
+		gl.glDisable(GL10.GL_BLEND);
+		
+		renderer.render(swipe, deltaTime);
+		
+		
+		
+		guiCam.setViewportAndMatrices();
 		gl.glEnable(GL10.GL_BLEND);
 		gl.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
+		gl.glEnable(GL10.GL_TEXTURE_2D);
 		batcher.beginBatch(Assets.items);
 		batcher.drawSprite(PonyMath.getRatio(width, 100), PonyMath.getRatio(width, 100), PonyMath.getRatio(width, 132), PonyMath.getRatio(width, 132), Assets.backButtonRegion);
 		batcher.endBatch();
 		gl.glDisable(GL10.GL_BLEND);
 		gl.glDisable(GL10.GL_TEXTURE_2D);
 		
-		renderer.render(swipe, deltaTime);
+		
 	}
 	
 	

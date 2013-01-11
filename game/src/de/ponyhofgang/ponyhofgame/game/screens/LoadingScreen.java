@@ -33,6 +33,8 @@ public class LoadingScreen extends GLScreen {
 	
 	boolean firstTimeCreate = true;
 	
+	MainMenuScreen mainMenuScreen;
+	
 	private static LoadingScreen instance = null; 
 
 	private LoadingScreen(Game game) {
@@ -40,7 +42,7 @@ public class LoadingScreen extends GLScreen {
 
 		this.game = (GLGame) game;
 		
-		MainMenuScreen mainMenuScreen = MainMenuScreen.getInstance();
+		mainMenuScreen = MainMenuScreen.getInstance();
 		
 		height = mainMenuScreen.height;
 		width = mainMenuScreen.width;
@@ -67,13 +69,19 @@ public class LoadingScreen extends GLScreen {
 		///////TEST////////////
 		
 		ArrayList<Integer> cars = new ArrayList<Integer>();
+		
+		if(mainMenuScreen.game.multiplayer){
 		cars.add(90);
-		cars.add(90);
+		cars.add(0);
+		}else{
+			
+		cars.add(90);	
+		}
 		
 		game.setScreen(GameScreen.getInstance(game, cars));
 		
 		
-		//game.setScreen(GameScreen.getInstance(game, SelectACarScreen.getInstance().cars));
+		//game.setScreen(GameScreen.getInstance(game, SelectACarScreen.getInstance().cars)); //TODO original
 		
 		
 	
