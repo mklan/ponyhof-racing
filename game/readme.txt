@@ -19,7 +19,8 @@
 -bis jetzt kann man nicht mit den ausgwählten Fahrzeugen fahren, sondern landet in Level Docks
  mit Spieler 1 als Mystery Machine und Spieler 2 mit Ghostbuster ( mehrere Spieler funktionieren noch nicht)
 -das Abschießen von Gegnern, einsammeln von Gadgetboxen und visualisieren von Olflecken bzw.
- Raketen sollte übertragen werden, (bis auf die Ausrutsch animation), ist jedoch noch sehr buggy
+ Raketen sollte übertragen werden können , (bis auf die Ausrutsch animation), ist jedoch noch sehr buggy(detonation und ausrutschen lässt
+ Spiel abstürtzen)
 -Im Multiplayer können die Collider noch stranger sein, als sie eh schon im Singleplayer sind...
  keine Ahnung wieso das so ist =/
  
