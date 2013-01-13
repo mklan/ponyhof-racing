@@ -27,7 +27,7 @@ public class SelectAMapScreen extends GLScreen {
 	Vector2 touchPoint;
 	Rectangle backButtonBounds, nextButtonBounds;
 	
-	int selectedMap = 0;
+	int selectedMap = 0; //TODO muss noch wählbar sein
 
 	int height;
 	int width;
@@ -38,6 +38,7 @@ public class SelectAMapScreen extends GLScreen {
 
 	public boolean pressedBackKey = false;
 	private boolean multiplayer;
+	private boolean allCarsSelected;
 
 	private static SelectAMapScreen instance = null;
 
@@ -86,15 +87,17 @@ public class SelectAMapScreen extends GLScreen {
 				
 				Assets.playSound(Assets.clickSound);
 				
-				Log.d("test",  "Auswahl der Autos: " + SelectACarScreen.getInstance().cars.size() +" von "+ mainMenuScreen.game.playerCount);
+				Log.d("test", "soViele Autos soll es geben:" +  SelectACarScreen.getInstance().cars.size());
 				
-				if(SelectACarScreen.getInstance().cars.size() != mainMenuScreen.game.playerCount ) SelectACarScreen.getInstance().packageCars();
-			    else{ 
-			    	if(multiplayer) mainMenuScreen.game.sendStringCommands(selectedMap+"", "map");
-			    	mainMenuScreen.game.map = selectedMap;
+	            if(allCarsSelected()){
+					
+				if(multiplayer) mainMenuScreen.game.sendStringCommands(selectedMap+"", "map");
 			    	
-			    	loading = true;
-			    }
+			    mainMenuScreen.game.map = selectedMap;
+			    loading = true;
+			   
+			    
+				}
 				
 
 			}
@@ -186,5 +189,20 @@ public class SelectAMapScreen extends GLScreen {
 	 public void clear()  
 	  {  
 	    instance = null;  
-	  }  
+	  } 
+	 
+	 
+	 public boolean allCarsSelected(){
+		 
+		 for(int j=0; j < mainMenuScreen.game.playerCount; j++){
+				if (SelectACarScreen.getInstance().cars.get(j) == null){
+					
+					Log.d("test", "Jemand hat noch nicht gewählt");
+					return  false;
+				}
+		 }	
+		
+		 return true;
+		 
+	 }
 }

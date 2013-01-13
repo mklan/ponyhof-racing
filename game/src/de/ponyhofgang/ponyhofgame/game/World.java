@@ -57,12 +57,18 @@ public class World implements CarSpecs {
 	private int ticker = 0;
 	public float time = 0;
 
+	private boolean multiplayer;
+
 
 	
 
 	public World(int playerCount, int myId, int worldId,
-			ArrayList<Integer> chosenCars) { 
+			ArrayList<Integer> chosenCars, boolean multiplayer) { 
+		
+		
 
+		this.multiplayer = multiplayer;
+		
 		cars = new ArrayList<Car>();
 		colliders = new ArrayList<LineRectangle>();
 		gadgets = new ArrayList<Gadget>();
@@ -182,15 +188,16 @@ public class World implements CarSpecs {
 
 	public void update(float deltaTime, int accelerationState, float angle) {  //das kommt aus den Controlls raus vom Spieler
 		
+
 		time = time + deltaTime;
 		
 		myCar.update(deltaTime, angle, accelerationState);
 	
 		
 		ticker ++;
-		if((playerCount > 1) && ticker%20 == 0){  //wenn es mehr Spieler gibt, dann sende meine Position an die anderen
+		if((multiplayer) && ticker%20 == 0){  //wenn es mehr Spieler gibt, dann sende meine Position an die anderen
 	    ticker = 0;	
-		MainMenuScreen.getInstance().game.sendData(myCar.position.x, myCar.position.y, myCar.pitch);	
+		MainMenuScreen.getInstance().game.sendData(myCar.position.x, myCar.position.y, myCar.pitch, "data");	
 			
 		}
 
@@ -206,7 +213,7 @@ public class World implements CarSpecs {
 			Rocket rocket = rockets.get(i);
 			rocket.update(deltaTime);
 			
-			if(rocket.explotionTimeState > Assets.explosionAnim.frameDuration*12) rockets.remove(i);
+			if(rocket.explotionTimeState > Assets.explosionAnim.frameDuration*12) rockets.set(i, null);
 			
 		}
 		//<---
@@ -284,7 +291,7 @@ public class World implements CarSpecs {
 				gadget.active = false;
 				gadget.lastTimeCollected = time;
 				
-				if (playerCount > 1) MainMenuScreen.getInstance().game.sendStringCommands(i+" "+time, "boxCollected");
+				if (multiplayer) MainMenuScreen.getInstance().game.sendStringCommands(i+" "+time, "boxCollected"); //melde den anderen Spielern, das einsammeln
 				
 				
 				listener.collectedGadget(gadget.content);
@@ -303,12 +310,13 @@ public class World implements CarSpecs {
 		for (int i = 0; i < len; i++) {
 			OilSpill oilspill = oilSpills.get(i);
 
-			if (OverlapTester.intersectSegmentRectangles(myCar.bounds,
+			if (oilspill != null && OverlapTester.intersectSegmentRectangles(myCar.bounds,
 					oilspill.bounds)) {
 
 				listener.droveTroughtOilSpill();
 				
-				oilSpills.remove(i);
+				oilSpills.set(i, null);
+				if (multiplayer) MainMenuScreen.getInstance().game.sendStringCommands(i+" ", "slipped");
 				//send Remove
 				
 				myCar.state = Car.SLIPPING;
@@ -328,6 +336,7 @@ public class World implements CarSpecs {
 		for (int i = 0; i < len; i++) {
 			Rocket rocket = rockets.get(i);
 
+			if ( rocket != null){
 			// fliegt Rakete gegen eine Wand?
 
 			
@@ -357,9 +366,11 @@ public class World implements CarSpecs {
 				rocket.state = Rocket.DETONATING;
 				
 				myCar.resetVelocity();
+				if (multiplayer) MainMenuScreen.getInstance().game.sendStringCommands(i+" ", "hit");
 				return;
 			}
 
+		}
 		}
 
 	}
@@ -374,14 +385,23 @@ public class World implements CarSpecs {
 					- myCar.bounds.direction.y * (myCar.bounds.length + 0.1f),
 					myCar.pitch, 0.8f, 0.8f));
 
+			if (multiplayer) MainMenuScreen.getInstance().game.sendData(myCar.position.x - myCar.bounds.direction.x
+					* (myCar.bounds.length + 0.1f), myCar.position.y
+					- myCar.bounds.direction.y * (myCar.bounds.length + 0.1f),
+					myCar.pitch, "oilSpill");
+			
 		}
 
 		if (gadgetContent == Gadget.ROCKET) {
 
 			//eine Rakete wird vor dem Auto erzeugt und fliegt in der momentanen Richtung, bis Sie auf ein Hindernis stößt
-			rockets.add(new Rocket(myCar.position.x + myCar.bounds.direction.x   * (myCar.bounds.length + 0.1f),
-					               myCar.position.y + myCar.bounds.direction.y * (myCar.bounds.length + 0.1f),
-					               myCar.pitch, 0.034f, 0.465f));
+		rockets.add(new Rocket(myCar.position.x + myCar.bounds.direction.x   * (myCar.bounds.length + 0.1f),
+		               myCar.position.y + myCar.bounds.direction.y * (myCar.bounds.length + 0.1f),
+		               myCar.pitch, 0.034f, 0.465f));
+			if (multiplayer) MainMenuScreen.getInstance().game.sendData(myCar.position.x + myCar.bounds.direction.x   * (myCar.bounds.length + 0.1f),
+		               myCar.position.y + myCar.bounds.direction.y * (myCar.bounds.length + 0.1f),
+		               myCar.pitch, "rocket");
+			
 			
 	
 
@@ -396,11 +416,51 @@ public class World implements CarSpecs {
 	
 	public void deactivateBox(int id, int time){
 		
+		Assets.playSound(Assets.collectSound);
 		Gadget gadget = gadgets.get(id);
 		gadget.active = false;
 		gadget.lastTimeCollected = time;
 	
 	}
+	
+	
+public void removeOilSplill(int id){
+		
+	    listener.droveTroughtOilSpill();
+		oilSpills.set(id, null);
+		//car.state = Car.SLIPPING;  //TODO animation bei den anderen abspielen
+		//car.slippingStartTime = time;
+
+	}
+
+
+public void removeRocket(int id){
+	
+    listener.detonatingRocket();
+	rockets.get(id).state = Rocket.DETONATING;
+	//car.state = Car.SLIPPING;  //TODO animation bei den anderen abspielen
+	//car.slippingStartTime = time;
+
+}
+
+
+
+public void createOilSplill(float x, float y, float angle){
+	
+	Assets.playSound(Assets.squashSound);
+	oilSpills.add(new OilSpill(x, y, angle, 0.8f, 0.8f));
+    
+
+}
+
+
+public void createRocket(float x, float y, float angle){
+	
+	Assets.playSound(Assets.launchingSound);
+	rockets.add(new Rocket(x, y, angle, 0.034f, 0.465f));
+    
+
+}
 	
 
 	

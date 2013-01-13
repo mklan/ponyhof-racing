@@ -84,6 +84,9 @@ public class GameScreen extends GLScreen {
 	private Rectangle gadgetButtonBounds;
 	private boolean multiplayer;
 	private int counter;
+	private Rectangle tabToStartBounds;
+	
+	public boolean playerIsReady = false;
 
 	
 	
@@ -111,9 +114,7 @@ public class GameScreen extends GLScreen {
 		touchPoint = new Vector2();
 
 		
-		//hier wird die Welt erstellt !!!!!
-		world = new World(selectedCars.size(), mainMenuScreen.game.ownId, mainMenuScreen.game.map, selectedCars);
-		///
+		
 		
 		
 		worldListener = new WorldListener() {
@@ -146,9 +147,6 @@ public class GameScreen extends GLScreen {
 
 		};
 		
-		
-		world.setWorldListener(worldListener);
-		
 		renderer = new WorldRenderer(glGraphics);
 
 		pauseBounds = new Rectangle(width - PonyMath.getRatio(width, 70)
@@ -156,6 +154,10 @@ public class GameScreen extends GLScreen {
 				- PonyMath.getRatio(width, 70) - PonyMath.getRatio(width, 70)
 				/ 2, width / 9.5f, width / 9.5f);
 
+		
+		tabToStartBounds = new Rectangle(width/2-PonyMath.getRatio(width, 256), height/2-PonyMath.getRatio(width,69 ), PonyMath.getRatio(width, 512), PonyMath.getRatio(width, 138));
+		
+		
 		resumeBounds = new Rectangle(width/2-PonyMath.getRatio(width, 256), height/2-PonyMath.getRatio(width, 85), PonyMath.getRatio(width, 512), PonyMath.getRatio(width, 126));
 		quitBounds = new Rectangle(width/2-PonyMath.getRatio(width, 256), height/2-PonyMath.getRatio(width, 250), PonyMath.getRatio(width, 512), PonyMath.getRatio(width, 126));
 
@@ -166,11 +168,11 @@ public class GameScreen extends GLScreen {
 				/ 2, width / 9.5f, width / 9.5f);
 		
 		if(Settings.touchEnabled){
-		leftBounds = new Rectangle(PonyMath.getRatio(width, 130+30)-PonyMath.getRatio(width, 130), PonyMath.getRatio(width, 63+20)-PonyMath.getRatio(width, 63), 128, 126); 
-		rightBounds = new Rectangle(PonyMath.getRatio(width, 130+30), PonyMath.getRatio(width, 63+20)-PonyMath.getRatio(width, 63), 130, 126);
+		leftBounds = new Rectangle(PonyMath.getRatio(width, 130+30)-PonyMath.getRatio(width, 130), PonyMath.getRatio(width, 63+20)-PonyMath.getRatio(width, 63), PonyMath.getRatio(width,128), PonyMath.getRatio(width,126)); 
+		rightBounds = new Rectangle(PonyMath.getRatio(width, 130+30), PonyMath.getRatio(width, 63+20)-PonyMath.getRatio(width, 63), PonyMath.getRatio(width,130), PonyMath.getRatio(width,126));
 		
-		brakeBounds = new Rectangle(width-PonyMath.getRatio(width, 130+30)-PonyMath.getRatio(width, 130), PonyMath.getRatio(width, 63+20)-PonyMath.getRatio(width, 63), 128, 126); 
-		accelBounds = new Rectangle(width-PonyMath.getRatio(width, 130+30), PonyMath.getRatio(width, 63+20)-PonyMath.getRatio(width, 63), 130, 126);
+		brakeBounds = new Rectangle(width-PonyMath.getRatio(width, 130+30)-PonyMath.getRatio(width, 130), PonyMath.getRatio(width, 63+20)-PonyMath.getRatio(width, 63),  PonyMath.getRatio(width,128), PonyMath.getRatio(width,126)); 
+		accelBounds = new Rectangle(width-PonyMath.getRatio(width, 130+30), PonyMath.getRatio(width, 63+20)-PonyMath.getRatio(width, 63),  PonyMath.getRatio(width,128), PonyMath.getRatio(width,126));
 		}
 		
 		
@@ -180,6 +182,11 @@ public class GameScreen extends GLScreen {
 		leftSideBounds = new Rectangle(0, 0, width / 2, height);
 		rightSideBounds = new Rectangle(width / 2, 0, width / 2, height);
 		}
+		
+		//hier wird die Welt erstellt !!!!!
+		world = new World(selectedCars.size(), mainMenuScreen.game.ownId, mainMenuScreen.game.map, selectedCars, multiplayer);
+		///
+		world.setWorldListener(worldListener);
 		
 		fpsCounter = new FPSCounter(); // zum Debuggen
 	}
@@ -234,8 +241,17 @@ public class GameScreen extends GLScreen {
 				continue;
 			guiCam.touchToWorld(touchPoint.set(event.x, event.y));
 			
+			if(OverlapTester.pointInRectangle(tabToStartBounds, touchPoint) && !playerIsReady){
+				Assets.playSound(Assets.clickSound);
+				playerIsReady = true;
+				//TODO ready an andere Spieler senden
+				
+			}
+			
+			
+			
 			//wurde Pause gedrückt?
-			if (OverlapTester.pointInRectangle(pauseBounds, touchPoint)) {
+			if (OverlapTester.pointInRectangle(pauseBounds, touchPoint) && playerIsReady) {
 				Assets.playSound(Assets.clickSound);
 				state = GAME_PAUSED;
 				if(multiplayer) mainMenuScreen.game.sendStringCommands(1+"", "pause"); //wenn im Multiplayer, dann den andeen bescheid sagen
@@ -261,9 +277,12 @@ public class GameScreen extends GLScreen {
 			state = GAME_OVER;
 		}
 
+		
+		if(playerIsReady){
 		//Hier wird der Nutzer-Input an die Welt geleitet!!!!!
 		world.update(deltaTime, InputAcceleration(), calculateInputRotation());
 		computeCarSound();  //TODO
+		}
 
 	}
 	
@@ -279,7 +298,7 @@ public class GameScreen extends GLScreen {
 		if(world.myCar.velocity.len() > 0) {
 			
 			counter++;
-			if ( counter%10 == 0){
+			if ( counter%20 == 0){
 				counter = 0;
 				
 			Assets.engineSound.setPitch( 1+ world.myCar.velocity.len()*0.1f);
@@ -477,25 +496,39 @@ public class GameScreen extends GLScreen {
 		gl.glEnable(GL10.GL_BLEND);
 		gl.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
 		gl.glEnable(GL10.GL_TEXTURE_2D);
+		
+		
+		
+		if(playerIsReady){
 		batcher.beginBatch(Assets.items);
 		batcher.drawSprite(width - PonyMath.getRatio(width, 70), height
 				- PonyMath.getRatio(width, 70), width / 9.5f, width / 9.5f,
 				Assets.pauseButtonRegion);
+		batcher.endBatch();
+		}
 		// Assets.font.drawText(batcher, timeString, 10, 320-20); //TODO
 		// Zeitdarstellen , bzw. auch Position
 		if (Settings.touchEnabled) { 
+			 batcher.beginBatch(Assets.items);
 			 batcher.drawSprite(PonyMath.getRatio(width, 130+30), PonyMath.getRatio(width, 63+20), 260, 126, Assets.steeringRegion);
 			 batcher.drawSprite(width-PonyMath.getRatio(width, 130+30), PonyMath.getRatio(width, 63+20), 260, 126, Assets.accelRegion);
+			 batcher.endBatch();
 		}
 		
 		
-		batcher.endBatch();
 		if (world.myCar.gadgetState == Car.GADGET_COLLECTED) { 
 			 
 			 batcher.beginBatch(Assets.items2);
 			 if (collectedGadget == Gadget.OILSPILL)batcher.drawSprite(width - PonyMath.getRatio(width, 70), height- PonyMath.getRatio(width, 220), width / 9.5f, width / 9.5f, Assets.oilSpillButtonRegion);
 			 else if (collectedGadget == Gadget.ROCKET)batcher.drawSprite(width - PonyMath.getRatio(width, 70), height- PonyMath.getRatio(width, 220), width / 9.5f, width / 9.5f, Assets.rocketButtonRegion);
 			 batcher.endBatch();
+		}
+		
+		
+		if(!playerIsReady){
+		batcher.beginBatch(Assets.items2);
+		batcher.drawSprite(width/2, height/2, PonyMath.getRatio(width, 512), PonyMath.getRatio(width, 138), Assets.tabToStartRegion);
+		batcher.endBatch();
 		}
 
 		

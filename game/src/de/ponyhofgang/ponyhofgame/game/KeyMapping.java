@@ -60,11 +60,11 @@ public class KeyMapping {
    	 
    	 if (currentScreen.getClass().getSimpleName().equals("GameScreen") && GameScreen.getInstance().state ==  GameScreen.GAME_PAUSED) {
    		 GameScreen.getInstance().state = GameScreen.GAME_RUNNING;
-   		 if(gA.multiplayer) gA.sendStringCommands(0+"", "pause"); //wenn im Multiplayer, dann den andeen bescheid sagen
+   		 if(gA.multiplayer) gA.sendStringCommands(0+"", "pause"); //wenn im Multiplayer, dann den anderen bescheid sagen
    	 }
    	 else if (currentScreen.getClass().getSimpleName().equals("GameScreen")){
    		 GameScreen.getInstance().state = GameScreen.GAME_PAUSED;
-   		 if(gA.multiplayer) gA.sendStringCommands(1+"", "pause"); //wenn im Multiplayer, dann den andeen bescheid sagen
+   		if(gA.multiplayer) gA.sendStringCommands(1+"", "pause"); //wenn im Multiplayer, dann den anderen bescheid sagen
    	 }
    	 
    	

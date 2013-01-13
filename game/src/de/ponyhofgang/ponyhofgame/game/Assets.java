@@ -81,6 +81,7 @@ public class Assets {
 	public static Texture gadgetsTexture;
 	public static Texture explosionTexture;
 	public static Animation explosionAnim;
+	public static TextureRegion tabToStartRegion;
 
 	
 	
@@ -132,8 +133,10 @@ public class Assets {
 	
 	public static void loadLevel(GLGame game) {
 	items2 = new Texture(game, "gui/items2.png", true);
- 	pauseMenuRegion = new TextureRegion(items2, 0, 0, 512, 419);
+ 	
+	pauseMenuRegion = new TextureRegion(items2, 0, 0, 512, 419);
  	pauseBackgroundRegion = new TextureRegion(items2, 0, 443, 2, 2);
+ 	tabToStartRegion = new TextureRegion(items2, 0, 726, 512, 138);
  
  	oilSpillButtonRegion = new TextureRegion(items2, 256, 443, 129, 129);
  	rocketButtonRegion = new TextureRegion(items2, 384, 443, 129, 129);

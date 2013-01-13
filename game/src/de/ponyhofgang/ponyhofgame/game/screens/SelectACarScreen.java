@@ -70,6 +70,12 @@ public class SelectACarScreen extends GLScreen {
 		
 		cars = new ArrayList<Integer>();
 		
+		for(int i=0; i < mainMenuScreen.game.playerCount; i++){
+			
+			cars.add(null);
+			
+		}
+		
 		renderer = new ShowCaseRenderer(glGraphics);
 
 		guiCam = new Camera2D(glGraphics, width, height);
@@ -117,6 +123,7 @@ public class SelectACarScreen extends GLScreen {
 			if (OverlapTester.pointInRectangle(backButtonBounds, touchPoint)) {
 				pressedBackKey = false;
 				Assets.playSound(Assets.clickSound);
+				ShowCaseRenderer.rotationCamera = 0;
 				game.setScreen(MainMenuScreen.getInstance());
 				clear();
 				
@@ -126,15 +133,16 @@ public class SelectACarScreen extends GLScreen {
 			if(ShowCaseRenderer.rotationCamera%90 == 0){  //Man darf nur weiter klicken, wenn das Auto zuende Rotiert ist
 			if (OverlapTester.pointInRectangle(nextButtonBounds, touchPoint)) {
 				
-				selectedCar = Math.round(ShowCaseRenderer.rotationCamera);  //ermittel anhand der Rotation das Auto
-				if(!multiplayer) cars.add(0, selectedCar);
-				if(multiplayer) mainMenuScreen.game.sendStringCommands(selectedCar+"", "car");  // Die auswahl der Autos wird an andere Spieler geschickt
+				selectedCar = Math.round(ShowCaseRenderer.rotationCamera);  //ermittelt anhand der Rotation das Auto
+				cars.set(0, selectedCar);
+				if(multiplayer) mainMenuScreen.game.sendStringCommands(selectedCar+"", "car");  // Die auswahl des Autos wird an andere Spieler geschickt
 				Assets.playSound(Assets.clickSound);
 				
 				if(mainMenuScreen.game.ownId == 0){  // Nur der Host darf eine Map auswählen
 				
 				if(multiplayer)game.setScreen(SelectAMapScreen.getInstance(game, true));
 				if(!multiplayer)game.setScreen(SelectAMapScreen.getInstance(game, false));
+				
 				}
 				
 			}
@@ -147,6 +155,7 @@ public class SelectACarScreen extends GLScreen {
 			
 			pressedBackKey = false;
 			Assets.playSound(Assets.clickSound);
+			ShowCaseRenderer.rotationCamera = 0;
 			game.setScreen(MainMenuScreen.getInstance());
 			clear();
 			
@@ -190,26 +199,7 @@ public class SelectACarScreen extends GLScreen {
 	}
 	
 	
-	public boolean packageCars() {
-		
-		cars.clear();   //lösche erstmal wieder das Array
-		
-		
-		if (selectedCar0 == -1){return false;}
-		else{ cars.add(0, selectedCar0);}
-		
-		if (selectedCar1 == -1){return false;}
-		else{ cars.add(1, selectedCar1);}
-		
-		if (selectedCar2 == -1){return false;}
-		else{ cars.add(2, selectedCar2);}
-		
-		if (selectedCar3 == -1){return false;}
-		else{ cars.add(3, selectedCar3);}
-		
-		return true;
-		
-	}  
+	
 
 	@Override
 	public void pause() {
