@@ -61,7 +61,7 @@ public class SelectAMapScreen extends GLScreen {
 				- PonyMath.getRatio(width, 132 / 2), PonyMath.getRatio(width,
 				100) - PonyMath.getRatio(width, 132 / 2), PonyMath.getRatio(
 				width, 132), PonyMath.getRatio(width, 132));
-		nextButtonBounds = new Rectangle(width-PonyMath.getRatio(width, 100)-PonyMath.getRatio(width, 132/2), PonyMath.getRatio(width, 100)-PonyMath.getRatio(width, 132/2), PonyMath.getRatio(width, 132), PonyMath.getRatio(width, 132));
+		nextButtonBounds = new Rectangle(width/2-PonyMath.getRatio(width, 715/2 ), height/2 - PonyMath.getRatio(width, 417/2 ), PonyMath.getRatio(width, 715), PonyMath.getRatio(width, 417));
 	
 	}
 
@@ -131,14 +131,25 @@ public class SelectAMapScreen extends GLScreen {
 		batcher.drawSprite(width / 2, height / 2, width, height,
 				Assets.backgroundRegion);
 		batcher.endBatch();
+		
+		
 		gl.glEnable(GL10.GL_BLEND);
 		gl.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
+		
+	
 		batcher.beginBatch(Assets.items);
 		batcher.drawSprite(PonyMath.getRatio(width, 100),
 				PonyMath.getRatio(width, 100), PonyMath.getRatio(width, 132),
 				PonyMath.getRatio(width, 132), Assets.backButtonRegion);
-		batcher.drawSprite(width-PonyMath.getRatio(width, 100), PonyMath.getRatio(width, 100), PonyMath.getRatio(width, 132), PonyMath.getRatio(width, 132), Assets.backButtonRegion);
-
+        batcher.endBatch();
+        
+    	batcher.beginBatch(Assets.background);
+		batcher.drawSprite(width / 2, height / 2, width/1.78f,
+				height/1.78f,
+				Assets.levelDocksRegion);
+		batcher.drawSprite(width / 2, height - PonyMath.getRatio(width, 54), PonyMath.getRatio(width, 512),
+				PonyMath.getRatio(width, 109),
+				Assets.chooseAMapTextRegion);
 		batcher.endBatch();
 
 		if (loading) {

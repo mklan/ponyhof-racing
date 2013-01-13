@@ -97,6 +97,9 @@ public class AboutScreen extends GLScreen {
 		batcher.drawSprite(PonyMath.getRatio(width, 100), PonyMath.getRatio(width, 100), PonyMath.getRatio(width, 132), PonyMath.getRatio(width, 132), Assets.backButtonRegion);
 		
 		batcher.endBatch();
+		
+		
+		
 		gl.glDisable(GL10.GL_BLEND);
 		gl.glDisable(GL10.GL_TEXTURE_2D);
 	}

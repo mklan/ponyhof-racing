@@ -7,11 +7,6 @@
  nervt... wir arbeiten an einer Lösung/Kompromiss
 
 
-#Singleplayer
--nach der Autoauswahl erscheint die spätere Mapauswahl ( hier noch alles in grau)... 
- einfach mit dem rechten unteren "backButton" fortfahren
-
-
 #Multiplayer
 -Sollte sich das Spiel aufhängen, oder keine Daten versenden, dann in der Klasse world.java in
  Zeile 191 die Ganzzahl hinter dem ModuloOperator erhohen. (bei Tobis/Simons app geht es mit Modulo 1

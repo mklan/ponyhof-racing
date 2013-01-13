@@ -83,12 +83,14 @@ public class Assets {
 	public static Animation explosionAnim;
 	public static TextureRegion tabToStartRegion;
 	public static TextureRegion pleaseWaitForOtherRegion;
+	public static TextureRegion levelDocksRegion;
+	public static TextureRegion chooseAMapTextRegion;
 
 	
 	
 	
 	public static void loadLoadingScreen(GLGame game) {
-		loading = new Texture(game, "gui/loading.jpg", true);
+		loading = new Texture(game, "gui/loading.jpg", false);
 		loadingBackgroundRegion = new TextureRegion(loading, 0, 493, 2, 2);
 		iconAndLoadingRegion = new TextureRegion(loading, 0, 0, 512, 271);
 		
@@ -96,8 +98,15 @@ public class Assets {
 	
 	
 	public static void load(GLGame game) {
-		background = new Texture(game, "gui/background.jpg", true);
+		background = new Texture(game, "gui/background.png", false);
 		backgroundRegion = new TextureRegion(background, 0, 0, 1280, 720);
+		
+		//Choose a Map
+		levelDocksRegion = new TextureRegion(background, 0, 721, 715, 417);
+		chooseAMapTextRegion = new TextureRegion(background, 1281, 0, 516, 109);
+		
+		
+		//
 		
 		items = new Texture(game, "gui/items.png", true);
 		menuRegion = new TextureRegion(items, 0, 0, 512, 512);
@@ -110,6 +119,7 @@ public class Assets {
      	pauseButtonRegion = new TextureRegion(items, 0, 644, 132, 132);
      	accelRegion = new TextureRegion(items, 132, 770, 260, 126);
      	steeringRegion = new TextureRegion(items, 132, 644, 260, 126);
+     	
      	
      	ectoMobileTexture = new Texture(game, "texture/ghostbusters.png", true);
      	ectoMobileModel = ObjLoader.load(game, "mesh/ghostbusters.obj");
