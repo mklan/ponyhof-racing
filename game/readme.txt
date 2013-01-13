@@ -15,12 +15,9 @@
 #Multiplayer
 -Sollte sich das Spiel aufhängen, oder keine Daten versenden, dann in der Klasse world.java in
  Zeile 191 die Ganzzahl hinter dem ModuloOperator erhohen. (bei Tobis/Simons app geht es mit Modulo 1
- also mit voller Geschwindigkeit. bei Hans/Atabak bis jetzt nur modulo 8 in der THM und zuhause über VPN/DSL6000 modulo 20 )
+ also mit voller Geschwindigkeit. bei Hans/Atabak bis jetzt in der THM mit modulo 8 und Zuhause über VPN/DSL6000 modulo 20 )
 -Die Spieler wählen das Auto und warten dann, denn der Host wählt die Map aus
--bis jetzt kann man nicht mit den ausgwählten Fahrzeugen fahren, sondern landet in Level Docks
- mit Spieler 1 als Mystery Machine und Spieler 2 mit Ghostbuster ( mehrere Spieler funktionieren noch nicht)
--das Detonieren von Raketen bringt das Spil zum Absturz
--die Ausrutsch animation und explosion wird noch nicht übertragen
+-die Ausrutschanimation und Explosion wird noch nicht übertragen
 -Im Multiplayer können die Collider noch stranger sein, als sie eh schon im Singleplayer sind...
 
  

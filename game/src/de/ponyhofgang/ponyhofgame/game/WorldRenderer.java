@@ -194,7 +194,7 @@ public class WorldRenderer {
 
 	}
 
-	private void renderRockets(GL10 gl, World world) {  //TODO hier versagt wohl der Multiplayer ...
+	private void renderRockets(GL10 gl, World world) {  
 
 		Assets.gadgetsTexture.bind();
 		Assets.rocketModel.bind();
@@ -204,7 +204,7 @@ public class WorldRenderer {
 		for (int i = 0; i < len; i++) {
 			Rocket rocket = world.rockets.get(i);
 		
-			if(rocket == null) continue;  //TODO hier
+			if(rocket == null) continue;
 			
             if(rocket.state == Rocket.FLYING){
 			gl.glPushMatrix();

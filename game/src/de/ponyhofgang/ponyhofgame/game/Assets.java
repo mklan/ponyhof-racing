@@ -82,6 +82,7 @@ public class Assets {
 	public static Texture explosionTexture;
 	public static Animation explosionAnim;
 	public static TextureRegion tabToStartRegion;
+	public static TextureRegion pleaseWaitForOtherRegion;
 
 	
 	
@@ -137,6 +138,7 @@ public class Assets {
 	pauseMenuRegion = new TextureRegion(items2, 0, 0, 512, 419);
  	pauseBackgroundRegion = new TextureRegion(items2, 0, 443, 2, 2);
  	tabToStartRegion = new TextureRegion(items2, 0, 726, 512, 138);
+ 	pleaseWaitForOtherRegion = new TextureRegion(items2, 0, 863, 512, 138);
  
  	oilSpillButtonRegion = new TextureRegion(items2, 256, 443, 129, 129);
  	rocketButtonRegion = new TextureRegion(items2, 384, 443, 129, 129);

@@ -68,21 +68,21 @@ public class LoadingScreen extends GLScreen {
 		
 		///////TEST////////////
 		
-		ArrayList<Integer> cars = new ArrayList<Integer>();
-		
-		if(mainMenuScreen.game.multiplayer){
-		cars.add(90);
-		cars.add(0);
-		game.setScreen(GameScreen.getInstance(game, cars));
-		}else{
-			
-	    game.setScreen(GameScreen.getInstance(game, SelectACarScreen.getInstance().cars));	
-		}
-		
-		
+//		ArrayList<Integer> cars = new ArrayList<Integer>();
+//		
+//		if(mainMenuScreen.game.multiplayer){
+//		cars.add(90);
+//		cars.add(0);
+//		game.setScreen(GameScreen.getInstance(game, cars));
+//		}else{
+//			
+//	    game.setScreen(GameScreen.getInstance(game, SelectACarScreen.getInstance().cars));	
+//		}
 		
 		
-	//game.setScreen(GameScreen.getInstance(game, SelectACarScreen.getInstance().cars)); //TODO original
+		
+		
+	game.setScreen(GameScreen.getInstance(game, SelectACarScreen.getInstance().cars)); //TODO original
 		
 		
 	

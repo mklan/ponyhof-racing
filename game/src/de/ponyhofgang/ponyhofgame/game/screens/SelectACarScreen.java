@@ -134,7 +134,7 @@ public class SelectACarScreen extends GLScreen {
 			if (OverlapTester.pointInRectangle(nextButtonBounds, touchPoint)) {
 				
 				selectedCar = Math.round(ShowCaseRenderer.rotationCamera);  //ermittelt anhand der Rotation das Auto
-				cars.set(0, selectedCar);
+				cars.set(mainMenuScreen.game.ownId, selectedCar);
 				if(multiplayer) mainMenuScreen.game.sendStringCommands(selectedCar+"", "car");  // Die auswahl des Autos wird an andere Spieler geschickt
 				Assets.playSound(Assets.clickSound);
 				

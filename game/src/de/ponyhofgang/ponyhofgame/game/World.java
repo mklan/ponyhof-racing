@@ -12,6 +12,7 @@ import de.ponyhofgang.ponyhofgame.game.gameObjects.Car;
 import de.ponyhofgang.ponyhofgame.game.gameObjects.Gadget;
 import de.ponyhofgang.ponyhofgame.game.gameObjects.OilSpill;
 import de.ponyhofgang.ponyhofgame.game.gameObjects.Rocket;
+import de.ponyhofgang.ponyhofgame.game.screens.GameScreen;
 import de.ponyhofgang.ponyhofgame.game.screens.MainMenuScreen;
 
 public class World implements CarSpecs {
@@ -188,7 +189,7 @@ public class World implements CarSpecs {
 
 	public void update(float deltaTime, int accelerationState, float angle) {  //das kommt aus den Controlls raus vom Spieler
 		
-
+		
 		time = time + deltaTime;
 		
 		myCar.update(deltaTime, angle, accelerationState);
@@ -211,8 +212,9 @@ public class World implements CarSpecs {
 		int len = rockets.size();
 		for (int i = 0; i < len; i++) {
 			Rocket rocket = rockets.get(i);
-			rocket.update(deltaTime);
+			if (rocket == null) continue;
 			
+			rocket.update(deltaTime);
 			if(rocket.explotionTimeState > Assets.explosionAnim.frameDuration*12) rockets.set(i, null);
 			
 		}
@@ -231,7 +233,9 @@ public class World implements CarSpecs {
 										// die Collision gecheckt werden
 		if (rockets.size() > 0)
 			checkRocketCollisions(); // ist eine Rakete abgefeuert worden, soll
-										// die Collision gecheckt werden
+		// die Collision gecheckt werden
+		
+		
 
 	}
 

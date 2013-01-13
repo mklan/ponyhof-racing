@@ -369,15 +369,21 @@ public class GameActivity extends GLGame {
 					parsePauseString(dataString);
 
 				}
+				
+				if (messageType.equals("ready")) {
+
+					GameScreen.getInstance().playerReadyCount++;
+				}
 
 				break;
+				
 			case MultiplayerInterface.MESSAGE_6_CLOSED:
 
 				Log.d("message", "" + 6);
 
 				Bundle closingBundle = msg.getData();
 				// Bundle closingBundle=(Bundle) msg.obj;// TODO Jan,
-				// Simon(tobi)
+				
 
 				Toast.makeText(
 						GameActivity.this,
@@ -385,6 +391,10 @@ public class GameActivity extends GLGame {
 								+ closingBundle
 										.getInt(MultiplayerInterface.CLOSED_BY)
 								+ " beendet", Toast.LENGTH_SHORT).show();
+				
+				GameScreen.getInstance().goToMainMenu();
+				
+				
 
 				break;
 			default:
@@ -484,8 +494,8 @@ public class GameActivity extends GLGame {
 			String type) {
 
 		if (!boundToService) {
-			// Toast.makeText(GameActivity.this, "not bound to a service",
-			// Toast.LENGTH_SHORT).show();
+			 Toast.makeText(GameActivity.this, "not bound to a service",
+			 Toast.LENGTH_SHORT).show();
 			return;
 		}
 
@@ -502,11 +512,11 @@ public class GameActivity extends GLGame {
 		final byte[] byteData = parcelData.marshall();
 
 		bundle.putByteArray(MultiplayerInterface.SEND_DATA, byteData);
-		if (ownId == 0)
-			bundle.putInt(MultiplayerInterface.SEND_ADDRESS, 1);
-		if (ownId == 1)
-			bundle.putInt(MultiplayerInterface.SEND_ADDRESS, 0);
-		// bundle.putInt(MultiplayerInterface.SEND_ADDRESS, -1);
+//		if (ownId == 0)
+//			bundle.putInt(MultiplayerInterface.SEND_ADDRESS, 1);
+//		if (ownId == 1)
+//			bundle.putInt(MultiplayerInterface.SEND_ADDRESS, 0);
+		 bundle.putInt(MultiplayerInterface.SEND_ADDRESS, -1);
 		bundle.putString(MultiplayerInterface.SEND_TYPE, type);
 
 		msg.setData(bundle);
@@ -524,8 +534,8 @@ public class GameActivity extends GLGame {
 	public void sendStringCommands(String data, String type) {
 
 		if (!boundToService) {
-			// Toast.makeText(GameActivity.this, "not bound to a service",
-			// Toast.LENGTH_SHORT).show();
+			 Toast.makeText(GameActivity.this, "not bound to a service",
+			 Toast.LENGTH_SHORT).show();
 			return;
 		}
 
