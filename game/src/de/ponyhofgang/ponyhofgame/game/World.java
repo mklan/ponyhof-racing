@@ -195,7 +195,7 @@ public class World implements CarSpecs {
 	
 		
 		ticker ++;
-		if((multiplayer) && ticker%20 == 0){  //wenn es mehr Spieler gibt, dann sende meine Position an die anderen
+		if((multiplayer) && ticker%1 == 0){  //wenn es mehr Spieler gibt, dann sende meine Position an die anderen
 	    ticker = 0;	
 		MainMenuScreen.getInstance().game.sendData(myCar.position.x, myCar.position.y, myCar.pitch, "data");	
 			
@@ -292,6 +292,8 @@ public class World implements CarSpecs {
 				gadget.lastTimeCollected = time;
 				
 				if (multiplayer) MainMenuScreen.getInstance().game.sendStringCommands(i+" "+time, "boxCollected"); //melde den anderen Spielern, das einsammeln
+				//TODO hier ist die Zeit asynchron, da eineige Spieler früher in das Spiel gehen als andere.. allerdings wird sich das von selbst lösen, wenn
+				       //die Zeit erst beim Startschuss gesetzt wird :)
 				
 				
 				listener.collectedGadget(gadget.content);
@@ -414,7 +416,7 @@ public class World implements CarSpecs {
 	}
 	
 	
-	public void deactivateBox(int id, int time){
+	public void deactivateBox(int id, float time){
 		
 		Assets.playSound(Assets.collectSound);
 		Gadget gadget = gadgets.get(id);
@@ -428,7 +430,9 @@ public void removeOilSplill(int id){
 		
 	    listener.droveTroughtOilSpill();
 		oilSpills.set(id, null);
-		//car.state = Car.SLIPPING;  //TODO animation bei den anderen abspielen
+		 
+		//TODO animation bei den anderen abspielen
+		//car.state = Car.SLIPPING; 
 		//car.slippingStartTime = time;
 
 	}
@@ -437,9 +441,11 @@ public void removeOilSplill(int id){
 public void removeRocket(int id){
 	
     listener.detonatingRocket();
-	rockets.get(id).state = Rocket.DETONATING;
-	//car.state = Car.SLIPPING;  //TODO animation bei den anderen abspielen
-	//car.slippingStartTime = time;
+    rockets.set(id, null);
+   
+    //TODO animation bei den anderen abspielen
+    //rockets.get(id).state = Rocket.DETONATING;
+
 
 }
 

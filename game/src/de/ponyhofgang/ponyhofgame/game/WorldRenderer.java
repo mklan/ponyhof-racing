@@ -176,6 +176,8 @@ public class WorldRenderer {
 
 		for (int i = 0; i < len; i++) {
 			OilSpill oilspill = world.oilSpills.get(i);
+			
+			if(oilspill == null) continue;
 
 			gl.glPushMatrix();
 			gl.glTranslatef(oilspill.position.x, 0.01f, oilspill.position.y);
@@ -192,7 +194,7 @@ public class WorldRenderer {
 
 	}
 
-	private void renderRockets(GL10 gl, World world) {
+	private void renderRockets(GL10 gl, World world) {  //TODO hier versagt wohl der Multiplayer ...
 
 		Assets.gadgetsTexture.bind();
 		Assets.rocketModel.bind();
@@ -202,6 +204,7 @@ public class WorldRenderer {
 		for (int i = 0; i < len; i++) {
 			Rocket rocket = world.rockets.get(i);
 		
+			if(rocket == null) continue;  //TODO hier
 			
             if(rocket.state == Rocket.FLYING){
 			gl.glPushMatrix();

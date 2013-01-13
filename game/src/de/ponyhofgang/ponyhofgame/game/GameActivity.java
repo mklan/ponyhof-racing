@@ -242,12 +242,8 @@ public class GameActivity extends GLGame {
 					// Auswahl der Autos, Host wählt Strecke, Welt wird erstellt
 					 multiplayer = true;
 					 setScreen(SelectACarScreen.getInstance(GameActivity.this,
-					 true)); // <---- TODO richtig
+					 true)); 
 
-					// TODO teeestt
-					
-//					multiplayer = true;
-//					setScreen(LoadingScreen.getInstance(GameActivity.this));
 
 				}
 
@@ -257,7 +253,7 @@ public class GameActivity extends GLGame {
 				Log.d("message", "" + 4);
 
 				Bundle dataBundle = msg.getData();
-				// Bundle dataBundle=(Bundle) msg.obj;// TODO Jan, Simon(tobi)
+				// Bundle dataBundle=(Bundle) msg.obj;// TODO Jan
 
 				Log.d("test",
 						"adress: "
@@ -297,24 +293,23 @@ public class GameActivity extends GLGame {
 					String dataStrings[] = new String(recievedByteData)
 							.split(" ");
 					GameScreen.getInstance().world.deactivateBox(
-							Integer.parseInt(dataStrings[0]),
-							Integer.parseInt(dataStrings[1]));
+							Integer.parseInt(dataStrings[1]),
+							Float.parseFloat(dataStrings[2]));
 
 				}
 
 				if (messageType.equals("slipped")) {
 
-					String dataString = new String(recievedByteData);
 					GameScreen.getInstance().world.removeOilSplill(Integer
-							.parseInt(dataString));
+							.parseInt(new String(recievedByteData).split(" ")[1]));
 
 				}
 
 				if (messageType.equals("hit")) {
 
-					String dataString = new String(recievedByteData);
+					
 					GameScreen.getInstance().world.removeRocket(Integer
-							.parseInt(dataString));
+							.parseInt(new String(recievedByteData).split(" ")[1]));
 
 				}
 

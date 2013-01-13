@@ -14,25 +14,22 @@
 
 #Multiplayer
 -Sollte sich das Spiel aufhängen, oder keine Daten versenden, dann in der Klasse world.java in
- Zeile 191 die Ganzzahl hinter dem ModuloOperator erhohen.
+ Zeile 191 die Ganzzahl hinter dem ModuloOperator erhohen. (bei Tobis/Simons app geht es mit Modulo 1
+ also mit voller Geschwindigkeit. bei Hans/Atabak bis jetzt nur modulo 8 in der THM und zuhause über VPN/DSL6000 modulo 20 )
 -Die Spieler wählen das Auto und warten dann, denn der Host wählt die Map aus
 -bis jetzt kann man nicht mit den ausgwählten Fahrzeugen fahren, sondern landet in Level Docks
  mit Spieler 1 als Mystery Machine und Spieler 2 mit Ghostbuster ( mehrere Spieler funktionieren noch nicht)
--das Abschießen von Gegnern, einsammeln von Gadgetboxen und visualisieren von Olflecken bzw.
- Raketen sollte übertragen werden können , (bis auf die Ausrutsch animation), ist jedoch noch sehr buggy(detonation und ausrutschen lässt
- Spiel abstürtzen)
+-das Detonieren von Raketen bringt das Spil zum Absturz
+-die Ausrutsch animation und explosion wird noch nicht übertragen
 -Im Multiplayer können die Collider noch stranger sein, als sie eh schon im Singleplayer sind...
- keine Ahnung wieso das so ist =/
+
  
  
- erfolgreich getestet wurde der Multiplayer mit Tobis/Simons(60 pkt/s) und Hans/Atabaks(5 okt/s) app
+ erfolgreich getestet wurde der Multiplayer mit folgenden apps:
 
-Changelog:
+ -Tobis/Simons(60 pkts/s a 16 bytes)
+ -Hans/Atabaks(5 pkts/s a 16 bytes)
 
-13.01: -Autoauswahl im Singleplayer klappt ( Rakete als Platzhalter für 4. Wagen + Batmobile pink texturiert
-       -"Ladebildschirm touchen und dann in der Pampa landen" wurde hoffentlich behoben
-       -man kann im Singleplayer mit dem ausgewähltem Auto fahren
-       -die sämtlichen gadets werden übertragen und erzeugt ( nicht getestet ) (keine Ausrutschanimation auf anderen Geräten)
 
 
 	viel Spaß :)  
