@@ -13,16 +13,18 @@
 
 
 #Multiplayer
--Sollte sich das Spiel aufhangen, oder keine Daten versenden, dann in der Klasse world.java in
+-Sollte sich das Spiel aufhängen, oder keine Daten versenden, dann in der Klasse world.java in
  Zeile 191 die Ganzzahl hinter dem ModuloOperator erhohen.
 -Die Spieler wählen das Auto und warten dann, denn der Host wählt die Map aus
 -bis jetzt kann man nicht mit den ausgwählten Fahrzeugen fahren, sondern landet in Level Docks
  mit Spieler 1 als Mystery Machine und Spieler 2 mit Ghostbuster ( mehrere Spiele funktionieren noch nicht)
 -das Abschießen von Gegnern, einsammeln von Gadgetboxen und visualisieren von Olflecken bzw.
- Raketen sollte nun auch übertragen werden, (bis auf die Ausrutsch animation)
+ Raketen sollte übertragen werden, (bis auf die Ausrutsch animation), ist jedoch noch sehr buggy
 -Im Multiplayer können die Collider noch stranger sein, als sie eh schon im Singleplayer sind...
  keine Ahnung wieso das so ist =/
  
+ 
+ erfolgreich getestet wurde der Multiplayer mit Tobis/Simons und Hans/Atabaks app
 
 Changelog:
 

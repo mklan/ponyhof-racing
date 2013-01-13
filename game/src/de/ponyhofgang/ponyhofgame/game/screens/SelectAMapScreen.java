@@ -87,9 +87,9 @@ public class SelectAMapScreen extends GLScreen {
 				
 				Assets.playSound(Assets.clickSound);
 				
-				Log.d("test", "soViele Autos soll es geben:" +  SelectACarScreen.getInstance().cars.size());
+				Log.d("debug", "soViele Autos soll es geben:" +  SelectACarScreen.getInstance().cars.size());
 				
-	            if(allCarsSelected()){
+	          //  if(allCarsSelected()){
 					
 				if(multiplayer) mainMenuScreen.game.sendStringCommands(selectedMap+"", "map");
 			    	
@@ -97,7 +97,7 @@ public class SelectAMapScreen extends GLScreen {
 			    loading = true;
 			   
 			    
-				}
+				//}
 				
 
 			}
