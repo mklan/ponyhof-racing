@@ -70,9 +70,13 @@ public class LoadingScreen extends GLScreen {
 		
 //		ArrayList<Integer> cars = new ArrayList<Integer>();
 //		
+//		cars.add( 90);
+//		cars.add( 0);
+//		
+//		
 //		if(mainMenuScreen.game.multiplayer){
-//		cars.add(90);
-//		cars.add(0);
+//	
+//		//cars.set(3, 0);
 //		game.setScreen(GameScreen.getInstance(game, cars));
 //		}else{
 //			

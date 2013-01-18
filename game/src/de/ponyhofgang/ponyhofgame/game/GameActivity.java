@@ -409,34 +409,12 @@ public class GameActivity extends GLGame {
 			int playerNo = Integer.parseInt(temp[0]);
 			int selectedCar = Integer.parseInt(temp[1]);
 
-			switch (playerNo) {
+		
+				SelectACarScreen.getInstance().cars.set (playerNo, selectedCar);
+				Toast.makeText(GameActivity.this,
+						playerNo + " hat ausgewählt " + selectedCar, Toast.LENGTH_SHORT)
+						.show();
 
-			case 0:
-				SelectACarScreen.getInstance().cars.set (0, selectedCar);
-				Toast.makeText(GameActivity.this,
-						"0 hat ausgewählt " + selectedCar, Toast.LENGTH_SHORT)
-						.show();
-				break;
-			case 1:
-				SelectACarScreen.getInstance().cars.set (1, selectedCar);
-				Toast.makeText(GameActivity.this,
-						"1 hat ausgewählt " + selectedCar, Toast.LENGTH_SHORT)
-						.show();
-				break;
-			case 2:
-				SelectACarScreen.getInstance().cars.set (2, selectedCar);
-				Toast.makeText(GameActivity.this,
-						"2 hat ausgewählt " + selectedCar, Toast.LENGTH_SHORT)
-						.show();
-				break;
-			case 3:
-				SelectACarScreen.getInstance().cars.set (3, selectedCar);
-				Toast.makeText(GameActivity.this,
-						"3 hat ausgewählt " + selectedCar, Toast.LENGTH_SHORT)
-						.show();
-				break;
-
-			}
 
 		}
 
