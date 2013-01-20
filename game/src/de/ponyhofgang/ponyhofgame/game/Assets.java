@@ -85,6 +85,8 @@ public class Assets {
 	public static TextureRegion pleaseWaitForOtherRegion;
 	public static TextureRegion levelDocksRegion;
 	public static TextureRegion chooseAMapTextRegion;
+	public static Vertices3 plateauModel;
+	public static Texture plateauTexture;
 
 	
 	
@@ -120,6 +122,9 @@ public class Assets {
      	accelRegion = new TextureRegion(items, 132, 770, 260, 126);
      	steeringRegion = new TextureRegion(items, 132, 644, 260, 126);
      	
+     	
+     	plateauTexture = new Texture(game, "texture/plateau.jpg", true);
+     	plateauModel = ObjLoader.load(game, "mesh/plateau.obj");
      	
      	ectoMobileTexture = new Texture(game, "texture/ghostbusters.png", true);
      	ectoMobileModel = ObjLoader.load(game, "mesh/ghostbusters.obj");

@@ -15,10 +15,11 @@ import de.ponyhofgang.ponyhofgame.framework.math.PonyMath;
 import de.ponyhofgang.ponyhofgame.framework.math.Rectangle;
 import de.ponyhofgang.ponyhofgame.framework.math.Vector2;
 import de.ponyhofgang.ponyhofgame.game.Assets;
+import de.ponyhofgang.ponyhofgame.game.CarSpecs;
 import de.ponyhofgang.ponyhofgame.game.ShowCaseRenderer;
 import de.ponyhofgang.ponyhofgame.game.gameObjects.Car;
 
-public class SelectACarScreen extends GLScreen {
+public class SelectACarScreen extends GLScreen implements CarSpecs{
 	
 	
 	
@@ -131,6 +132,9 @@ public class SelectACarScreen extends GLScreen {
 			
 			
 			if(ShowCaseRenderer.rotationCamera%90 == 0){  //Man darf nur weiter klicken, wenn das Auto zuende Rotiert ist
+				
+				playThemeSong(Math.round(ShowCaseRenderer.rotationCamera));
+				
 			if (OverlapTester.pointInRectangle(nextButtonBounds, touchPoint)) {
 				
 				selectedCar = Math.round(ShowCaseRenderer.rotationCamera);  //ermittelt anhand der Rotation das Auto
@@ -163,6 +167,38 @@ public class SelectACarScreen extends GLScreen {
 			
 	}
 
+	private void playThemeSong(int selectedCar) {
+		
+		switch(selectedCar){
+		
+		case ECTOMOBILE:
+			
+			
+
+			break;
+		case BATMOBILE:
+
+			
+
+			break;
+		case MYSTERYMACHINE:
+
+			
+
+			break;
+
+		case PODRACER:
+
+			
+
+			break;
+		}
+		
+	}
+		
+	
+
+	
 	@Override
 	public void present(float deltaTime) {
 		

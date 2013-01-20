@@ -105,6 +105,51 @@ public class ShowCaseRenderer {
 	}
 
 	private void renderShowCase(GL10 gl) {
+		
+/////////////Plateau///////////////
+		
+	gl.glColor4f(0.6f, 0.6f, 0.6f, 1f);
+	Assets.plateauTexture.bind();
+	Assets.plateauModel.bind();
+
+	gl.glPushMatrix();
+
+	gl.glTranslatef(0, 0.01f, -1.5f);
+	gl.glRotatef(-rotation, 0, 1, 0);
+
+	Assets.plateauModel.draw(GL10.GL_TRIANGLES, 0,
+			Assets.plateauModel.getNumVertices());
+	gl.glPopMatrix();
+	
+	gl.glPushMatrix();
+
+	gl.glTranslatef(0, 0.01f, 1.5f);
+	gl.glRotatef(-rotation, 0, 1, 0);
+
+	Assets.plateauModel.draw(GL10.GL_TRIANGLES, 0,
+			Assets.plateauModel.getNumVertices());
+	gl.glPopMatrix();
+	
+	gl.glPushMatrix();
+
+	gl.glTranslatef(-1.5f, 0.01f, 0);
+	gl.glRotatef(-rotation, 0, 1, 0);
+
+	Assets.plateauModel.draw(GL10.GL_TRIANGLES, 0,
+			Assets.plateauModel.getNumVertices());
+	gl.glPopMatrix();
+	
+	gl.glPushMatrix();
+
+	gl.glTranslatef(1.5f, 0.01f, 0);
+	gl.glRotatef(-rotation, 0, 1, 0);
+
+	Assets.plateauModel.draw(GL10.GL_TRIANGLES, 0,
+			Assets.plateauModel.getNumVertices());
+	gl.glPopMatrix();
+
+	Assets.plateauModel.unbind();
+	gl.glColor4f(1, 1, 1, 1f);
 
 		Assets.ectoMobileTexture.bind();
 		Assets.ectoMobileModel.bind();
@@ -120,8 +165,8 @@ public class ShowCaseRenderer {
 		gl.glPopMatrix();
 
 		Assets.ectoMobileModel.unbind();
-
-		Assets.batMobileTexture.bind();
+		
+	    Assets.batMobileTexture.bind();
 		Assets.batMobileModel.bind();
 
 		gl.glPushMatrix();
@@ -165,7 +210,8 @@ public class ShowCaseRenderer {
 		gl.glPopMatrix();
 
 		Assets.podRacerModel.unbind();
-
+	
+		
 	}
 
 }

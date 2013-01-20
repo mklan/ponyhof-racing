@@ -52,13 +52,14 @@ public class World implements CarSpecs {
 	public Car car3;
 
 
-	public int myId;
 	private int playerCount;
 
 	private int ticker = 0;
 	public float time = 0;
 
 	private boolean multiplayer;
+
+	public int myId;
 
 
 	
@@ -118,7 +119,9 @@ public class World implements CarSpecs {
 		}
 
 		myCar = cars.get(myId);  // identifiziere mein Auto
+		
 		this.myId = myId;
+	
 		this.playerCount = playerCount;
 
 		switch (playerCount) {  //jenachdem wieviele leute mitspielen, werden den Autos objekte zugeordnet 
