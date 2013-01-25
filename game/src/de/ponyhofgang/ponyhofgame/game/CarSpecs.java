@@ -23,9 +23,9 @@ public interface CarSpecs {
 	public static final float ECTOMOBILE_LENGTH = 0.73f;
 	
 	//Podracer
-    public static final int PODRACER = 180;
-    public static final float PODRACER_WIDTH =  0.241f;
-	public static final float PODRACER_LENGTH = 0.73f;
+    public static final int CRYSTALSHIP = 180;
+    public static final float CRYSTALSHIP_WIDTH =  0.26f;
+	public static final float CRYSTALSHIP_LENGTH = 0.9f;
 	
 	//Batmobile
 	public static final int BATMOBILE = 270;

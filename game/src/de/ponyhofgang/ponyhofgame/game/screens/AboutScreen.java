@@ -7,6 +7,7 @@ import de.ponyhofgang.ponyhofgame.framework.Game;
 import de.ponyhofgang.ponyhofgame.framework.Input.TouchEvent;
 import de.ponyhofgang.ponyhofgame.framework.gl.Camera2D;
 import de.ponyhofgang.ponyhofgame.framework.gl.SpriteBatcher;
+import de.ponyhofgang.ponyhofgame.framework.gl.TextureRegion;
 import de.ponyhofgang.ponyhofgame.framework.impl.GLScreen;
 import de.ponyhofgang.ponyhofgame.framework.math.OverlapTester;
 import de.ponyhofgang.ponyhofgame.framework.math.PonyMath;
@@ -42,8 +43,6 @@ public class AboutScreen extends GLScreen {
 		height = mainMenuScreen.height;
 		width = mainMenuScreen.width;
 		
-		;
-
 		guiCam = new Camera2D(glGraphics, width, height);
 		batcher = new SpriteBatcher(glGraphics, 10);
 		touchPoint = new Vector2();
@@ -99,6 +98,14 @@ public class AboutScreen extends GLScreen {
 		batcher.endBatch();
 		
 		
+		batcher.beginBatch(Assets.background);
+		batcher.drawSprite(width / 2, height / 2, PonyMath.getRatio(width, 790), PonyMath.getRatio(width, 427),
+				Assets.infoRegion);
+		batcher.endBatch();
+		
+
+		
+		
 		
 		gl.glDisable(GL10.GL_BLEND);
 		gl.glDisable(GL10.GL_TEXTURE_2D);
@@ -110,6 +117,9 @@ public class AboutScreen extends GLScreen {
 
 	@Override
 	public void resume() {
+
+		Assets.reload();
+
 	}
 
 	@Override

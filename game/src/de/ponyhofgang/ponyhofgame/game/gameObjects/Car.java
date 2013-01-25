@@ -45,6 +45,13 @@ public class Car extends DynamicGameObject implements CarSpecs{
 	private boolean firstSlippingTime;
 
 	
+	public boolean inStartCollision;  
+	public int rank = 0;
+	public int inCollider = 1;
+	public int inColliderType = Checkpoint.X;
+	public int lap = 1; 
+	public int colliderCount;
+	
 	public Car(float x, float y, float angle, float width, float length, int chosenCar) {
 	super(x, y, angle, width, length);	
 	

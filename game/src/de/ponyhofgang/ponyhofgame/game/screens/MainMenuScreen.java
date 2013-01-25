@@ -34,6 +34,9 @@ public class MainMenuScreen extends GLScreen {
 	
 	public int height;
 	public int width;
+	
+	public boolean loading = false;
+	public boolean loaded = false;
 	       
 
 	
@@ -41,6 +44,7 @@ public class MainMenuScreen extends GLScreen {
 
 
 	public GameActivity game;
+	private boolean paused;
 	
 
 
@@ -89,17 +93,14 @@ public class MainMenuScreen extends GLScreen {
 				
 				Assets.playSound(Assets.clickSound);
 				game.ownId = 0;
-				game.setScreen(SelectACarScreen.getInstance(game, false));
-				
-				
+				//game.setScreen(SelectACarScreen.getInstance(game, false));
+				loading = true;
 				
 				
 			}
 			
 			if (OverlapTester.pointInRectangle(multiplayerBounds, touchPoint)) {
 				Assets.playSound(Assets.clickSound);
-				
-				
 				
 				game.initializeMultiplayer();
 			}
@@ -128,6 +129,14 @@ public class MainMenuScreen extends GLScreen {
 			}
 		}
 		
+		
+		
+		if (loaded) {
+
+			game.setScreen(LoadingScreenCars.getInstance(game, game.multiplayer));
+			loaded = false;
+
+		}
 	
 		
 		
@@ -147,6 +156,11 @@ public class MainMenuScreen extends GLScreen {
 
 		gl.glEnable(GL10.GL_BLEND);
 		gl.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
+		
+		
+		batcher.beginBatch(Assets.background);
+		batcher.drawSprite(width/2, height*0.9f, width/1.7112299f, PonyMath.getRatio(width, 130), Assets.headlineRegion);
+		batcher.endBatch();
 
 		batcher.beginBatch(Assets.items);
 
@@ -154,6 +168,21 @@ public class MainMenuScreen extends GLScreen {
 		batcher.drawSprite(width-PonyMath.getRatio(width, 100), PonyMath.getRatio(width, 80), width/9.5f, width/9.5f, Assets.aboutRegion);
 
 		batcher.endBatch();
+		
+		if (loading) {
+
+			batcher.beginBatch(Assets.loading);
+			batcher.drawSprite(width / 2, height / 2, width, height,
+					Assets.loadingBackgroundRegion);
+
+			batcher.drawSprite(width / 2, height / 2,
+					PonyMath.getRatio(width, 512),
+					PonyMath.getRatio(width, 271), Assets.iconAndLoadingRegion);
+
+			batcher.endBatch();
+			loading = false;
+			loaded = true;
+		}
 		
 		gl.glDisable(GL10.GL_BLEND);
 		gl.glDisable(GL10.GL_TEXTURE_2D);
@@ -165,10 +194,18 @@ public class MainMenuScreen extends GLScreen {
 	@Override
 	public void pause() {
 		
+	  paused = true;
+		
 	}
 
 	@Override
 	public void resume() {
+	
+	if (paused){
+		
+		paused = false;
+		Assets.reload();
+	}
 		
 	}
 
@@ -176,6 +213,7 @@ public class MainMenuScreen extends GLScreen {
 	public void dispose() {
 		
 
+		  paused = true;
 	}
 	
 	 public static MainMenuScreen getInstance(Game game, int height, int width) {

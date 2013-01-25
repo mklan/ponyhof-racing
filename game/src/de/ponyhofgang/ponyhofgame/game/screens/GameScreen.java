@@ -1,5 +1,6 @@
 package de.ponyhofgang.ponyhofgame.game.screens;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,6 +22,7 @@ import de.ponyhofgang.ponyhofgame.framework.math.Rectangle;
 import de.ponyhofgang.ponyhofgame.framework.math.Vector2;
 
 import de.ponyhofgang.ponyhofgame.game.Assets;
+import de.ponyhofgang.ponyhofgame.game.GameActivity;
 import de.ponyhofgang.ponyhofgame.game.Settings;
 import de.ponyhofgang.ponyhofgame.game.World;
 import de.ponyhofgang.ponyhofgame.game.World.WorldListener;
@@ -69,13 +71,14 @@ public class GameScreen extends GLScreen {
 
 	String lastTime;
 	String timeString;
-	FPSCounter fpsCounter;
+	FPSCounter fpsCounter; 
 
 	private int height;
 	private int width;
 	private int collectedGadget;
 	float accelY;
 	
+	private DecimalFormat formatedTime;
 	
 	
 	
@@ -90,6 +93,9 @@ public class GameScreen extends GLScreen {
 	
 	public boolean playerIsReady = false;
 	public int playerReadyCount = 0;
+	private GameActivity gameActivity;
+	private boolean firstTime;
+	private boolean firstTimeAnotherGame = true;
 
 	
 	
@@ -100,13 +106,16 @@ public class GameScreen extends GLScreen {
 	private GameScreen(Game game, ArrayList<Integer> selectedCars) {
 		super(game);
 		
-		GameScreen.game = (GLGame) game;
+		GameScreen.game = (GameActivity) game;
        
+		gameActivity = (GameActivity) game;
 		
 	    mainMenuScreen = MainMenuScreen.getInstance();
 		
 		height = mainMenuScreen.height;
 		width = mainMenuScreen.width;
+		
+		formatedTime = new DecimalFormat("00");
 		
 		this.multiplayer = mainMenuScreen.game.multiplayer;
 
@@ -217,19 +226,35 @@ public class GameScreen extends GLScreen {
 
 	}
 
-	private void updateGameOver() { // Tippen um zum Startbildschirm zu gelangen
+	private void updateGameOver() { 
+		
+		if(firstTime){
+		MainMenuScreen.getInstance().game.sendStringCommands(PonyMath.timeString(world.time, formatedTime), "time");
+		firstTime = false;
+		}
+		
+		 //Quit drücken umTippen um zum Startbildschirm zu gelangen
 		List<TouchEvent> events = game.getInput().getTouchEvents();
 		int len = events.size();
 		for (int i = 0; i < len; i++) {
 			TouchEvent event = events.get(i);
 			if (event.type == TouchEvent.TOUCH_UP) {
 				Assets.playSound(Assets.clickSound);
-				SelectAMapScreen.getInstance().loaded = false;
-				SelectAMapScreen.getInstance().loading = false;
-			    game.setScreen(mainMenuScreen);
-			    world = null;
+//				SelectAMapScreen.getInstance().loaded = false;
+//				SelectAMapScreen.getInstance().loading = false;
+//			    game.setScreen(mainMenuScreen);
+//			    world = null;
+				playerIsReady = false;
+				playerReadyCount = 0;
+				world.resetWorld();
+				firstTimeAnotherGame = true;
+				state = GAME_RUNNING;
+				
 			}
 		}
+		
+		
+		
 
 	}
 
@@ -279,18 +304,20 @@ public class GameScreen extends GLScreen {
 			}
 
 		}
-		
-	
 
-		timeString = "time:" + world.time;   //TODO time, aber eher die Time vom Startschuss
-		
-		
 		if (world.isGameOver()) {
 			state = GAME_OVER;
 		}
 
 		
-		if(playerIsReady && (playerReadyCount >= mainMenuScreen.game.playerCount)){
+		if(playerIsReady && (playerReadyCount >= mainMenuScreen.game.playerCount)){  //Wenn alle spieler bereit sind
+		
+		//Hier wird der Nutzer-Input an die Welt geleitet!!!!!
+		if (firstTimeAnotherGame ){
+		world.shuffleCarPositions();
+		firstTimeAnotherGame = false;
+		}
+		
 		//Hier wird der Nutzer-Input an die Welt geleitet!!!!!
 		world.update(deltaTime, InputAcceleration(), calculateInputRotation());
 		computeCarSound(); 
@@ -309,13 +336,9 @@ public class GameScreen extends GLScreen {
 		
 		if(world.myCar.velocity.len() > 0) {
 			
-			counter++;
-			if ( counter%20 == 0){
-				counter = 0;
-				
 			Assets.engineSound.setPitch( 1+ world.myCar.velocity.len()*0.1f);
 				
-			}
+
 			
 		}
 			   
@@ -483,11 +506,11 @@ public class GameScreen extends GLScreen {
 		gl.glEnable(GL10.GL_BLEND);
 		gl.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
 		gl.glEnable(GL10.GL_TEXTURE_2D);
-		batcher.beginBatch(Assets.items);
-		// batcher.drawSprite(240, 160, 128, 64, Assets.gameOverRegion); //TODO
-		// GameOverScreen ( wohl transparetner Kasten mit Endposition, und Zeit
-		// )
-		// Assets.font.drawText(batcher, scoreString, 10, 320-20);
+		batcher.beginBatch(Assets.background);
+		batcher.drawSprite(width/2, height/2, PonyMath.getRatio(width, 715), PonyMath.getRatio(width, 587), Assets.gameOverRegion); // GameOverScreen 
+	
+		batcher.drawSprite(width/2, PonyMath.getRatio(width, 125), PonyMath.getRatio(width, 715), PonyMath.getRatio(width, 61), Assets.againQuitResultsRegion);
+		
 		batcher.endBatch();
 		gl.glDisable(GL10.GL_TEXTURE_2D);
 		gl.glDisable(GL10.GL_BLEND);
@@ -515,7 +538,32 @@ public class GameScreen extends GLScreen {
 		guiCam.setViewportAndMatrices();
 		gl.glEnable(GL10.GL_BLEND);
 		gl.glBlendFunc(GL10.GL_SRC_ALPHA, GL10.GL_ONE_MINUS_SRC_ALPHA);
-		gl.glEnable(GL10.GL_TEXTURE_2D);
+	    gl.glEnable(GL10.GL_TEXTURE_2D);
+		
+		
+
+		// Zeitdarstellen 
+	    batcher.beginBatch(Assets.items2);
+		Assets.font.drawText(batcher, PonyMath.timeString(world.time, formatedTime), (width/2.4f), (height*0.93f), 1);
+		batcher.endBatch();
+		
+		// Rundendarstellung
+		batcher.beginBatch(Assets.items2);
+		Assets.font.drawText(batcher, "lap: "+world.myCar.lap+"/"+world.laps, PonyMath.getRatio(width, 60), height*0.95f, 1.5f);
+		batcher.endBatch();
+		
+		if(multiplayer){
+		// Positionsdarstellung
+		batcher.beginBatch(Assets.items2);
+		Assets.font.drawText(batcher, "pos: "+world.myCar.rank+"/"+ gameActivity.playerCount , PonyMath.getRatio(width, 60), height*0.90f, 1.5f);
+		batcher.endBatch();
+		}
+		
+		batcher.endBatch();
+		batcher.beginBatch(Assets.items);
+		batcher.drawSprite(width - PonyMath.getRatio(width, 70), height
+				- PonyMath.getRatio(width, 70), width / 9.5f, width / 9.5f,
+				Assets.pauseButtonRegion);
 		
 		
 		//pause button
@@ -528,11 +576,11 @@ public class GameScreen extends GLScreen {
 		}
 
 		
-		//touchbuttons
+		//touchbuttons 
 		if (Settings.touchEnabled) { 
 			 batcher.beginBatch(Assets.items);
-			 batcher.drawSprite(PonyMath.getRatio(width, 130+30), PonyMath.getRatio(width, 63+20), 260, 126, Assets.steeringRegion);
-			 batcher.drawSprite(width-PonyMath.getRatio(width, 130+30), PonyMath.getRatio(width, 63+20), 260, 126, Assets.accelRegion);
+			 batcher.drawSprite(PonyMath.getRatio(width, 130+30), PonyMath.getRatio(width, 63+20), width/5, PonyMath.getRatio(width,126), Assets.steeringRegion);
+			 batcher.drawSprite(width-PonyMath.getRatio(width, 130+30), PonyMath.getRatio(width, 63+20), width/5, PonyMath.getRatio(width,126), Assets.accelRegion);
 			 batcher.endBatch();
 		}
 		
@@ -547,7 +595,7 @@ public class GameScreen extends GLScreen {
 		}
 		
 		
-		//tab To begin button
+		//tab To begin button  
 		if(!playerIsReady){
 		batcher.beginBatch(Assets.items2);
 		batcher.drawSprite(width/2, height/2, PonyMath.getRatio(width, 512), PonyMath.getRatio(width, 138), Assets.tabToStartRegion);
@@ -577,7 +625,12 @@ public class GameScreen extends GLScreen {
 
 	@Override
 	public void resume() {
+		
+		if(state == GAME_PAUSED){
 		Assets.gameScreenReload();
+		Assets.SelectACarScreenReload();
+		Assets.reload();
+		}
 
 	}
 

@@ -53,8 +53,8 @@ public class KeyMapping {
 	 if (currentScreen.getClass().getSimpleName().equals("MainMenuScreen")) System.exit(1); 
    	 if (currentScreen.getClass().getSimpleName().equals("SettingsScreen")) SettingsScreen.getInstance().pressedBackKey = true;
    	 if (currentScreen.getClass().getSimpleName().equals("AboutScreen")) AboutScreen.getInstance().pressedBackKey = true;
-   	 if (currentScreen.getClass().getSimpleName().equals("ChooseCarScreen")) SelectACarScreen.getInstance().pressedBackKey = true;
-   	 if (currentScreen.getClass().getSimpleName().equals("ChooseMapScreen")) SelectAMapScreen.getInstance().pressedBackKey = true;
+   	 if (currentScreen.getClass().getSimpleName().equals("SelectACarScreen")) SelectACarScreen.getInstance().pressedBackKey = true;
+   	 if (currentScreen.getClass().getSimpleName().equals("SelectAMapScreen")) SelectAMapScreen.getInstance().pressedBackKey = true;
 	    	
    	 
    	 

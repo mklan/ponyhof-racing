@@ -28,7 +28,7 @@ public class AndroidSound implements Sound {
 	}
 	
 	public void play(float volume, int loopFlag, float pitch) {
-		streamId = soundPool.play(soundId, volume, volume, 0, loopFlag, 1);
+		streamId = soundPool.play(soundId, volume, volume, 0, loopFlag, pitch);
 		isPlaying = true;
 	}
 	

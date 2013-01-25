@@ -9,16 +9,20 @@ public class ParcelData implements Parcelable {
 	public float positionX ;
 	public float positionY ;
 	public float angle;
+	public int lap;
+	public int inCollider;
 	
 	
 	
 	
-	public ParcelData( int playerId, float positionX, float positionY, float angle){
+	public ParcelData( int playerId, float positionX, float positionY, float angle, int lap, int inCollider){
 		
 		this.playerId = playerId;
 		this.positionX = positionX;
 		this.positionY = positionY;
 		this.angle = angle;
+		this.lap = lap;
+		this.inCollider = inCollider;
 		;
 	}
 
@@ -36,6 +40,8 @@ public class ParcelData implements Parcelable {
 		dest.writeFloat(positionX);
 		dest.writeFloat(positionY);
 		dest.writeFloat(angle);
+		dest.writeInt(lap);
+		dest.writeInt(inCollider);
 		
 		
 		
@@ -48,6 +54,8 @@ public class ParcelData implements Parcelable {
         positionX = in.readFloat();
         positionY = in.readFloat();
         angle = in.readFloat();
+        lap = in.readInt();
+        inCollider = in.readInt();
         
     }
 	

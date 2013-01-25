@@ -1,9 +1,11 @@
 package de.ponyhofgang.ponyhofgame.game;
 
 
+
 import de.ponyhofgang.ponyhofgame.framework.Music;
 import de.ponyhofgang.ponyhofgame.framework.Sound;
 import de.ponyhofgang.ponyhofgame.framework.gl.Animation;
+import de.ponyhofgang.ponyhofgame.framework.gl.Font;
 import de.ponyhofgang.ponyhofgame.framework.gl.ObjLoader;
 import de.ponyhofgang.ponyhofgame.framework.gl.Texture;
 import de.ponyhofgang.ponyhofgame.framework.gl.TextureRegion;
@@ -42,6 +44,7 @@ public class Assets {
 	
 	//Sounds
 	public static Sound clickSound;
+	
 	public static Sound explosionSound;
 	public static Sound squashSound;
 	public static Sound slippingSound;
@@ -49,6 +52,12 @@ public class Assets {
 	public static Sound collectSound;
 	public static Sound engineSound;
 	public static Sound idleSound;
+	
+	public static Sound batmanTheme;
+	public static Music ghostbusterTheme;
+	public static Sound scoobyTheme;
+	public static Music breakingBadTheme;
+
 	
 	//
 	public static TextureRegion steeringRegion;
@@ -87,6 +96,18 @@ public class Assets {
 	public static TextureRegion chooseAMapTextRegion;
 	public static Vertices3 plateauModel;
 	public static Texture plateauTexture;
+	
+	public static Font font;
+	public static TextureRegion chooseACarTextRegion;
+	public static TextureRegion headlineRegion;
+	public static TextureRegion mysteryMachineRegion;
+	public static TextureRegion ectoMobileRegion;
+	public static TextureRegion batMobileRegion;
+	public static TextureRegion krystalShipRegion;
+	public static TextureRegion chooseACarBackgroundRegion;
+	public static TextureRegion gameOverRegion;
+	public static TextureRegion againQuitResultsRegion;
+	public static TextureRegion infoRegion;
 
 	
 	
@@ -102,10 +123,25 @@ public class Assets {
 	public static void load(GLGame game) {
 		background = new Texture(game, "gui/background.png", false);
 		backgroundRegion = new TextureRegion(background, 0, 0, 1280, 720);
+		headlineRegion = new TextureRegion(background, 715 ,721, 748, 130);
+		
+		//Infoscreen
+		infoRegion = new TextureRegion(background, 715 ,1138, 1083, 587);
+		
+		//Results
+		gameOverRegion = new TextureRegion(background, 0 ,1138, 715, 587);
+		againQuitResultsRegion = new TextureRegion(background, 0 ,1724, 715, 61);
 		
 		//Choose a Map
-		levelDocksRegion = new TextureRegion(background, 0, 721, 715, 417);
-		chooseAMapTextRegion = new TextureRegion(background, 1281, 0, 516, 109);
+		levelDocksRegion = new TextureRegion(background, 0, 720, 715, 417);
+		chooseAMapTextRegion = new TextureRegion(background, 1281, 0, 516, 105);
+		//Choose a Car
+		chooseACarTextRegion = new TextureRegion(background, 1281, 109 , 516, 105);
+		chooseACarBackgroundRegion = new TextureRegion(background, 1281, 234 , 516, 74);
+		mysteryMachineRegion = new TextureRegion(background, 1281, 375 , 516, 27);
+		ectoMobileRegion = new TextureRegion(background, 1281, 375+32 , 516, 27);
+		batMobileRegion = new TextureRegion(background, 1281, 375+32+32 , 516, 27);
+		krystalShipRegion = new TextureRegion(background, 1281, 375+32+32+32 , 516, 27);
 		
 		
 		//
@@ -122,27 +158,39 @@ public class Assets {
      	accelRegion = new TextureRegion(items, 132, 770, 260, 126);
      	steeringRegion = new TextureRegion(items, 132, 644, 260, 126);
      	
+     
+     	clickSound = game.getAudio().newSound("sound/click.wav");
      	
-     	plateauTexture = new Texture(game, "texture/plateau.jpg", true);
+     	
+     	
+     	
+     
+	}
+	
+	
+	public static void loadCars(GLGame game){
+		
+	 	plateauTexture = new Texture(game, "texture/plateau.jpg", true);
      	plateauModel = ObjLoader.load(game, "mesh/plateau.obj");
      	
      	ectoMobileTexture = new Texture(game, "texture/ghostbusters.png", true);
      	ectoMobileModel = ObjLoader.load(game, "mesh/ghostbusters.obj");
      	
-     	batMobileTexture = new Texture(game, "texture/gengar.png", true);
+     	batMobileTexture = new Texture(game, "texture/batmobil.png", true);
      	batMobileModel = ObjLoader.load(game, "mesh/batmobile.obj");
      	
      	mysteryMachineTexture = new Texture(game, "texture/scooby_bus_textur.png", true);
      	mysteryMachineModel = ObjLoader.load(game, "mesh/scooby_bus.obj");
      	
-     	podRacerTexture = new Texture(game, "texture/rocket.png", true);
-     	podRacerModel = ObjLoader.load(game, "mesh/rocket.obj");
+     	podRacerTexture = new Texture(game, "texture/crystalShip.png", true);
+     	podRacerModel = ObjLoader.load(game, "mesh/crystalShip.obj");
      	
-     	
-     	clickSound = game.getAudio().newSound("sound/click.wav");
-     	
-     	
-     
+     	batmanTheme = game.getAudio().newSound("sound/batman.wav");
+     	ghostbusterTheme = game.getAudio().newMusic("sound/ghostbusters.ogg");
+     	scoobyTheme = game.getAudio().newSound("sound/scooby.wav");
+     	breakingBadTheme = game.getAudio().newMusic("sound/breakingbad.mp3");
+     	breakingBadTheme.setLooping(true);
+		 
 	}
 	
 	
@@ -176,7 +224,6 @@ public class Assets {
  	gadgetsTexture = new Texture(game, "texture/rocket.png", true);
  	oilSpillModel = ObjLoader.load(game, "mesh/oilspill.obj");
  	
-
  	rocketModel = ObjLoader.load(game, "mesh/rocket.obj");
  	
  	explosionTexture = new Texture(game, "texture/explode.png", true);
@@ -197,6 +244,7 @@ public class Assets {
  	engineSound = game.getAudio().newSound("sound/engine_loop.ogg");
 	idleSound = game.getAudio().newSound("sound/engine_idle.mp3");
  	
+	font = new Font(items2, 530, 433, 12, 40, 48);
  	
 	}
 	
@@ -205,10 +253,7 @@ public class Assets {
 	public static void reload() {
 		background.reload();
 		items.reload();
-		ectoMobileTexture.reload();
-		batMobileTexture.reload();
-		mysteryMachineTexture.reload();
-		podRacerTexture.reload();
+
 		loading.reload();
 		//gadgetsTexture.reload(); //wenn keine Rakete mehr im Showcase gezeigt wird dann hier einfügen und bei 186 enfernen
 		
@@ -219,6 +264,17 @@ public class Assets {
 		
 	}
 	
+	
+	public static void SelectACarScreenReload(){
+		
+		ectoMobileTexture.reload();
+		batMobileTexture.reload();
+		mysteryMachineTexture.reload();
+		podRacerTexture.reload();
+		plateauTexture.reload();
+		
+		
+	}
 	
 	
 	public static void gameScreenReload() {
@@ -243,15 +299,11 @@ public class Assets {
 		sound.play(1);
 		}
 	
-	public static void playEngineSound(Music music) {
-		if (Settings.sfxEnabled)
-		music.setLooping(true);
-		music.play();
-		}
-	
-	public static void playloopedSound(Sound sound, float pitch) {
+
+	public static Sound playloopedSound(Sound sound, float pitch) {
 		if (Settings.sfxEnabled)
 		sound.play(1, -1, pitch);
+		return sound;
 		}
 	
 

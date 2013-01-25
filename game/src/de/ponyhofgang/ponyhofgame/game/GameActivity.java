@@ -25,7 +25,10 @@ import android.os.Parcel;
 import android.os.RemoteException;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.View;
 import android.widget.Toast;
+import android.widget.ViewSwitcher;
+import de.ponyhofgang.ponyhofgame.R;
 import de.ponyhofgang.ponyhofgame.framework.Screen;
 import de.ponyhofgang.ponyhofgame.framework.impl.GLGame;
 import de.ponyhofgang.ponyhofgame.game.multiplayer.MultiplayerInterface;
@@ -34,8 +37,9 @@ import de.ponyhofgang.ponyhofgame.game.multiplayer.ParcelData;
 import de.ponyhofgang.ponyhofgame.game.screens.SelectACarScreen;
 import de.ponyhofgang.ponyhofgame.game.screens.SelectAMapScreen;
 import de.ponyhofgang.ponyhofgame.game.screens.GameScreen;
-import de.ponyhofgang.ponyhofgame.game.screens.LoadingScreen;
+
 import de.ponyhofgang.ponyhofgame.game.screens.MainMenuScreen;
+
 
 public class GameActivity extends GLGame {
 
@@ -54,13 +58,35 @@ public class GameActivity extends GLGame {
 	public int playerCount = 1;
 	public int map = 0;
 	public boolean multiplayer = false;
+	
+	public String[] playerNames;
 
 	public String packageName;
+	
 
+
+	
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		// TODO Auto-generated method stub
+		super.onCreate(savedInstanceState);
+		
+		Toast.makeText(this, "loading...", Toast.LENGTH_SHORT).show();
+		
+		 
+
+	} 
+	
+	
 	public Screen getStartScreen() {
 
+	
+		
+		
 		return MainMenuScreen.getInstance(this, super.getHeight(),
 				super.getWidth());
+		
+		
 
 	}
 
@@ -68,11 +94,16 @@ public class GameActivity extends GLGame {
 	public void onSurfaceCreated(GL10 gl, EGLConfig config) {
 		super.onSurfaceCreated(gl, config);
 		if (firstTimeCreate) {
+			
+
 
 			Assets.loadLoadingScreen(this);
+			
 			Settings.load(getFileIO());
 			Assets.load(this);
 			firstTimeCreate = false;
+			
+			
 
 		} else {
 			Assets.reload();
@@ -133,8 +164,7 @@ public class GameActivity extends GLGame {
 	@Override
 	protected void onStop() {
 		super.onStop();
-		// doUnbind(); //TODO buggy
-
+		
 		if (chosenServiceIndex != -1)
 			unbindService(serviceConnection);
 
@@ -146,20 +176,17 @@ public class GameActivity extends GLGame {
 
 		packageName = chosenService.packageName;
 
-		// i.setClassName(chosenService.packageName, chosenService.packageName +
-		// ".ConnectionService"); //Jan
-
 		i.setClassName(
 				chosenService.packageName,
 				chosenService.packageName
 						+ "."
 						+ chosenService.applicationInfo
-								.loadLabel(getPackageManager())); // Hans, Tobi
+								.loadLabel(getPackageManager())); 
 
 		bindService(i, serviceConnection, Context.BIND_AUTO_CREATE);
 	}
 
-	public void doUnbind() // TODO Bug funct nicht!
+	public void doUnbind() 
 	{
 
 		if (boundToService) {
@@ -175,11 +202,13 @@ public class GameActivity extends GLGame {
 			} catch (RemoteException e) {
 				Log.e(TAG, e.getClass().getName() + ": " + e.getMessage());
 			}
-			boundToService = false;
-
+		
 			unbindService(serviceConnection);
+			boundToService = false;
 		}
 	}
+	
+	
 
 	private class MyServiceConnection implements ServiceConnection {
 		public void onServiceConnected(ComponentName name, IBinder service) {
@@ -207,6 +236,7 @@ public class GameActivity extends GLGame {
 	private class ActivityHandler extends Handler {
 
 		private boolean firstTime = true;
+		
 
 		@Override
 		public void handleMessage(Message msg) {
@@ -220,13 +250,10 @@ public class GameActivity extends GLGame {
 
 				playerCount = bundle
 						.getInt(MultiplayerInterface.CONNECTION_PLAYERCOUNT);
-				Log.d("test", "count " + playerCount);
-				Log.d("test",
-						"playerNames "
-								+ bundle.getString(MultiplayerInterface.CONNECTION_PLAYERNAMES));
+				
+				parsePlayerNames(bundle.getString(MultiplayerInterface.CONNECTION_PLAYERNAMES));
 				ownId = bundle.getInt(MultiplayerInterface.CONNECTION_OWN_ID);
-				Log.d("test", "ownId " + ownId);
-
+				
 				if (firstTime) {
 
 					Intent i = new Intent();
@@ -241,8 +268,9 @@ public class GameActivity extends GLGame {
 
 					// Auswahl der Autos, Host wählt Strecke, Welt wird erstellt
 					 multiplayer = true;
-					 setScreen(SelectACarScreen.getInstance(GameActivity.this,
-					 true)); 
+
+					MainMenuScreen.getInstance().loading = true;
+
 
 
 				}
@@ -253,7 +281,7 @@ public class GameActivity extends GLGame {
 				Log.d("message", "" + 4);
 
 				Bundle dataBundle = msg.getData();
-				// Bundle dataBundle=(Bundle) msg.obj;// TODO Jan
+				
 
 				Log.d("test",
 						"adress: "
@@ -280,6 +308,8 @@ public class GameActivity extends GLGame {
 
 					if (ownId != 0) { // Wenn man nicht der Host ist, wird der
 										// Ladebildschirm gestartet
+						
+						if(SelectACarScreen.getInstance().sound != null)SelectACarScreen.getInstance().sound.stop();
 
 						setScreen(SelectAMapScreen.getInstance(
 								GameActivity.this, true));
@@ -353,10 +383,7 @@ public class GameActivity extends GLGame {
 					ParcelData recievedData = ParcelData.CREATOR
 							.createFromParcel(parcelData);
 
-					Log.d("coords", recievedData.positionX + " "
-							+ recievedData.positionY + " " + recievedData.angle);
-
-					if (recievedData.playerId != ownId)
+			    if (recievedData.playerId != ownId)
 						setCoords(recievedData); // nur falls das nicht meine
 													// Daten sind
 					parcelData.recycle();
@@ -368,6 +395,12 @@ public class GameActivity extends GLGame {
 					String dataString = new String(recievedByteData);
 					parsePauseString(dataString);
 
+				}
+				
+				if (messageType.equals("time")) {
+
+					String dataString = new String(recievedByteData);
+					//TODO
 				}
 				
 				if (messageType.equals("ready")) {
@@ -382,7 +415,7 @@ public class GameActivity extends GLGame {
 				Log.d("message", "" + 6);
 
 				Bundle closingBundle = msg.getData();
-				// Bundle closingBundle=(Bundle) msg.obj;// TODO Jan,
+				
 				
 
 				Toast.makeText(
@@ -400,6 +433,12 @@ public class GameActivity extends GLGame {
 			default:
 				super.handleMessage(msg);
 			}
+		}
+
+		public void parsePlayerNames(String dataString) {
+			
+			playerNames = dataString.split(" ");
+	
 		}
 
 		private void parseCarString(String dataString) {
@@ -446,30 +485,38 @@ public class GameActivity extends GLGame {
 			GameScreen.getInstance().world.car0.position.x = data.positionX;
 			GameScreen.getInstance().world.car0.position.y = data.positionY;
 			GameScreen.getInstance().world.car0.pitch = data.angle;
+			GameScreen.getInstance().world.car0.lap = data.lap;
+			GameScreen.getInstance().world.car0.inCollider = data.inCollider;
 
 			break;
 		case 1:
 			GameScreen.getInstance().world.car1.position.x = data.positionX;
 			GameScreen.getInstance().world.car1.position.y = data.positionY;
 			GameScreen.getInstance().world.car1.pitch = data.angle;
+			GameScreen.getInstance().world.car1.lap = data.lap;
+			GameScreen.getInstance().world.car1.inCollider = data.inCollider;
 
 			break;
 		case 2:
 			GameScreen.getInstance().world.car2.position.x = data.positionX;
 			GameScreen.getInstance().world.car2.position.y = data.positionY;
 			GameScreen.getInstance().world.car2.pitch = data.angle;
+			GameScreen.getInstance().world.car2.lap = data.lap;
+			GameScreen.getInstance().world.car2.inCollider = data.inCollider;
 			break;
 		case 3:
 			GameScreen.getInstance().world.car3.position.x = data.positionX;
 			GameScreen.getInstance().world.car3.position.y = data.positionY;
 			GameScreen.getInstance().world.car3.pitch = data.angle;
+			GameScreen.getInstance().world.car3.lap = data.lap;
+			GameScreen.getInstance().world.car3.inCollider = data.inCollider;
 			break;
 
 		}
 	}
 
 	public void sendData(float positionX, float positionY, float angle,
-			String type) {
+			int lap, int inCollider, String type) {
 
 		if (!boundToService) {
 			 Toast.makeText(GameActivity.this, "not bound to a service",
@@ -481,7 +528,7 @@ public class GameActivity extends GLGame {
 
 		Bundle bundle = new Bundle();
 
-		ParcelData data = new ParcelData(ownId, positionX, positionY, angle);
+		ParcelData data = new ParcelData(ownId, positionX, positionY, angle, lap, inCollider);
 
 		
 		final Parcel parcelData = Parcel.obtain();
@@ -490,11 +537,7 @@ public class GameActivity extends GLGame {
 		final byte[] byteData = parcelData.marshall();
 
 		bundle.putByteArray(MultiplayerInterface.SEND_DATA, byteData);
-//		if (ownId == 0)
-//			bundle.putInt(MultiplayerInterface.SEND_ADDRESS, 1);
-//		if (ownId == 1)
-//			bundle.putInt(MultiplayerInterface.SEND_ADDRESS, 0);
-		 bundle.putInt(MultiplayerInterface.SEND_ADDRESS, -1);
+		bundle.putInt(MultiplayerInterface.SEND_ADDRESS, -1);
 		bundle.putString(MultiplayerInterface.SEND_TYPE, type);
 
 		msg.setData(bundle);
@@ -570,5 +613,8 @@ public class GameActivity extends GLGame {
 				Toast.LENGTH_SHORT).show();
 
 	}
+
+
+
 
 }

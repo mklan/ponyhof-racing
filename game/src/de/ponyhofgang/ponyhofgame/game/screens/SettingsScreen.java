@@ -152,6 +152,9 @@ public class SettingsScreen extends GLScreen {
 
 	@Override
 	public void resume() {
+		
+		Assets.reload();
+
 	}
 
 	@Override

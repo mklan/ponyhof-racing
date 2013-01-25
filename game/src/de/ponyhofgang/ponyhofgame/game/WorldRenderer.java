@@ -62,10 +62,11 @@ public class WorldRenderer {
 	public void render(World world, float deltaTime) {
 		GL10 gl = glGraphics.getGL();
 
-		// 3rd Person FollowCam
-		// camera.getPosition().set(world.car.position.x, 2,
-		// world.car.position.y).sub(world.car.direction.x * 3 , 0,
-		// world.car.direction.y * 3 ); //followCam
+//		// 3rd Person FollowCam
+//		 camera.getPosition().set(world.myCar.position.x, 2,
+//		 world.myCar.position.y).sub(world.myCar.bounds.direction.x * 3 , 0,
+//		 world.myCar.bounds.direction.y * 3 ); 
+//		 camera.getLookAt().set(world.myCar.position.x, 0,world.myCar.position.y);
 
 		// 3rd Person ViewerCam
 		camera.getPosition().set(world.myCar.position.x, 5,
@@ -74,13 +75,14 @@ public class WorldRenderer {
 				world.myCar.position.y);
 
 		// -----> 1st Person
-		// camera.getPosition().set(world.car.position.x, 0.5f,
-		// world.car.position.y).add(world.car.direction.x * 0.5f , 0,
-		// world.car.direction.y * 0.5f ); //FirstPersonCam
-		// camera.getLookAt().set(world.car.position.x, 0.5f,
-		// world.car.position.y).add(world.car.direction.x * 3 , 0,
-		// world.car.direction.y * 3 ); //FirstPersonCam
+//		 camera.getPosition().set(world.myCar.position.x, 0.5f,
+//		 world.myCar.position.y).add(world.myCar.bounds.direction.x * 0.5f , 0,
+//		 world.myCar.bounds.direction.y * 0.5f ); //FirstPersonCam
+//		 camera.getLookAt().set(world.myCar.position.x, 0.5f,
+//		 world.myCar.position.y).add(world.myCar.bounds.direction.x * 3 , 0,
+//		 world.myCar.bounds.direction.y * 3 ); //FirstPersonCam
         // <----
+		 
 		camera.setMatrices(gl);
 		gl.glEnable(GL10.GL_DEPTH_TEST);
 		gl.glEnable(GL10.GL_TEXTURE_2D);
@@ -345,7 +347,7 @@ public class WorldRenderer {
 			model = Assets.mysteryMachineModel;
 			break;
 
-		case CarSpecs.PODRACER:
+		case CarSpecs.CRYSTALSHIP:
 
 			texture = Assets.podRacerTexture;
 			model = Assets.podRacerModel;

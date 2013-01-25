@@ -39,6 +39,7 @@ public class SelectAMapScreen extends GLScreen {
 	public boolean pressedBackKey = false;
 	private boolean multiplayer;
 	private boolean allCarsSelected;
+	private boolean paused;
 
 	private static SelectAMapScreen instance = null;
 
@@ -87,9 +88,6 @@ public class SelectAMapScreen extends GLScreen {
 				
 				Assets.playSound(Assets.clickSound);
 				
-				Log.d("debug", "soViele Autos soll es geben:" +  SelectACarScreen.getInstance().cars.size());
-				
-	          //  if(allCarsSelected()){
 					
 				if(multiplayer) mainMenuScreen.game.sendStringCommands(selectedMap+"", "map");
 			    	
@@ -97,7 +95,7 @@ public class SelectAMapScreen extends GLScreen {
 			    loading = true;
 			   
 			    
-				//}
+			
 				
 
 			}
@@ -148,7 +146,7 @@ public class SelectAMapScreen extends GLScreen {
 				height/1.78f,
 				Assets.levelDocksRegion);
 		batcher.drawSprite(width / 2, height - PonyMath.getRatio(width, 54), PonyMath.getRatio(width, 512),
-				PonyMath.getRatio(width, 109),
+				PonyMath.getRatio(width, 105),
 				Assets.chooseAMapTextRegion);
 		batcher.endBatch();
 
@@ -173,10 +171,21 @@ public class SelectAMapScreen extends GLScreen {
 
 	@Override
 	public void pause() {
+		
+	  paused = true;
+		
 	}
 
 	@Override
 	public void resume() {
+	
+	if (paused){
+		
+		paused = false;
+
+		Assets.SelectACarScreenReload();
+		Assets.reload();
+	}
 	}
 
 	@Override

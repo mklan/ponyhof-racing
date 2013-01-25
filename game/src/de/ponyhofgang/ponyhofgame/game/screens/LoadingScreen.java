@@ -18,12 +18,7 @@ public class LoadingScreen extends GLScreen {
 	Camera2D guiCam;
 	SpriteBatcher batcher;
 	Vector2 touchPoint;
-	Rectangle musicCheckboxBounds;
-	Rectangle sfxCheckboxBounds;
-	Rectangle arrowLeftBounds;
-	Rectangle arrowRightBounds;
-	Rectangle backButtonBounds;
-
+	
 	int height;
 	int width;
 	
@@ -34,11 +29,13 @@ public class LoadingScreen extends GLScreen {
 	boolean firstTimeCreate = true;
 	
 	MainMenuScreen mainMenuScreen;
+
 	
 	private static LoadingScreen instance = null; 
 
 	private LoadingScreen(Game game) {
 		super(game);
+
 
 		this.game = (GLGame) game;
 		
@@ -59,34 +56,16 @@ public class LoadingScreen extends GLScreen {
 	@Override
 	public void update(float deltaTime) {
 		
+		
+	 
 		if (firstTimeCreate) {
 
 			Assets.loadLevel(game);
 			firstTimeCreate = false;
 		} 
         
-		
-		///////TEST////////////
-		
-//		ArrayList<Integer> cars = new ArrayList<Integer>();
-//		
-//		cars.add( 90);
-//		cars.add( 0);
-//		
-//		
-//		if(mainMenuScreen.game.multiplayer){
-//	
-//		//cars.set(3, 0);
-//		game.setScreen(GameScreen.getInstance(game, cars));
-//		}else{
-//			
-//	    game.setScreen(GameScreen.getInstance(game, SelectACarScreen.getInstance().cars));	
-//		}
-		
-		
-		
-		
-	game.setScreen(GameScreen.getInstance(game, SelectACarScreen.getInstance().cars)); //TODO original
+
+	game.setScreen(GameScreen.getInstance(game, SelectACarScreen.getInstance().cars)); 
 		
 		
 	

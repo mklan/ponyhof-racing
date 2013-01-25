@@ -21,8 +21,9 @@ public final class R {
     }
     public static final class id {
         public static final int buttonSendMessage=0x7f080001;
-        public static final int imageView1=0x7f080007;
-        public static final int menu_settings=0x7f080008;
+        public static final int menu_settings=0x7f080009;
+        public static final int profileSwitcher=0x7f080007;
+        public static final int progressbar=0x7f080008;
         public static final int selectService_button_start=0x7f080006;
         public static final int selectService_text_playerCount=0x7f080003;
         public static final int selectService_text_playerId=0x7f080005;
