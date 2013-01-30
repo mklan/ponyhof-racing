@@ -16,6 +16,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -24,7 +25,9 @@ import android.os.Messenger;
 import android.os.Parcel;
 import android.os.RemoteException;
 import android.util.Log;
+import android.view.Display;
 import android.view.KeyEvent;
+import android.view.Surface;
 import android.view.View;
 import android.widget.Toast;
 import android.widget.ViewSwitcher;
@@ -62,6 +65,11 @@ public class GameActivity extends GLGame {
 	public String[] playerNames;
 
 	public String packageName;
+
+	public boolean tablet = false;
+	
+	
+
 	
 
 
@@ -71,11 +79,24 @@ public class GameActivity extends GLGame {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		
-		Toast.makeText(this, "loading...", Toast.LENGTH_SHORT).show();
+		//Toast.makeText(this, "loading...", Toast.LENGTH_SHORT).show();
 		
-		 
+		Display display = getWindowManager().getDefaultDisplay();
+		
+		tablet = display.getRotation() == 0;  //prüfe ob Tablet oder Smartphone
+		
+		Toast.makeText(this, "loading... ", Toast.LENGTH_SHORT).show();
+		
+	}
+	    
+		
+	   
+	 
+	
+	
+	
+	
 
-	} 
 	
 	
 	public Screen getStartScreen() {

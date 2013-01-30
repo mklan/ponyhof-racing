@@ -1,5 +1,7 @@
 package de.ponyhofgang.ponyhofgame.framework.gl;
 
+import de.ponyhofgang.ponyhofgame.framework.math.PonyMath;
+
 public class Font {
     public final Texture texture;
     public final int glyphWidth;
@@ -24,7 +26,7 @@ public class Font {
         }        
     }
     
-    public void drawText(SpriteBatcher batcher, String text, float x, float y, float sizeFactor) {
+    public void drawText(SpriteBatcher batcher, String text, float x, float y, float sizeFactor, int width) {
         int len = text.length();
         for(int i = 0; i < len; i++) {
             int c = text.charAt(i) - ' ';
@@ -32,7 +34,7 @@ public class Font {
                 continue;
             
             TextureRegion glyph = glyphs[c];
-            batcher.drawSprite(x, y, glyphWidth/sizeFactor, glyphHeight/sizeFactor, glyph);
+            batcher.drawSprite(x, y, PonyMath.getRatio(width, glyphWidth/sizeFactor), PonyMath.getRatio(width, glyphHeight/sizeFactor), glyph);
             x += glyphWidth;
         }
     }

@@ -46,7 +46,7 @@ public class PonyMath {
 
 	}
 
-	public static float getRatio(int l, int value) {
+	public static float getRatio(int l, float value) {
 		
 		return Math.round((l / 0.625f) / (2048 / value));
 	}

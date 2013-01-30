@@ -95,7 +95,7 @@ public class GameScreen extends GLScreen {
 	public int playerReadyCount = 0;
 	private GameActivity gameActivity;
 	private boolean firstTime;
-	private boolean firstTimeAnotherGame = true;
+	private boolean firstTimeAnotherGame = false;
 
 	
 	
@@ -406,7 +406,8 @@ public class GameScreen extends GLScreen {
 				}
 			}
 		} else {   // Ist ACCEL eingestellt
-			accelY = game.getInput().getAccelY()/1.5f;  // Für Tablets muss X Achse verwendet werden !!!
+			if (gameActivity.tablet) accelY = -game.getInput().getAccelX()/1.5f;
+			else accelY = game.getInput().getAccelY()/1.5f;  // Für Tablets muss X Achse verwendet werden !!!
 			if (accelY > -ACCEL_STEERING_ANGLE && accelY < ACCEL_STEERING_ANGLE) {  //im diesem Rahmen ist alles möglich
 				angle = accelY;                                                     
 			} else if (accelY < -ACCEL_STEERING_ANGLE){  // das ist das Maxiumum
@@ -544,18 +545,18 @@ public class GameScreen extends GLScreen {
 
 		// Zeitdarstellen 
 	    batcher.beginBatch(Assets.items2);
-		Assets.font.drawText(batcher, PonyMath.timeString(world.time, formatedTime), (width/2.4f), (height*0.93f), 1);
+		Assets.font.drawText(batcher, PonyMath.timeString(world.time, formatedTime), (width/2.4f), (height*0.93f), 1, width);
 		batcher.endBatch();
 		
 		// Rundendarstellung
 		batcher.beginBatch(Assets.items2);
-		Assets.font.drawText(batcher, "lap: "+world.myCar.lap+"/"+world.laps, PonyMath.getRatio(width, 60), height*0.95f, 1.5f);
+		Assets.font.drawText(batcher, "lap: "+world.myCar.lap+"/"+world.laps, PonyMath.getRatio(width, 60), height*0.95f, 1.5f,  width);
 		batcher.endBatch();
 		
 		if(multiplayer){
 		// Positionsdarstellung
 		batcher.beginBatch(Assets.items2);
-		Assets.font.drawText(batcher, "pos: "+world.myCar.rank+"/"+ gameActivity.playerCount , PonyMath.getRatio(width, 60), height*0.90f, 1.5f);
+		Assets.font.drawText(batcher, "pos: "+world.myCar.rank+"/"+ gameActivity.playerCount , PonyMath.getRatio(width, 60), height*0.90f, 1.5f,  width);
 		batcher.endBatch();
 		}
 		

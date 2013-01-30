@@ -73,6 +73,11 @@ public class World implements CarSpecs {
 	public World(int playerCount, int myId, int worldId,
 			ArrayList<Integer> chosenCars, boolean multiplayer) {
 		
+		
+		Thread thread1 = new WallCollision();
+		//Start the threads
+		
+		
 		this.multiplayer = multiplayer;
 
 		cars = new ArrayList<Car>();
@@ -116,7 +121,7 @@ public class World implements CarSpecs {
 				break;
 			}
 
-			cars.add(new Car(0, 0, 180, carWidth, carLength,
+			cars.add(new Car(0, 0, 0, carWidth, carLength,
 					chosenCars.get(i)));
 		}
 
@@ -158,6 +163,8 @@ public class World implements CarSpecs {
 			checkpoints.add(new Checkpoint(-6, 6, 90, 1, 5, Checkpoint.MINUS_Y));
 
 		}
+		
+		thread1.start();
 
 	}
 
@@ -172,7 +179,8 @@ case 1:
 car0 = myCar;
 car0.position.x = -5;
 car0.position.y = 6;
-car0.rotate(360);
+car0.pitch = 180;
+
 
 
 break;
@@ -184,11 +192,11 @@ car1 = cars.get(1);
 
 car0.position.x = -5;
 car0.position.y = 6.5f;
-car0.rotate(180);
+car0.pitch = 180;
 
 car1.position.x = -5;
 car1.position.y = 5.5f;
-car1.rotate(180);
+car1.pitch = 180;
 
 break;
 
@@ -208,9 +216,9 @@ car0 = cars.get(0);
 car1 = cars.get(1);
 car2 = cars.get(2);
 
-car0.rotate(180);
-car1.rotate(180);
-car2.rotate(180);
+car0.pitch = 180;
+car1.pitch = 180;
+car2.pitch = 180;
 
 break;
 
@@ -234,10 +242,10 @@ car1 = cars.get(1);
 car2 = cars.get(2);
 car3 = cars.get(3);
 
-car0.rotate(180);
-car1.rotate(180);
-car2.rotate(180);
-car3.rotate(180);
+car0.pitch = 180;
+car1.pitch = 180;
+car2.pitch = 180;
+car3.pitch = 180;
 
 break;
 
@@ -300,7 +308,7 @@ break;
 			checkRank();
 		// <----
 
-		checkWorldCollisions();
+		
 		checkGadgetBoxCollisions(); // TODO keine Gadgetboxen im Timetrial.. //
 									// höchstens ggf. Speedboost
 
@@ -718,6 +726,23 @@ private int checkCheckpointCollision() {
 		myCar.finished = false;
 		oilSpills.clear();
 		
+	}
+	
+	
+	class WallCollision extends Thread {
+
+	public void run() {
+			//Display info about this particular thread
+			while(true){
+			checkWorldCollisions();
+//			try {
+//				sleep(1000);
+//			} catch (InterruptedException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+			}
+		}
 	}
 
 }
