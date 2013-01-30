@@ -1,7 +1,4 @@
 ﻿#Allgemein
--Auf Tablets ist die Steuerung mit Accelerometer verdreht, dafur einfach in der Klasse GameScreen.java
- in Zeile 409 accelY = game.getInput().getAccelY()/1.5f; in accelY = -game.getInput().getAccelX()/1.5f; ändern
- und neu compilieren.
 -Auf einigen Geräten funktioniert das Pitchen des Motorsounds nicht
 
 
